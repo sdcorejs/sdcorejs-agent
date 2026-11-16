@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "trial": "t02",
+  "task": "Initialize the existing Order Desk engineering blueprint under the task's authorized guidance-only scope.",
+  "isolation": {
+    "pack": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42",
+    "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture",
+    "external_network_used": false,
+    "package_installs": false,
+    "subagents_spawned": false,
+    "sibling_or_rubric_reads": false,
+    "application_or_dependency_writes": false,
+    "maintainer_authoring_tools_used": false
+  },
+  "selected_skill": {
+    "name": "sdcorejs-explore",
+    "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/explore.md",
+    "action": "project-blueprint-write-approved",
+    "selection_reason": "Frontmatter explicitly covers managing project blueprints."
+  },
+  "loaded_pack_guidance": [
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/AGENTS.md"
+  ],
+  "loaded_reference_paths": [
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/runtime-protocols.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-context.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/tasklist.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-blueprint.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-bootstrap.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/artifact-lifecycle.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/session-authority.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/testing-philosophy.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/system-registry.json",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/explore-contract.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-blueprint.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/explore-context.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/harness/communication-economy.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/convention-context.md"
+  ],
+  "commands": [
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/prompt.txt",
+      "exit_code": 0,
+      "result": "Read isolated trial task and constraints."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/AGENTS.md",
+      "exit_code": 0,
+      "result": "Read supplied pack guidance."
+    },
+    {
+      "command": "rg --files -g '!node_modules' -g '!package-lock.json' -g '!pnpm-lock.yaml' -g '!yarn.lock' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "result": "Listed pack and target paths. Output truncated; no sibling or real repository was read."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills')\nfor f in sorted(p.rglob('*.md')):\n s=f.read_text(); a=s.split('---',2)\n print(str(f)+'\\n'+(a[1].strip() if s.startswith('---') and len(a)>2 else 'No frontmatter'))\nPY",
+      "exit_code": 0,
+      "result": "Loaded skill name/description frontmatter only before selecting sdcorejs-explore."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/runtime-protocols.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-context.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/tasklist.md",
+      "exit_code": 0,
+      "result": "Read runtime, context and progress protocols."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/AGENTS.md /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/README.md /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/package.json /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/src/order.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/src/server.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/test/unit.test.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/test/integration.test.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/test/e2e.test.mjs",
+      "exit_code": 0,
+      "result": "Read complete small target policy, manifest, source and test files. AGENTS, README and package were subsequently read again without combined-output truncation."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/explore.md",
+      "exit_code": 0,
+      "result": "---\nname: sdcorejs-explore\ndescription: \"Explore/map a codebase, trace feature flows, find reusable code, read/refresh project summary, recover context, manage project blueprints/persona/memories/conventions, harvest documentation facts, or inspect env shape. Includes a parallel-opportunity check for substantial independent read-only investigations. Modes: summary-read, summary-refresh, code-map, trace-flow, env-setup, recovery, persona, memories, conventions, documentation-harvest. Runtime-localized.\"\nrequired-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/AGENTS.md /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/README.md /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/package.json\nrg --files --hidden -g '!.git/**' /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "result": "# Order Desk\n\nManual policy: preserve operator terminology and never log customer secrets.\n# Order Desk\n\nNode 24 ESM, no dependencies. Run `npm test` for unit tests, `npm run test:integration` for service tests, and `npm run test:e2e` for real HTTP boundary tests. No browser UI exists. No deployment is configured.\n{\n  \"name\": \"order-desk-fixture\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"engines\": {\n    \"node\": \">=24\"\n  },\n  \"scripts\": {\n    \"test\": \"node --test test/unit.test.mjs\",\n    \"test:integration\": \"node --test test/integration.test.mjs\",\n    \"test:e2e\": \"node --test test/e2e.test.mjs [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-blueprint.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-bootstrap.md",
+      "exit_code": 0,
+      "result": "# Project Blueprint\n\nUse this reference when initializing a project or recording an existing project\nbaseline. Explore owns the inventory. It connects project decisions to their\nevidence; accepted conventions and approved architecture remain the rule\nauthority. Product owns requirements, Spec owns accepted behavior, Architecture\nowns boundaries, Test owns test execution, and the canonical validation map owns\ndelivery evidence evaluation.\n\nThe deterministic, side-effect-free helper is\n`_refs/shared/project-blueprint.mjs`. It neither scans a repository nor runs\ncommands, writes files, approves d [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/artifact-lifecycle.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/session-authority.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/testing-philosophy.md",
+      "exit_code": 0,
+      "result": "# SDCoreJS Artifact Lifecycle\n\nThis reference defines ownership, metadata, runtime propagation, Git closure,\nand redaction rules for `.sdcorejs/**` artifacts. Read it before any workflow\nwrites, verifies, stages, commits, or pushes those artifacts.\n\n`_refs/shared/artifact-lifecycle.mjs` provides a deterministic, read-only\ndiscovery and classification helper. It never stages or commits files.\n\nBlueprints use `.sdcorejs/blueprints/<kebab>.json` and the shared-owned\n`project-blueprint` kind; read-only discovery cannot grant write ownership.\nProduct snapshots, assets and delivery receipts use the  [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/system-registry.json /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/explore-contract.mjs",
+      "exit_code": 0,
+      "result": "{\n  \"schema_version\": 1,\n  \"registry_version\": \"1.2.0\",\n  \"generic_harness_fallback\": {\n    \"track\": \"general\",\n    \"executor\": \"sdcorejs-execute-plan\",\n    \"review_profile\": \"general\"\n  },\n  \"tracks\": [\n    {\n      \"id\": \"ai-agent\",\n      \"executor\": \"sdcorejs-ai-agent\",\n      \"review_profile\": \"ai-agent\",\n      \"repair_supported\": true,\n      \"ship_supported\": true\n    },\n    {\n      \"id\": \"angular\",\n      \"executor\": \"sdcorejs-angular\",\n      \"review_profile\": \"angular\",\n      \"repair_supported\": true,\n      \"ship_supported\": true\n    },\n    {\n      \"id\": \"design\",\n      \"executor\": \"sdcore [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-bootstrap.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/session-authority.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/testing-philosophy.md",
+      "exit_code": 0,
+      "result": "# Controlled Project Instruction Bootstrap\n\nOwner: sdcorejs-explore, after final code writes and convention sync. Review reads\ninstructions and emits candidates only. Absence of project_bootstrap in the\nconvention policy is disabled; existing projects are not automatically migrated.\n\nProject engineering decisions belong in the detailed blueprint from\n`project-blueprint.md`, not in this managed instruction block. Blueprint setup\nand AGENTS.md projection have separate write authority. Validate the blueprint\nand accepted conventions first; preserve human instructions and link the detailed\nrules.  [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/artifact-lifecycle.md",
+      "exit_code": 0,
+      "result": "# SDCoreJS Artifact Lifecycle\n\nThis reference defines ownership, metadata, runtime propagation, Git closure,\nand redaction rules for `.sdcorejs/**` artifacts. Read it before any workflow\nwrites, verifies, stages, commits, or pushes those artifacts.\n\n`_refs/shared/artifact-lifecycle.mjs` provides a deterministic, read-only\ndiscovery and classification helper. It never stages or commits files.\n\nBlueprints use `.sdcorejs/blueprints/<kebab>.json` and the shared-owned\n`project-blueprint` kind; read-only discovery cannot grant write ownership.\nProduct snapshots, assets and delivery receipts use the  [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/project-blueprint.mjs",
+      "exit_code": 0,
+      "result": "import { systemRegistry } from './system-registry.mjs';\nimport { classifyConventionPath, isSafeRuleId, ruleFileStem } from './convention-paths.mjs';\n\n/** An inventory of decisions, not a second convention or architecture registry. */\nexport const BLUEPRINT_AREAS = Object.freeze([\n  'scope', 'stack', 'architecture', 'coding', 'api-data', 'permissions', 'ui',\n  'accessibility', 'unit-testing', 'integration-testing', 'e2e-testing',\n  'documentation', 'delivery', 'learning',\n]);\nconst AUTHORITY_KINDS = new Set([\n  'accepted-convention', 'approved-architecture', 'approved-specification',\n  'approve [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/explore-context.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/harness/communication-economy.md",
+      "exit_code": 0,
+      "result": "# Explore Context And Summary v2\n\nUse this reference after `sdcorejs-explore` selects an action that emits\n`explore_context`, reads a project summary, or owns an approved summary refresh.\n\n## Contents\n\n- [Explore Context](#explore-context)\n- [Summary Read](#summary-read)\n- [Summary Refresh Authorization](#summary-refresh-authorization)\n- [Summary v2 Frontmatter](#summary-v2-frontmatter)\n- [Summary v2 Body](#summary-v2-body)\n- [Freshness Rules](#freshness-rules)\n\n## Explore Context\n\nEvery `sdcorejs-explore` action builds this runtime context for its exact\nconsumer. Do not render the full block  [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess,json,hashlib,os\nroot=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target'); cap=root.parent/'capture'; cap.mkdir(exist_ok=True)\ncommands=[('git-root',['git','rev-parse','--show-toplevel']),('git-head',['git','rev-parse','HEAD']),('git-status-before',['git','status','--short']),('git-diff-before',['git','diff','--no-ext-diff']),('git-index-before',['git','diff','--cached','--no-ext-diff']),('git-files',['git','ls-files']),('repository-origin',['git','config','--get','remote.origin.url']),('node-version',['node','--version']),('npm-version',['npm','--version']),('unit',['npm','test']),('integration',['npm','run','test:integration']),('e2e',['npm','run','test:e2e'])]\nrecords=[]\nenv=dict(os.environ,NPM_CONFIG_CACHE=str(cap/'npm-cache'),NPM_CONFIG_UPDATE_NOTIFIER='false')\nfor name,args in commands:\n r=subprocess.run(args,cwd=root,env=env,text=True,capture_output=True,timeout=45)\n output=r.stdout+r.stderr; path=cap/(name+'.log'); path.write_text(output)\n records.append({'command':' '.join(args),'cwd':str(root),'exit_code':r.returncode,'output_path':str(path),'output_sha256':hashlib.sha256(path.read_bytes()).hexdigest()})\n print(json.dumps({'name':name,'exit_code':r.returncode,'output':output}))\n(cap/'verification-commands.json').write_text(json.dumps(records,indent=2)+'\\n')\nfiles={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in root.rglob('*') if f.is_file() and '.git' not in f.relative_to(root).parts}\n(cap/'baseline-hashes.json').write_text(json.dumps(files,indent=2)+'\\n')\n(cap/'agents-before.md').write_bytes((root/'AGENTS.md').read_bytes())\nPY",
+      "exit_code": 0,
+      "result": "{\"name\": \"git-root\", \"exit_code\": 0, \"output\": \"/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target\\n\"}\n{\"name\": \"git-head\", \"exit_code\": 0, \"output\": \"91f78ce774bd079c2489ccc714064b0422b3de8f\\n\"}\n{\"name\": \"git-status-before\", \"exit_code\": 0, \"output\": \"\"}\n{\"name\": \"git-diff-before\", \"exit_code\": 0, \"output\": \"\"}\n{\"name\": \"git-index-before\", \"exit_code\": 0, \"output\": \"\"}\n{\"name\": \"git-files\", \"exit_code\": 0, \"output\": \"AGENTS.md\\nREADME.md\\npackage.json\\nsrc/order.mjs\\nsrc/server.mjs\\ntest/e2e.test.mjs\\ntest/integration.test.mjs\\ntest/unit.test.mjs\\n\"}\n{\"name\": \"repository [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json\np=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42')\nr=json.loads((p/'_refs/shared/system-registry.json').read_text())\nprint(json.dumps({'tracks':[x for x in r['tracks'] if x['id'] in ['node','documentation','general']],'stack_profiles':[x for x in r['stack_profiles'] if x['id']=='node-general'],'blueprints_root':r['artifact_roots']['blueprints']},indent=2))\nPY\ncat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/_refs/shared/convention-context.md",
+      "exit_code": 0,
+      "result": "Warning: truncated output (original token count: 6230)\nTotal output lines: 679\n\n{\n  \"tracks\": [\n    {\n      \"id\": \"documentation\",\n      \"executor\": \"sdcorejs-documentation\",\n      \"review_profile\": \"documentation\",\n      \"repair_supported\": true,\n      \"ship_supported\": true\n    },\n    {\n      \"id\": \"general\",\n      \"executor\": \"sdcorejs-execute-plan\",\n      \"review_profile\": \"general\",\n      \"repair_supported\": true,\n      \"ship_supported\": true\n    },\n    {\n      \"id\": \"node\",\n      \"executor\": \"sdcorejs-execute-plan\",\n      \"review_profile\": \"node\",\n      \"repair_supported\": true,\n      \"s [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "tool": "apply_patch",
+      "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/build-blueprint.py",
+      "result": "Created capture/build-blueprint.py; candidate authoring script, no target mutation."
+    },
+    {
+      "tool": "apply_patch",
+      "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-blueprint.mjs",
+      "result": "Created capture validation script."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess,json,hashlib\ncap=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture'); root=cap.parent/'target'\nrecords=json.loads((cap/'verification-commands.json').read_text())\nfor name,args in [('build-candidate',['python3',str(cap/'build-blueprint.py')]),('validate-candidate',['node',str(cap/'validate-blueprint.mjs'),'candidate'])]:\n r=subprocess.run(args,cwd=root,text=True,capture_output=True,timeout=30); output=r.stdout+r.stderr; path=cap/(name+'.log'); path.write_text(output)\n records.append({'command':' '.join(args),'cwd':str(root),'exit_code':r.returncode,'output_path':str(path),'output_sha256':hashlib.sha256(path.read_bytes()).hexdigest()})\n print(output)\n if r.returncode: raise SystemExit(r.returncode)\n(cap/'verification-commands.json').write_text(json.dumps(records,indent=2)+'\\n')\nPY",
+      "exit_code": 0,
+      "result": "Created candidate blueprint and AGENTS link in capture; target is not yet changed.\n\n{\n  \"mode\": \"candidate\",\n  \"authority\": {\n    \"write_allowed\": true,\n    \"reason\": \"explicit or approved explore ownership\"\n  },\n  \"validation\": {\n    \"ok\": true,\n    \"status\": \"incomplete\",\n    \"errors\": [],\n    \"gaps\": [\n      \"permissions\",\n      \"learning\"\n    ],\n    \"observed\": [\n      \"scope\",\n      \"architecture\",\n      \"coding\",\n      \"api-data\",\n      \"unit-testing\",\n      \"integration-testing\",\n      \"e2e-testing\",\n      \"documentation\",\n      \"delivery\"\n    ]\n  },\n  \"classification\": \"node/node-gener [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib,subprocess\ncap=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture'); root=cap.parent/'target'\nbaseline=json.loads((cap/'baseline-hashes.json').read_text())\nfor path,expected in baseline.items():\n assert hashlib.sha256((root/path).read_bytes()).hexdigest()==expected, 'Repository changed since baseline: '+path\ncandidate=json.loads((cap/'blueprint-candidate.json').read_text())\nvalidation=json.loads((cap/'validate-candidate.log').read_text()); assert validation['validation']['ok']\nblueprint=root/'.sdcorejs/blueprints/order-desk.json'; assert not blueprint.exists()\nblueprint.parent.mkdir(parents=True,exist_ok=True)\nblueprint.write_bytes((cap/'blueprint-candidate.json').read_bytes())\n(root/'AGENTS.md').write_bytes((cap/'agents-candidate.md').read_bytes())\nassert blueprint.read_bytes()==(cap/'blueprint-candidate.json').read_bytes()\nassert (root/'AGENTS.md').read_bytes()==(cap/'agents-candidate.md').read_bytes()\n(cap/'persistence.log').write_text('Created .sdcorejs/blueprints/order-desk.json and appended the authorized link to AGENTS.md; baseline hashes checked before writing and exact candidate bytes verified after writing.\\n')\nprint((cap/'persistence.log').read_text())\nrecords=json.loads((cap/'verification-commands.json').read_text())\nfor name,args in [('validate-persisted',['node',str(cap/'validate-blueprint.mjs'),'final']),('diff-check',['git','diff','--check']),('status-after',['git','status','--short','--untracked-files=all']),('agents-diff',['git','diff','--no-ext-diff','--','AGENTS.md']),('protected-diff',['git','diff','--exit-code','--','README.md','package.json','src','test'])]:\n r=subprocess.run(args,cwd=root,text=True,capture_output=True,timeout=30); output=r.stdout+r.stderr; path=cap/(name+'.log'); path.write_text(output)\n records.append({'command':' '.join(args),'cwd':str(root),'exit_code':r.returncode,'output_path':str(path),'output_sha256':hashlib.sha256(path.read_bytes()).hexdigest()})\n print(json.dumps({'name':name,'exit_code':r.returncode,'output':output}))\n if r.returncode: raise SystemExit(r.returncode)\n(cap/'verification-commands.json').write_text(json.dumps(records,indent=2)+'\\n')\nPY",
+      "exit_code": 0,
+      "result": "Created .sdcorejs/blueprints/order-desk.json and appended the authorized link to AGENTS.md; baseline hashes checked before writing and exact candidate bytes verified after writing.\n\n{\"name\": \"validate-persisted\", \"exit_code\": 0, \"output\": \"{\\n  \\\"mode\\\": \\\"persisted\\\",\\n  \\\"authority\\\": {\\n    \\\"write_allowed\\\": true,\\n    \\\"reason\\\": \\\"explicit or approved explore ownership\\\"\\n  },\\n  \\\"validation\\\": {\\n    \\\"ok\\\": true,\\n    \\\"status\\\": \\\"incomplete\\\",\\n    \\\"errors\\\": [],\\n    \\\"gaps\\\": [\\n      \\\"permissions\\\",\\n      \\\"learning\\\"\\n    ],\\n    \\\"observed\\\": [\\n      \\\"scope\\\",\\n      \\\"arc [Read output abbreviated in trace; verification stdout is preserved in separate logs.]"
+    },
+    {
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/finalize-captures.py",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "result": "Capture integrity verified: 19 command logs, all exit 0; 14 blueprint areas; only AGENTS.md and the blueprint changed in the target; original manual policy and protected file hashes preserved.",
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/capture-integrity.log"
+    }
+  ],
+  "decisions": {
+    "target_kind": "target-project",
+    "track": "node",
+    "stack_profile": "node-general",
+    "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+    "source_revision": "91f78ce774bd079c2489ccc714064b0422b3de8f",
+    "authority": "User explicitly authorized writing project guidance/blueprint and linking it from AGENTS.md while preserving manual policy.",
+    "tenant_model": "unresolved; no design selected or approval invented",
+    "blueprint_status": "valid inventory, incomplete decisions",
+    "instruction_link": "Explicitly requested bounded direct link, preserving original AGENTS bytes. No automatic bootstrap or convention-sync policy was installed."
+  },
+  "explore_context": {
+    "source": "sdcorejs-explore",
+    "action": "project-blueprint-write-approved",
+    "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "target_root_kind": "target-project",
+    "tracks": [
+      "node"
+    ],
+    "stack_profiles": [
+      "node-general"
+    ],
+    "profile_confidence": "high",
+    "profile_evidence": [
+      "package.json declares Node >=24 ESM without framework dependencies",
+      "src/server.mjs imports node:http",
+      "test/*.mjs use node:test"
+    ],
+    "freshness": {
+      "summary_status": "missing",
+      "strategy": "targeted-read"
+    },
+    "writes": [
+      {
+        "path": ".sdcorejs/blueprints/order-desk.json",
+        "approved": true,
+        "reason": "Explicit requested engineering baseline"
+      },
+      {
+        "path": "AGENTS.md",
+        "approved": true,
+        "reason": "Explicit requested link; original manual content preserved"
+      }
+    ]
+  },
+  "artifact_context": {
+    "schema_version": 1,
+    "change_ref": "order-desk-engineering-blueprint-initialization",
+    "source_spec": "none",
+    "source_plan": "none",
+    "required_with_change": [],
+    "shared_owned": [
+      {
+        "path": ".sdcorejs/blueprints/order-desk.json",
+        "kind": "project-blueprint",
+        "owner": "sdcorejs-explore",
+        "reason": "Authorized shared durable baseline"
+      }
+    ],
+    "conditional": [],
+    "local_only": [
+      {
+        "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture",
+        "kind": "diagnostic",
+        "reason": "Explicit benchmark capture; no staging or commit"
+      }
+    ],
+    "unrelated_observed": []
+  },
+  "limitations": [
+    "Tenant identity, membership/ownership, operation permissions, enforcement and denial semantics require an actual accepted decision before implementation.",
+    "Integration script currently proves only direct cancellation predicate behavior, not service wiring.",
+    "The existing HTTP E2E proves one happy path, not all validation/routing/authorization behavior.",
+    "No lint, build, typecheck, formatter or coverage script exists; no such check was fabricated.",
+    "No browser UI, CLI, job, persistence or deployment exists in this repository.",
+    "No verified historical lesson record exists; learning is a gap rather than invented memory.",
+    "This was a guidance-only baseline. No delivery-readiness, full test-coverage or security-completeness claim is made."
+  ],
+  "skipped_checks": [
+    {
+      "check": "Browser E2E",
+      "reason": "No UI boundary exists; real HTTP API E2E ran."
+    },
+    {
+      "check": "Tenant authorization tests",
+      "reason": "Model and contract are unresolved; no authorization implementation exists."
+    },
+    {
+      "check": "Pack authoring tests/audits/mirror generation",
+      "reason": "Consuming-project task; maintainer tools are out of scope."
+    },
+    {
+      "check": "External services/network, installs and publication",
+      "reason": "Not authorized and unnecessary."
+    }
+  ],
+  "verification_summary": {
+    "unit": "PASSED, 2 tests",
+    "integration": "PASSED, 2 direct predicate tests",
+    "e2e": "PASSED, 1 actual HTTP test",
+    "blueprint": "ok:true, status:incomplete, 14 required areas, 40 evidence references verified",
+    "manual_policy": "Original bytes preserved",
+    "protected_files": "Source, tests, README and package.json match baseline hashes",
+    "diff_check": "PASSED"
+  },
+  "skill_frontmatter_paths_loaded": [
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/orchestration/documentation.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/orchestration/parallel-dispatch.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/orchestration/repair-loop.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/orchestration/subagent-driven-development.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/orchestration/using-skills.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/sdlc/01-brainstorming.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/sdlc/02-spec.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/sdlc/03-plan.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/sdlc/04-execute-plan.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/sdlc/architecture.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/cleanup.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/debug.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/explore.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/git.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/review.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/ship.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/shared/workflow/simplify.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/angular/sdcorejs-angular.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/content/sdcorejs-content.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/design/sdcorejs-design.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/nestjs/sdcorejs-nestjs.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/nextjs/sdcorejs-nextjs.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/product/sdcorejs-product.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p42/skills/tracks/test/sdcorejs-test.md"
+  ],
+  "verification_commands": [
+    {
+      "command": "git rev-parse --show-toplevel",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-root.log",
+      "output_sha256": "4511b6446c3827612962e3f4df4b009985b0e4ec346e332eec6893a9b8efd920"
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-head.log",
+      "output_sha256": "f0d8fabfb75e2d56549951f1a9950c9051f610fb9408c99f2a868e3e9cd9c2aa"
+    },
+    {
+      "command": "git status --short",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-status-before.log",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "git diff --no-ext-diff",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-diff-before.log",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "git diff --cached --no-ext-diff",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-index-before.log",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "git ls-files",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-files.log",
+      "output_sha256": "28677da6abd3dff98693affd1410df268eb6994b3e3cbebbf135f0235c5a2638"
+    },
+    {
+      "command": "git config --get remote.origin.url",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/repository-origin.log",
+      "output_sha256": "5df908c3121cf7d185bfce90988cc7ebc0dcda10d21a112d39723e214ea3c729"
+    },
+    {
+      "command": "node --version",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/node-version.log",
+      "output_sha256": "249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81"
+    },
+    {
+      "command": "npm --version",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/npm-version.log",
+      "output_sha256": "d9f29f5aab43c8c1a8d6acc856e258b89735f541aa5e1f07b39a62f28bfa8d06"
+    },
+    {
+      "command": "npm test",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/unit.log",
+      "output_sha256": "adfb2b4e511c9425ad3de8c91ce32af67fb527f9734c7e157dadfc36be8ce415"
+    },
+    {
+      "command": "npm run test:integration",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/integration.log",
+      "output_sha256": "236301c721afc8be288256c505de835434e3e897ee491d1ea0cbc35248fb160b"
+    },
+    {
+      "command": "npm run test:e2e",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/e2e.log",
+      "output_sha256": "34e29d158c736fad2d0115de61504dc15811c75827b607589dbf596690c558fd"
+    },
+    {
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/build-blueprint.py",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/build-candidate.log",
+      "output_sha256": "cf1c2c0ad7311517f854dd28df491be2308f2be46265f4c8f4fb533a739165e6"
+    },
+    {
+      "command": "node /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-blueprint.mjs candidate",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-candidate.log",
+      "output_sha256": "be46c3f6f601cfda3a1f6755c0cd107ae56a989034178dcee6f718c7ec1ac481"
+    },
+    {
+      "command": "node /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-blueprint.mjs final",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-persisted.log",
+      "output_sha256": "28deed25a08d48db29bcfe5f7c96bfbb94c1fd79aa342cb650849d345a9ee954"
+    },
+    {
+      "command": "git diff --check",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/diff-check.log",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/status-after.log",
+      "output_sha256": "4acd3948e8aef909597c88b64808a3b0a05d65c58e8c181e0afedc4c735e7139"
+    },
+    {
+      "command": "git diff --no-ext-diff -- AGENTS.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/agents-diff.log",
+      "output_sha256": "721e9d516ed7d7a6c1be7a310d63147f2495e2aff6956b4a038ea5f9da64266c"
+    },
+    {
+      "command": "git diff --exit-code -- README.md package.json src test",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "exit_code": 0,
+      "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/protected-diff.log",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts_changed": [
+    {
+      "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/AGENTS.md",
+      "sha256": "3ba869ef37a1578e46cc9403c16025c75a5521f6c322bd1bf66ce5f1b152d164",
+      "change": "modified"
+    },
+    {
+      "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json",
+      "sha256": "e2618bd1430d4dc41c0ca331ce1dce661be94b89f1dabc177133c656772ce79a",
+      "change": "created"
+    }
+  ],
+  "capture_artifacts": [
+    "agents-before.md",
+    "agents-candidate.md",
+    "agents-diff.log",
+    "baseline-hashes.json",
+    "before-manifest.json",
+    "blueprint-candidate.json",
+    "build-blueprint.py",
+    "build-candidate.log",
+    "capture-integrity.log",
+    "diff-check.log",
+    "e2e.log",
+    "finalize-captures.py",
+    "git-diff-before.log",
+    "git-files.log",
+    "git-head.log",
+    "git-index-before.log",
+    "git-root.log",
+    "git-status-before.log",
+    "integration.log",
+    "node-version.log",
+    "npm-cache/_logs/2026-11-14T09_06_10_464Z-debug-0.log",
+    "npm-cache/_logs/2026-11-14T09_06_10_895Z-debug-0.log",
+    "npm-cache/_logs/2026-11-14T09_06_11_338Z-debug-0.log",
+    "npm-version.log",
+    "persistence.log",
+    "protected-diff.log",
+    "repository-origin.log",
+    "response.md",
+    "status-after.log",
+    "trace.json",
+    "unit.log",
+    "validate-blueprint.mjs",
+    "validate-candidate.log",
+    "validate-persisted.log",
+    "verification-commands.json"
+  ]
+}

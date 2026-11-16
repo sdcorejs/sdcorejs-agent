@@ -1,0 +1,76 @@
+{
+  "evidence_class": "host-agent fixture pilot; no baseline A/B or NVIDIA Tier3",
+  "read_only_case": {
+    "result": "requested-outcome-satisfied",
+    "fixture_unchanged": true,
+    "processes_started": 0
+  },
+  "historical_deviations": [
+    "First startup trial treated partial process visibility as absence; repaired with explicit coverage guard.",
+    "First repair trial omitted whole-startup deadline; repaired with required positive startup_timeout_ms."
+  ],
+  "final_startup": {
+    "command": [
+      "npm",
+      "run",
+      "dev"
+    ],
+    "startup_timeout_ms": 15000,
+    "budget_recorded_before_launch": "deadline-budget-before-launch.json",
+    "enforcement": "Monotonic absolute deadline begins before launch; watchdog terminates only the newly owned process group on expiry; every HTTP and subprocess poll budget is capped by remaining time; readiness after expiry is rejected.",
+    "readiness": {
+      "observed_at": "2026-11-14T10:41:11.734202+00:00",
+      "elapsed_ms": 497.14572499942733,
+      "status": 200,
+      "body": {
+        "application": "onboarding-fixture",
+        "ready": true
+      }
+    },
+    "startup_timed_out": false,
+    "failure": null,
+    "owned_cleanup_identity_verified": true,
+    "exit_code": 0,
+    "endpoint_absent_after_cleanup": true,
+    "inputs_unchanged": true,
+    "historical_receipts_unchanged": true
+  },
+  "input_hashes": {
+    "canonical": {
+      "AGENTS.md": "27744af72252f7c57b5e35525c2fd21e52aef92f651009f9864e7502d844be49",
+      "skills/shared/workflow/explore.md": "72e91df3ffe098e30c250f23ee06c8647e8a27a1d297a59da36435ddcbec4cf0",
+      "_refs/shared/runtime-protocols.md": "7e716334efb19adff8189283c8446e9f54ee337ba8234b7607c8db69b760fa9d",
+      "_refs/shared/project-context.md": "0a78718061a420ff07f6fcbf8ba9d501677acc6d98dddc01e3e7128f73619055",
+      "_refs/shared/existing-project-onboarding.md": "f4957e9cd610008e8b4ad4c43ebbf16a1440876f7e2e29101e55d2a2577e78f1",
+      "_refs/shared/explore-env-setup-actions.md": "01d9510d6c4af5e2b2ed9fe65c15426ff93414d1e070076d5361590de27cc94b",
+      "_refs/shared/explore-context.md": "0216ca661fefc3b645889bfbba3c0a4f189012eac2cbdbd5eb0273bf81da3659",
+      "_refs/shared/explore-contract.mjs": "3ccf1af150d2e7c95b5ee5bedd04ca5881fc922ec9f60bac6c99c049bc6538fb",
+      "_refs/shared/system-registry.json": "b2bacc600486a1c0d4ac11efaf395aa0f85605aee6036d254dfdb8408851bae8",
+      "_refs/shared/project-runtime.mjs": "d2c1a4c19f4ad3b58805dfef038f6a1a13c5acd682a7f19b596919995dec6532",
+      "_refs/shared/session-authority.md": "2188aa5a39221d152dd98511341704435488609c672ad22da03cec2059053f2a",
+      "_refs/shared/tasklist.md": "b3bf2914c204e631d874883f5ca13dd7263d895f4b18be7fe457921425636d40",
+      "_refs/harness/communication-economy.md": "44b72876081b1a49765e5bbd9b076aea66a1a5b79c29fb6f773af0dd4a93c890",
+      "_refs/shared/project-instructions.mjs": "163805f122824e6f5f0e3cb327a41a2fd03254a323c7fc051965314da402f19b",
+      "_refs/harness/runtime-policy.mjs": "da3a6e336b0fd00e781cc483ae7a416b3ad090336e610738277f11ef9d95559a",
+      "_refs/shared/artifact-lifecycle.md": "8a7afee95ab2bb4419a95d0039da81206f1f5356f26817896b98ccf2d463f8c4"
+    },
+    "fixture": {
+      "AGENTS.md": "50d337db7833ef209ad8ef2831ea6637999ad8722f871b3496cd41547af22382",
+      "README.md": "d4bd6e12395272ae484af00eee3fe4dfeeb8c31322ead12d5b614dde68c5776e",
+      "apps/api/AGENTS.md": "7cd3dc5e04670d05d0c135c83740da5e33d54a8c58c83207adddf82fe2d867f6",
+      "apps/web/AGENTS.md": "f296c2544769f950a6d0360fb3dee58b6dfe9d0cecc49574d21674c0964583cd",
+      "apps/web/src/page.js": "26fb77a4822bc0435dc91b760b929e53461cfa99607ecdd45f3eb668c25f42ad",
+      "package.json": "098ecb9bd6ab72e674f1f91ae344048c4e4d2460d75e27945a5f15502884d290",
+      "server.mjs": "a963cebf57bb15b4f1de6e1f9a6d82639673eead7d692901a7ecaa8d6563f15f"
+    }
+  },
+  "limitations": [
+    "One additional actual local startup/readiness run; deadline expiry path is implemented but was not triggered by this healthy fixture.",
+    "Fresh follow-up used one fixture, then a repair rerun on that fixture; no statistical effect or general legacy-project certification.",
+    "No provider telemetry was exposed; model/tokens not invented."
+  ],
+  "raw_evidence_root": "/workspace/work/existing-repo-onboarding-20261114/behavior",
+  "provider_api_calls": 0,
+  "model": null,
+  "tokens": null
+}

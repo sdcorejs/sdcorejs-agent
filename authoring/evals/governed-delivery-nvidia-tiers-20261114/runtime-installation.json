@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "runtime-installed-provider-blocked",
+  "source_repository": "https://github.com/NVIDIA/SkillEvaluator",
+  "source_revision": "f5bf6c1f3666699fd145612a2e9162e9721db3f9",
+  "pyproject_sha256": "d8c610696eda10dddf1e8bd6eed00cb818688448b8e81d8f69b5e341a087b467",
+  "uv_lock_sha256": "b53cde317b5adafb12f8fb85db0dbcff2fa6df4079a2349561dc46a755c1b3a0",
+  "versions": {
+    "skillevaluator": "0.9.0",
+    "harbor": "0.25.0",
+    "openai": "2.44.0",
+    "anthropic": "0.116.0",
+    "litellm": "1.93.2",
+    "python-dotenv": "1.2.2"
+  },
+  "cli": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+  "installation_command": "UV_PROJECT_ENVIRONMENT=/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv UV_CACHE_DIR=/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/uv-cache UV_PYTHON_INSTALL_DIR=/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/python uv sync --frozen --extra tier2 --extra tier3 --no-dev --python /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "installation_cwd": "/workspace/work/skill-install/nvidia-skillevaluator",
+  "installation_exit_code": 0,
+  "installation_log": "/workspace/work/sdcorejs-nvidia-remaining-20261114/reports/install-runtime.log",
+  "installation_log_sha256": "756df4398b0e078347129af22005d94de5865186c9b7be9a11c0779ed1873268",
+  "provider_configured": false,
+  "model_api_calls_performed": 0,
+  "root_credentials_written": false,
+  "authfile_contents_inspected_by_assistant": false,
+  "native_codex_login_status_checked": true,
+  "native_codex_login_status": "Logged in using ChatGPT"
+}

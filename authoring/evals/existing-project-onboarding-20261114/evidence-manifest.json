@@ -1,0 +1,16 @@
+{
+  "core-tests.json": "3f25bcf03d55843f94d3830e2005d9af937a0daf3a8bdd98a7ff439908014309",
+  "deadline-audit.json": "912027d8fbb40502130364cdcc0ea1588b0f3f00fc114242c46d36f517c27d9c",
+  "README.md": "f7f32baf2aa1198299fcd95780bbc90e16a55bf5515a2462c5c89842178cda45",
+  "pre-deadline-audit-binding.json": "87ccdeae81931a7995c4015c29d9657b3aaa6bb924d92edcb9d87fba8729103e",
+  "deterministic-authoring.json": "563bbfc7f30b114d2664fc009401b2d43a32b02d93174012f763254c19e3476d",
+  "deadline-audit.md": "e150777036f15cbf81923fad5bfdcde6a3ece06ab0df68ce5fd31b1f1eeb6597",
+  "source-manifest.json": "fe84ebb5755da04de604fc592ef13af22911d4f109e3cd37f6bc502dad9c3417",
+  "nvidia-tier1-summary.json": "c8f8501d540e48bf1160eacf39cc3ff311e5f7d0721c4267d035ee20adf44e1f",
+  "independent-audit.md": "00c39937cab3b71722948dc18063856798dfac25e860935d56ef3892ed3f317b",
+  "initial-audit.md": "cbce40bab7675abb72a2e7e3340bbc81cfbf27e03d716c888de91089a879b84c",
+  "baseline-source-manifest.json": "f806e756432ddb943c9d66068b97e15df0e0d0dd2f3c047d05639af821eaee77",
+  "baseline-assessment.md": "ae2feb3fe4f912992fd33d1b727384ab7474d910a19dc706adf02e9284517a11",
+  "behavior-receipt.json": "60455c8d87f8d18015f532ba820428ba49773b859e723d1745bce9031b6cafed",
+  "research.md": "c3a3e2ef54849b7ef42b68b6e0b560e7bfaf922ca747bd4e99d560ff1879e992"
+}

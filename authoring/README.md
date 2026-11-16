@@ -5,6 +5,11 @@ skill pack. It is outside `skills/**` and must not be installed in target
 projects, copied to public mirrors, listed in public harness manifests, or
 shown in the site skill catalog.
 
+Before skill-pack implementation, follow [prerequisites and independent audit](prerequisites.md).
+The [required skill-pack registry](skill-packs.md) defines installation locations,
+verified source revisions and recovery on a fresh machine. Run the read-only
+preflight `node authoring/tools/check-prerequisites.mjs` at every authoring start.
+
 Contents:
 
 - `skills/sdcorejs-skill-authoring/` - the internal workflow initialized with

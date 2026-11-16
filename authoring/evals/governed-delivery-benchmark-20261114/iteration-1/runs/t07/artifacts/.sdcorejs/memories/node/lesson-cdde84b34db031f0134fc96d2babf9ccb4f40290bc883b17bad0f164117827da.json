@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "memory",
+  "owner": "sdcorejs-explore",
+  "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+  "owner_role": "sequential-owner",
+  "track": "node",
+  "stack_profile": "node-general",
+  "source_skill": "sdcorejs-explore",
+  "concept_id": "normalization.nullish-category",
+  "change_ref": "normalize-category-null-input",
+  "source_spec": "none",
+  "source_plan": "none",
+  "commit_policy": "conditional",
+  "confidence": "high",
+  "created_at": "2026-11-14T09:12:27.134974+00:00",
+  "problem": "normalizeCategory previously threw when its input was null or undefined instead of returning an empty category.",
+  "root_cause": "The previous implementation in inputs/fix.diff called value.trim() before checking for nullish input. Null and undefined cannot provide that method.",
+  "resolution": "At this category boundary, check value == null before trimming and lowercasing. Return an empty string for null or undefined, and preserve existing string normalization. This evidence supports this function and its nullish contract only; it does not establish a policy for all normalizers, non-string objects or numbers, other falsy values, or payment logic.",
+  "regression_protection": {
+    "description": "Run the existing category regression explicitly: node --test test/category.test.mjs. It checks null, undefined, and trimming/lowercasing of a string. package.json scripts.test selects only test/unit.test.mjs and does not include these cases.",
+    "paths": [
+      "test/category.test.mjs"
+    ]
+  },
+  "applicability": {
+    "tracks": [
+      "node"
+    ],
+    "modules": [],
+    "boundaries": [
+      "category-normalization"
+    ],
+    "paths": [
+      "src/category.mjs",
+      "test/category.test.mjs"
+    ],
+    "keywords": [
+      "normalizeCategory",
+      "normalization",
+      "null-input",
+      "undefined"
+    ]
+  },
+  "source_revision": "11b80db173ba3a0bfd063f5318f24a7ac73ad97a",
+  "source_fingerprints": [
+    {
+      "path": "src/category.mjs",
+      "sha256": "4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5"
+    },
+    {
+      "path": "test/category.test.mjs",
+      "sha256": "40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537"
+    },
+    {
+      "path": "package.json",
+      "sha256": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2"
+    },
+    {
+      "path": "inputs/fix.diff",
+      "sha256": "6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9"
+    }
+  ],
+  "verification": {
+    "result": "PASSED",
+    "command": "node --test test/category.test.mjs",
+    "cwd": ".",
+    "source_revision": "11b80db173ba3a0bfd063f5318f24a7ac73ad97a",
+    "proof": {
+      "path": ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md",
+      "sha256": "24ec1361b6672ebbf1adb4b02d4c7eb625f86f96faa8f2345c19a4d7de6580a7"
+    }
+  },
+  "proposed_convention": null,
+  "redaction_applied": true,
+  "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+  "artifact_id": "memory-lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da"
+}

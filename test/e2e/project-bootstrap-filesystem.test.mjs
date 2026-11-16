@@ -8,6 +8,24 @@ import { applyProjectBootstrap, planProjectBootstrap, bootstrapHash } from '../.
 const policy = () => ({ ...structuredClone(DEFAULT_CONVENTION_POLICY), repository: { repository_id: 'repo' }, project_bootstrap: { schema_version: 1, mode: 'manual', target: 'AGENTS.md', template_version: 1, managed_block_id: 'sdcorejs-project-baseline' } });
 const options = () => ({ policy: policy(), repository_id: 'repo', approved_target: 'AGENTS.md', explicit_authority: true, action: 'conventions-sync-write-approved', worker_role: 'sequential-owner', instruction_conflicts: [], writer_contract: { kind: 'cooperative', all_writers_cooperate: true, external_editors_excluded: true } });
 async function sandbox(t) { const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'sdcore-bootstrap-'))); await fs.mkdir(path.join(root, '.git')); t.after(() => fs.rm(root, { recursive: true, force: true })); return root; }
+test('approved AGENTS bootstrap records pack adoption for future agents while preserving Claude instructions', async t => {
+  const root = await sandbox(t);
+  const claude = '# Human Claude instructions\nUse pnpm; preserve Claude-specific settings.\n';
+  await fs.writeFile(path.join(root, 'CLAUDE.md'), claude);
+  const denied = await applyProjectBootstrap({ ...options(), root, explicit_authority: false, expected_hash: bootstrapHash('') });
+  assert.equal(denied.status, 'proposal');
+  await assert.rejects(fs.readFile(path.join(root, 'AGENTS.md')), { code: 'ENOENT' });
+  const result = await applyProjectBootstrap({ ...options(), root, expected_hash: bootstrapHash('') });
+  assert.equal(result.status, 'written');
+  const bytes = await fs.readFile(path.join(root, 'AGENTS.md'));
+  const links = [...bytes.toString('utf8').matchAll(/\]\((https:\/\/[^)]+)\)/gu)].map(match => match[1]);
+  assert.ok(links.includes('https://github.com/sdcorejs/sdcorejs-agent'), 'future agents need the official skill-pack identity');
+  assert.ok(links.includes('https://github.com/sdcorejs/sdcorejs-agent#5-minute-adoption'), 'missing-pack offers need official tool-specific installation instructions');
+  assert.equal(await fs.readFile(path.join(root, 'CLAUDE.md'), 'utf8'), claude);
+  const repeated = await applyProjectBootstrap({ ...options(), root, expected_hash: bootstrapHash(bytes) });
+  assert.equal(repeated.status, 'unchanged');
+  assert.deepEqual(await fs.readFile(path.join(root, 'AGENTS.md')), bytes);
+});
 test('managed update preserves BOM, CRLF and bytes outside block; repeated sync is identical', async t => {
   const root = await sandbox(t), target = path.join(root, 'AGENTS.md');
   const original = Buffer.from('\uFEFF# Human instructions\r\nKeep this text.\r\n'); await fs.writeFile(target, original);

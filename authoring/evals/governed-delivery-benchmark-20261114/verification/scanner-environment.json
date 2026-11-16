@@ -1,0 +1,18 @@
+{
+  "SKILLEVALUATOR_RUNTIME_DIR": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/runtimes",
+  "UV_CACHE_DIR": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/uv-cache",
+  "UV_TOOL_DIR": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/uv-tools",
+  "UV_TOOL_BIN_DIR": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/bin",
+  "UV_PYTHON_INSTALL_DIR": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/python",
+  "XDG_CACHE_HOME": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/cache",
+  "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/config",
+  "XDG_DATA_HOME": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/data",
+  "PIP_CACHE_DIR": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/pip-cache",
+  "TMPDIR": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/tmp",
+  "PYTHONDONTWRITEBYTECODE": "1",
+  "SEMGREP_SETTINGS_FILE": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/config/semgrep-settings.yml",
+  "SEMGREP_ENABLE_VERSION_CHECK": "0",
+  "SEMGREP_SEND_METRICS": "off",
+  "SKILLEVALUATOR_SKILLSPECTOR_PATH": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/bin/skillspector",
+  "SKILLEVALUATOR_SEMGREP_PATH": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/bin/semgrep"
+}

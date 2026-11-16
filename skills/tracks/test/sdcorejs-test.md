@@ -12,8 +12,9 @@ Own test planning, test authoring, safe execution, coverage matrices, UAT cases,
 RED-first TDD, authenticated runner evidence, and UI capture verification.
 `sdcorejs-debug` owns root-cause investigation and production bug fixes.
 `sdcorejs-documentation` owns guide prose and image placement. This skill must
-not invoke Git, call `sdcorejs-git`, install dependencies, or start/modify a
-runtime unless the current request explicitly authorizes that exact action.
+not invoke Git without its own scoped authority. Necessary dependency preparation and
+runtime startup reuse current implementation/test authority through Explore's
+runtime contract; read-only actions never acquire those permissions.
 
 ## Shared protocols
 
@@ -55,6 +56,13 @@ ship, or an explicit capture request. It is not a general routing target.
 Requests to debug, fix, repair, investigate, or root-cause a failing test select
 `debug-handoff`. Pass the smallest reproduction plus current `test_context`,
 `test_status`, and `test_evidence`.
+
+Before runtime-dependent tests, use `_refs/shared/explore-env-setup-actions.md`
+to inspect the owning local application and execute any authorized startup.
+Reuse a healthy matching instance or the test runner's configured server
+lifecycle; report blockers and never use an unrelated listener as test evidence.
+`test-plan-readonly`, coverage-only questions and output triage never start it.
+Readiness alone does not satisfy the behavior-based E2E requirement.
 
 ## Step 2 - Classify the stack profile
 
@@ -123,6 +131,18 @@ when the module is missing or non-writable.
 `ui-evidence-capture` additionally loads
 `_refs/shared/test-ui-evidence.md`. It must reuse the existing runner and return
 verified provenance; otherwise classify the capture as diagnostic/local-only.
+
+## Behavioral E2E and ticket evidence
+
+Use `_refs/shared/project-blueprint.md` for applicable project testing decisions
+and `selectBehavioralE2E` for changed behavior. User journeys, API contracts, CLI
+flows and background jobs need their corresponding end-to-end verification.
+Pure logic or documentation-only work uses suitable checks with an explicit
+exception reason; an exception never overrides an accepted AC evidence class.
+Feed actual command/case results, current revision, environment and sanitized
+proof into the existing validation map. Keep downloaded ticket reference images
+separate from real UI evidence. Product consumes that same validated evidence
+for delivery; no screenshot or authored test alone is a passing result.
 
 ## Step 4 - Build v2 preflight
 

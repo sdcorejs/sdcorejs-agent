@@ -1,0 +1,72 @@
+{
+  "captured_at_utc": "2026-11-14T10:14:24.301835+00:00",
+  "repository": "/workspace/sdcorejs-agent",
+  "revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "27744af72252f7c57b5e35525c2fd21e52aef92f651009f9864e7502d844be49",
+      "bytes": 10076
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "278f38c7dbcbaa3a90a357a3651129488302e956a6879202d0411000d387a58d",
+      "bytes": 17399
+    },
+    {
+      "path": "authoring/prerequisites.md",
+      "sha256": "19116a51e84e1f8da707a71afb4dbbb0245f36f50c40a0b9eb536ac648c1b127",
+      "bytes": 3883
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "sha256": "5bfdec5138117e0fd14e41785a2b858fb4963500b0427ae9a8fdf5b08847029c",
+      "bytes": 20377
+    },
+    {
+      "path": "_refs/shared/project-context.md",
+      "sha256": "6a7e7228c4e531fe797601f5c5ec1e35333b73641252bd6a685fc3fba78d69da",
+      "bytes": 13354
+    },
+    {
+      "path": "_refs/shared/project-context.mjs",
+      "sha256": "09c2f86315486183d0c011495bcd19ce9c35a187d5ad9a02c7c87d7308ef27b0",
+      "bytes": 34974
+    },
+    {
+      "path": "_refs/shared/explore-contract.mjs",
+      "sha256": "cf9af4a4cb65ccd955aa3320319cee18a447ffbf99028d0c792acd7f301aa857",
+      "bytes": 18704
+    },
+    {
+      "path": "_refs/shared/explore-env-setup-actions.md",
+      "sha256": "b5176bfd3d7c8240505d823aa41e5dbb13fff19be8468f71e11268545847b384",
+      "bytes": 723
+    },
+    {
+      "path": "_refs/shared/project-bootstrap.md",
+      "sha256": "773dad5e96aea7a9dcd25350ecc298ca05eb3aff5a45683869eaec25e8380c07",
+      "bytes": 3286
+    },
+    {
+      "path": "_refs/shared/convention-context.md",
+      "sha256": "38a07021cb087864292840fd9e52df2e08ecbc3614e542a6db58fc664ccf6a0a",
+      "bytes": 24178
+    },
+    {
+      "path": "_refs/shared/session-authority.md",
+      "sha256": "2188aa5a39221d152dd98511341704435488609c672ad22da03cec2059053f2a",
+      "bytes": 3377,
+      "captured_at_utc": "2026-11-14T10:16:41.775672+00:00",
+      "role": "supporting authority reference"
+    },
+    {
+      "path": "_refs/shared/runtime-protocols.md",
+      "sha256": "7e716334efb19adff8189283c8446e9f54ee337ba8234b7607c8db69b760fa9d",
+      "bytes": 2171,
+      "captured_at_utc": "2026-11-14T10:16:41.775842+00:00",
+      "role": "supporting authority reference"
+    }
+  ],
+  "scope": "Read-only source assessment; not live target execution."
+}

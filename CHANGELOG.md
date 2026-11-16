@@ -7,6 +7,26 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Block ticket snapshot/delivery closure when a required dependency is excluded,
+  preserving local-only privacy instead of silently allowing an incomplete push.
+  Normalize Windows relative targets for nested instruction discovery, and accept
+  hash-bound session delegation in decision-coverage validation without claiming
+  document review. Align active adoption/release guides with the 25-skill pack
+  and update the showcase site's Astro dependency to 7.4.12 security fixes,
+  with its Node.js minimum and CI runtime aligned at 22.23.4.
+
+- Add a sourced visual library with 12 pattern families, six optional themes and
+  six paired examples. Design/Brainstorming turn accepted preview requests into
+  editable HTML through shared static/live rendering, responsive/state controls
+  and local interactions. Schema-v2 choices bind to current screen/library hashes;
+  v1 remains supported. Design handoff validates selection evidence while preserving
+  ownership, approval and installed-Core compatibility checks.
+
+- Record public SDCoreJS pack adoption and official missing-skill installation
+  guidance in the approved AGENTS managed block. Existing-project onboarding
+  exposes same-scope, hash-bound CLAUDE-to-AGENTS consolidation proposals while
+  preserving human rules, Claude-specific settings and separate write/install
+  authority. Read-only discovery never migrates instruction files.
 - Show per-source guidance for unreadable task-breakdown sources: the read-only
   check CLI gains `check sources -`, which groups unreadable links by domain and
   kind id, redacts secret-shaped values, and returns a fixed connector, export or

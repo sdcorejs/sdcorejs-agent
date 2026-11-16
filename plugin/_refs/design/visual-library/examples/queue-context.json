@@ -1,0 +1,27 @@
+{
+  "id": "queue-context",
+  "question": "Choose a workspace for the queue.",
+  "patterns": [
+    {
+      "pattern_id": "op-drawer",
+      "variant": "compact",
+      "label": "Contextual drawer",
+      "summary": "Inspect a record over the list.",
+      "best_when": "Occasional quick inspection",
+      "tradeoff": "The open panel hides adjacent rows"
+    },
+    {
+      "pattern_id": "op-split",
+      "variant": "split",
+      "label": "Work queue",
+      "summary": "Keep list and record visible side by side.",
+      "best_when": "Repeated review of consecutive records",
+      "tradeoff": "Two columns require more width"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the business requirements before offering.",
+  "criteria": [
+    "Keep your place between requests",
+    "Make the next record easy to reach"
+  ]
+}

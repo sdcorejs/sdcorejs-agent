@@ -4,6 +4,24 @@ Use this reference only when a workflow creates, discovers, reads, updates, migr
 aggregates, exports, validates, or closes documentation below
 `.sdcorejs/documentation/`. It is not bootstrap context for unrelated work.
 
+Document identity and containment stay in this layout. Audience and outline are
+selected through `../documentation/documentation-profile.md`, with
+`documentation_profile_version`, `documentation_scope` and
+`documentation_audience` metadata. Scope may be module, entity, feature, task,
+role, state or journey without adding competing category roots. Existing manual
+prose is preserved by the safe update planner. Aggregate composition validates
+then removes per-source managed-block delimiters so generated projections do not
+inherit conflicting editing ownership; malformed markers block the build.
+Approved requirement coverage retains stable AC identities from verified current
+specs. A `gap` or `conflict` propagates with null counts through module and
+cross-repository aggregates, displayed as not assessed; it is never summed as
+zero successful coverage. Observed-behavior guides remain usable with this gap
+visible. See the profile reference for trusted-host receipt validation.
+Legacy counts without explicit `selected` status remain unassessed. Selected
+counts must be nonnegative integers whose met/partial/missing sum equals total;
+null, malformed or inconsistent values remain a gap. Successful aggregation
+preserves the selected status instead of dropping its authority marker.
+
 ```yaml
 layout_version: 2
 documentation_root: .sdcorejs/documentation

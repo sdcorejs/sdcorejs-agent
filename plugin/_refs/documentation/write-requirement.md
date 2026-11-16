@@ -14,6 +14,16 @@ This is not a replacement for the product track. Use `sdcorejs-product` for
 full PRDs, user stories, acceptance criteria, UAT checklists, traceability
 matrices, and requirement/implementation/test consistency reviews.
 
+## Tracked source ownership
+
+When the TASKID identifies an external ticket being implemented, use Product's
+`_refs/product/ticket-intake.md` intake/refresh first. The immutable snapshot owns
+source provenance and the approved spec owns accepted behavior. This record is
+an optional reader view with exact snapshot/spec path and hash references;
+do not copy an editable competing set of requirements or overwrite either source.
+New AC discovered while documenting are proposals for Product/Spec reconciliation.
+Standalone lightweight records retain the workflow below.
+
 ## Output Path
 
 Write exactly one file per task id:

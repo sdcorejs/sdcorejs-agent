@@ -1,0 +1,9 @@
+{
+  "added": [
+    ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md"
+  ],
+  "deleted": [],
+  "modified": [
+    "docs/operator-guide.md"
+  ]
+}

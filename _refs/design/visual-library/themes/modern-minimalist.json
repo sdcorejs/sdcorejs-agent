@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "modern-minimalist",
+  "name": "Modern Minimalist",
+  "tokens": {
+    "bg": "#f5f6f7",
+    "surface": "#ffffff",
+    "text": "#26343d",
+    "muted": "#52616c",
+    "border": "#708090",
+    "accent": "#36454f",
+    "accent_text": "#ffffff",
+    "soft": "#e8edf0",
+    "font": "sans"
+  },
+  "source_refs": [
+    "theme-modern-minimalist"
+  ],
+  "adaptation": "Adapted presentation palette to semantic UI roles. Accent/muted tones adjusted for contrast, system font fallback replaces font assets; verify chosen pairs in the consuming UI."
+}

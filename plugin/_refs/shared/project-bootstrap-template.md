@@ -12,4 +12,16 @@ Use sdcorejs-explore for context and sdcorejs-review for read-only assessment.
 Observed patterns remain proposals. Only an authorized Explore sync may update
 conventions or this managed block after final code writes; review never writes it.
 If these skills are unavailable, apply this baseline directly and state that limitation.
+
+## SDCoreJS skills for this project
+
+This project uses the [SDCoreJS Agent skill pack](https://github.com/sdcorejs/sdcorejs-agent)
+for AI-assisted development. Check the current agent's available public
+`sdcorejs-*` skills. When missing, recommend the
+[official tool-specific installation](https://github.com/sdcorejs/sdcorejs-agent#5-minute-adoption)
+and respect the project's declared version or a pinned release. When availability
+is unknown, state that uncertainty before offering setup. Installation has its own
+scoped authorization; this file does not prove installation. Reuse an existing
+decline within the current session. If setup is unavailable or declined, continue
+with the portable baseline and state the limitation.
 <!-- sdcorejs-project-baseline:end -->

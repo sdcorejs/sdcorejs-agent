@@ -1,0 +1,18 @@
+$ python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/verify_blueprint.py
+{
+  "result": "passed",
+  "changed_paths": [
+    ".sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md",
+    "AGENTS.md"
+  ],
+  "manual_policy_preserved": true,
+  "baseline_source_tests_and_manifest_unchanged": true,
+  "local_links_validated": 10,
+  "utf8_and_whitespace": "passed",
+  "sha256": {
+    ".sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md": "5f1d4dc9f4784da1b3e33b079d69925632fc8b598d0ef54d40ff9b95acbd2253",
+    "AGENTS.md": "58be40fd90123f3ca962af20f1181706bfa95a6709ae2fb1940744820ad1b6d6"
+  }
+}
+
+exit_code=0

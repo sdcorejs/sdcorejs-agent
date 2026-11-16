@@ -1,3 +1,5 @@
+import { renderPattern } from '../../design/visual-library/render-pattern.mjs';
+
 /**
  * Visual Companion renderer.
  *
@@ -181,7 +183,8 @@ export function renderPreview(option, { assetUrl = null, messages = DEFAULT_MESS
     : '';
 
   let body;
-  if (preview.kind === 'wireframe') body = renderWireframePreview(preview);
+  if (preview.kind === 'pattern') body = renderPattern(preview);
+  else if (preview.kind === 'wireframe') body = renderWireframePreview(preview);
   else if (preview.kind === 'flow') body = renderFlowPreview(preview);
   else if (preview.kind === 'table') body = renderTablePreview(preview);
   else if (preview.kind === 'svg') {
@@ -203,17 +206,17 @@ export function renderOption(option, index, screen, { assetUrl = null, messages 
   const role = multiple ? 'checkbox' : 'radio';
   const recommended = screen.recommendation === option.id;
   return (
-    '<li role="none"><button type="button" class="vc-option" ' +
+    '<li role="none"' + (option.preview?.kind === 'pattern' ? ' class="vc-pattern-option"' : '') + '><button type="button" class="vc-option" ' +
     `role="${role}" aria-checked="false" ` +
     `aria-label="${escapeHtml(messages.option)} ${index + 1}: ${escapeHtml(option.label)}" ` +
     `data-option-id="${escapeHtml(option.id)}"${recommended ? ' data-recommended="true"' : ''}>` +
     `<span class="vc-number" aria-hidden="true">${index + 1}</span>` +
-    `<span class="vc-label">${escapeHtml(option.label)}</span>` +
+    `<span class="vc-label">${escapeHtml(option.label)}${recommended && option.preview?.kind === 'pattern' ? `<span class="vc-recommended">${escapeHtml(messages.recommendation)}</span>` : ''}</span>` +
     `<span class="vc-summary">${escapeHtml(option.summary)}</span>` +
-    renderPreview(option, { assetUrl, messages }) +
+    (option.preview?.kind === 'pattern' ? '' : renderPreview(option, { assetUrl, messages })) +
     `<span class="vc-detail"><strong>${escapeHtml(messages.best_when)}:</strong> ${escapeHtml(option.best_when)}</span>` +
     `<span class="vc-detail"><strong>${escapeHtml(messages.tradeoff)}:</strong> ${escapeHtml(option.tradeoff)}</span>` +
-    '</button></li>'
+    '</button>' + (option.preview?.kind === 'pattern' ? renderPreview(option, { assetUrl, messages }) : '') + '</li>'
   );
 }
 
@@ -253,6 +256,7 @@ export function renderMarkdownFallback(screen, runtime = {}) {
 export function describePreview(option, messages = DEFAULT_MESSAGES) {
   if (!hasRenderablePreview(option)) return option.preview_asset;
   const preview = option.preview;
+  if (preview.kind === 'pattern') return `${preview.pattern_id}/${preview.variant}: ${preview.content.title}; ${preview.content.subtitle}; ${preview.content.columns.join(' | ')}; ${preview.viewport}; ${preview.state}`;
   if (preview.kind === 'wireframe') {
     return `${preview.caption ?? 'wireframe'}: ${preview.regions.map((region) => `${region.area}/${region.label}`).join(', ')}`;
   }

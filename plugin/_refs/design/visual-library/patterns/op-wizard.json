@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "op-wizard",
+  "name": "Guided process",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "complete-steps",
+    "edit-record"
+  ],
+  "data_shapes": [
+    "dependent-steps"
+  ],
+  "applicability": "Later steps depend on validated earlier choices.",
+  "avoid_when": "Independent field groups do not require a forced sequence.",
+  "variants": [
+    {
+      "id": "horizontal",
+      "layout": "wizard"
+    },
+    {
+      "id": "vertical",
+      "layout": "wizard"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "core-flow",
+    "core-wizard-source",
+    "portal-compositions"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": "22.3.4",
+    "verification": "Inspect exact installed component exports and pattern source before implementation."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original HTML composition derived from the cited source structure; domain fixtures are illustrative, not requirements."
+}

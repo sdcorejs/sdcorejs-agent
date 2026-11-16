@@ -1,0 +1,23 @@
+{
+  "files": [
+    "AGENTS.md",
+    "README.md",
+    "inputs/note.md",
+    "inputs/snapshot.json",
+    "inputs/validation.json",
+    "package.json",
+    "src/order.mjs",
+    "src/server.mjs",
+    "test/e2e.test.mjs",
+    "test/integration.test.mjs",
+    "test/unit.test.mjs"
+  ],
+  "summary_exists": false,
+  "sdcorejs_exists": false,
+  "attachment": {
+    "path": ".sdcorejs/tickets/example/assets/reference/missing.png",
+    "exists": false,
+    "listed_sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+    "role": "reference"
+  }
+}

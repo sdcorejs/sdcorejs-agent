@@ -1,0 +1,40 @@
+{
+  "skills": 10,
+  "cases": 40,
+  "cases_per_skill": 4,
+  "strict_validations": 20,
+  "generated_task_contexts": 80,
+  "source_snapshot_sha256": "be12f9d5e120cafc7a33646a9a4ee0a837cdab7032a7cbc9e5a81c55aec24210",
+  "previous_inputs_unchanged": true,
+  "changed_target_skills_since_previous": [
+    "sdcorejs-execute-plan",
+    "sdcorejs-explore",
+    "sdcorejs-test"
+  ],
+  "changed_or_new_shared_refs": 9,
+  "model_trials": 0,
+  "scores_created": false,
+  "manifest": "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/inputs-manifest.json",
+  "evaluator_version": "0.9.0",
+  "subprocesses": 26,
+  "all_subprocesses_exit_zero": true,
+  "provider_calls": 0,
+  "source_files_reverified": 414,
+  "limitations": [
+    "Four cases per skill are a pilot; no new onboarding cases.",
+    "Portable path routing is an adaptation, not exact distribution certification.",
+    "Strict validation and offline staging do not establish model behavior or scores."
+  ],
+  "receipt_hashes": {
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/PREPARATION-RECEIPT.md": "852cf90fbfbfbf40f5bff5de3a0fc3d2544cf77ac92b7d9db9b7064212ed2c78",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/inputs-manifest.json": "83aec096178f6dee4ae5fa3aacbfdc7046b33ec9a7e7ff9aba5d5547790a3aaa",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/dependency-hashes.json": "903c85da250e2fb241f5c422762dfe26d9b3279067a0b7b2d381cba6af53bd65",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/portable-manifest.json": "18f6f02bb240936fca9aeebc4c83db887a2f39f24b7768775d1c5b27dd8ea01f",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/staging-rehearsal.json": "6f223031e92e52a21c83dbfa128f2d59a8a556062722b64b21a3ebf89ff976d1",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/receipts/commands.json": "4c807186a2e85ebf32ebf0db2749ac73c725bdc56b663e887c3b20516920a2b0",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/receipts/current-source-after.json": "5e7b3f18282a860f52784bdabd63720ab607b9b5ad729348ecef04c1ef859788",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/receipts/refresh-summary.json": "a1d5bf29662eb9da2824d855389fd51499654b1f4030dda5d0b3e55a717a57ff",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/receipts/previous-inputs-before.json": "bef46371829eba0da7d098cf2ca02f92ca4062fa34c060e8e000df6cf3acb96b",
+    "/workspace/work/sdcorejs-keyless-validation-20261114/nvidia-inputs/receipts/previous-inputs-after.json": "bef46371829eba0da7d098cf2ca02f92ca4062fa34c060e8e000df6cf3acb96b"
+  }
+}

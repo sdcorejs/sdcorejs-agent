@@ -1,0 +1,82 @@
+{
+  "phase": "preflight",
+  "authority": {
+    "write_allowed": true,
+    "reason": "explicit or approved explore ownership"
+  },
+  "authority_source": "Explicit user scope: remember the verified normalization lesson; minimal AGENTS pointer allowed; no application changes or new team rules.",
+  "role": "sequential owner of the isolated consuming target",
+  "project_context": {
+    "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+    "target_root_kind": "target-project",
+    "request_scope": "normalizeCategory category normalization null undefined trim lowercase",
+    "tracks": [
+      "node"
+    ],
+    "stack_profiles": [
+      "node-general"
+    ],
+    "summary": {
+      "status": "missing",
+      "schema": "missing",
+      "path": "none",
+      "usable_sections": [],
+      "invalidated_sections": []
+    },
+    "related_artifacts": {
+      "specs": [],
+      "plans": [],
+      "docs": [],
+      "handoffs": [],
+      "tasks": [],
+      "memories": []
+    },
+    "memory_policy": {
+      "authority": "advisory",
+      "current_source_precedence": true
+    },
+    "conventions": {
+      "policy_status": "missing",
+      "policy_path": "none",
+      "loaded_paths": [],
+      "accepted_rule_ids": [],
+      "observed_rule_ids": [],
+      "conflicted_rule_ids": [],
+      "deprecated_rule_ids": [],
+      "stale_rule_ids": [],
+      "invalid_paths": [],
+      "unresolved_owner_repositories": []
+    },
+    "code_context": {
+      "strategy": "targeted-read",
+      "scope": "normalizeCategory category normalization null undefined trim lowercase",
+      "entrypoints": [
+        "src/category.mjs",
+        "test/category.test.mjs",
+        "inputs/fix.diff"
+      ],
+      "evidence_paths": [
+        "src/category.mjs",
+        "test/category.test.mjs",
+        "inputs/fix.diff"
+      ],
+      "unresolved_relationships": []
+    },
+    "current_evidence": {
+      "files": [
+        "src/category.mjs",
+        "test/category.test.mjs",
+        "inputs/fix.diff"
+      ],
+      "diffs": [],
+      "commands": [
+        "git status --short"
+      ]
+    },
+    "writes_allowed": false,
+    "local_runtime_writes_allowed_after_consent": false,
+    "redaction_applied": true,
+    "legacy_notice": "none"
+  },
+  "duplicate_search": "No normalization-related memory selected; old payment filename unrelated and legacy metadata absent."
+}

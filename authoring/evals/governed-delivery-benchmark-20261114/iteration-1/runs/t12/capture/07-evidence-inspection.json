@@ -1,0 +1,45 @@
+{
+  "associated_HEAD": "e5d7a58c8ea634dfb05768b676b72e17706154a2",
+  "repository_expected": "github.com/benchmark-sdcorejs/order-desk",
+  "repository_observed": "github.com/elsewhere/billing",
+  "repository_matches": false,
+  "change_expected": "quantity-limits",
+  "change_observed": "invoice-rounding",
+  "change_matches": false,
+  "revision_expected": "rev-2",
+  "revision_observed": "rev-1",
+  "revision_matches": false,
+  "evidence_class": "UNIT",
+  "provided_result": "PASS",
+  "provided_run_id": "old-green",
+  "source_revision_binding_present": false,
+  "attachments": [
+    {
+      "path": ".sdcorejs/tickets/example/assets/reference/missing.png",
+      "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+      "role": "reference",
+      "within_target": true,
+      "exists": false,
+      "actual_sha256": null,
+      "hash_verified": false,
+      "visually_inspected": false
+    }
+  ],
+  "summary_exists": false,
+  "convention_policy_exists": false,
+  "target_file_hashes": {
+    "AGENTS.md": "2f9e532e6a305ed9d5c96a318a2e5ea7cf141fcdaa36240cb344d9f7f9bfb5d0",
+    "README.md": "11e3210c55398d28ef64ae53ec66d3cee4e0444b117f626ceb747db7522c33eb",
+    "inputs/note.md": "e64c891e8ac70edae199e2db6d67087484562a5b7a27a7577e08fe6c7cc6478c",
+    "inputs/snapshot.json": "037d1993e409adc567ae175b56ab3cd39c5231c1450124a699c26bbaca4c7175",
+    "inputs/validation.json": "57ece638c83fa02086e4e71bd1ca0c0eb6c67e3f8aac7bdc63d4890fd4cdae40",
+    "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2",
+    "src/order.mjs": "bb5c638bd489b6fe973245f69c35ed98e29432017f9ac9137a21710f5b66f256",
+    "src/server.mjs": "a3f4fb914f5508fc2d833245fc1411b1b4035725eb8ca62f9146c347280be1c9",
+    "test/e2e.test.mjs": "6cf15b0f74a3d8d3d7e3af7b675a493c08370136385364399195f95dc534fd1a",
+    "test/integration.test.mjs": "07a4969505499bf537d5e5c99e8d0e0a09688d8ee3c8a7bb4069d992d6355645",
+    "test/unit.test.mjs": "0ac7b1fd52c152ccb0c36da2d4c88fc78bd836ce362787a97649e0c67a8e1865"
+  },
+  "tests_executed": false,
+  "acceptance_verified": false
+}

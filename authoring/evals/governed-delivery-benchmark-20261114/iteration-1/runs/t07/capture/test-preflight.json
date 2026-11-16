@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "source": "sdcorejs-test",
+  "change": {
+    "change_ref": "normalize-category-null-input",
+    "associated_HEAD_or_diff": "11b80db173ba3a0bfd063f5318f24a7ac73ad97a",
+    "source_fingerprints": {
+      "src/category.mjs": "4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5",
+      "test/category.test.mjs": "40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537",
+      "inputs/fix.diff": "6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9",
+      "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2",
+      ".sdcorejs/memories/workflow/old-payment-advice.md": "ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58",
+      "AGENTS.md": "2f9e532e6a305ed9d5c96a318a2e5ea7cf141fcdaa36240cb344d9f7f9bfb5d0"
+    }
+  },
+  "classification": {
+    "test_action": "run-only",
+    "stack_profile": "general",
+    "test_levels": [
+      "unit"
+    ],
+    "repository_kind": "single-app",
+    "environment_class": "local"
+  },
+  "scope": {
+    "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+    "owner": "sdcorejs-test",
+    "target_paths": [
+      "src/category.mjs",
+      "test/category.test.mjs"
+    ],
+    "risk_dimensions": [
+      "nullish-input exception",
+      "valid-string behavior preserved"
+    ]
+  },
+  "runner": {
+    "runner_name": "node:test",
+    "config_paths": [
+      "package.json"
+    ],
+    "command_sources": [
+      "package.json:scripts.test",
+      "test/category.test.mjs"
+    ],
+    "package_manager": "Node CLI; no package manager required"
+  },
+  "environment": {
+    "environment_id": "isolated-offline-target",
+    "class": "local",
+    "write_policy": "read-only application; capture-only test output",
+    "external_effects": [],
+    "required_services": [],
+    "blockers": []
+  },
+  "auth": {
+    "required": false,
+    "discovery_status": "not-applicable"
+  },
+  "data": {
+    "strategy": "read-only",
+    "cleanup_policy": "not-applicable",
+    "external_side_effect_policy": "blocked"
+  },
+  "execution": {
+    "working_directory": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target",
+    "commands_planned": [
+      "node --test test/category.test.mjs"
+    ],
+    "commands_run": [],
+    "commands_skipped": [],
+    "write_paths_planned": [],
+    "local_artifact_paths": [
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/capture/regression-output.txt"
+    ]
+  },
+  "redaction_applied": true
+}

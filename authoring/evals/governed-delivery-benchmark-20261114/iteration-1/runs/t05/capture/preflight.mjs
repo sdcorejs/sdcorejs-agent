@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { stableRepositoryId, assertOwnerWriteTarget } from '../../../packs/p17/_refs/shared/repository-contract.mjs';
+import { buildCanonicalEntryPath, buildLegacyEntryPath, validateDocumentKey } from '../../../packs/p17/_refs/shared/documentation-layout.mjs';
+import { resolveDocumentationAction } from '../../../packs/p17/_refs/documentation/intent.mjs';
+import { classifyTask } from '../../../packs/p17/_refs/harness/runtime-policy.mjs';
+
+const target = process.cwd();
+const repositoryId = stableRepositoryId({remote_url: 'https://github.com/benchmark-sdcorejs/order-desk.git'});
+const key = 'order-cancellation';
+assert.equal(validateDocumentKey('technical-docs', key).ok, true);
+const entry = buildCanonicalEntryPath('technical-docs', key);
+const legacy = buildLegacyEntryPath('technical-docs', key);
+assert.equal(fs.existsSync(path.join(target, entry)), false);
+assert.equal(fs.existsSync(path.join(target, legacy)), false);
+assert.equal(fs.existsSync(path.join(target, '.sdcorejs')), false);
+assert.ok(path.resolve(target, entry).startsWith(path.resolve(target, '.sdcorejs/documentation') + '/'));
+assertOwnerWriteTarget({owner_repository_id: repositoryId, current_repository_id: repositoryId, repository_relative_path: entry});
+console.log(JSON.stringify({repository_id: repositoryId, repository_role: 'standalone', technical_doc_path: entry, entry_state: 'missing', generated_at: new Date().toISOString(), action: resolveDocumentationAction({requested_action: 'technical-doc'}), classification: classifyTask({request: 'Update operator cancellation documentation', owned_paths: ['docs/operator-guide.md', entry], writes: true, behavior_confirmed: true, acceptance_criteria_confirmed: true, verification_confirmed: true, changed_surfaces: ['text-only'], category: 'documentation', bounded: true})}, null, 2));

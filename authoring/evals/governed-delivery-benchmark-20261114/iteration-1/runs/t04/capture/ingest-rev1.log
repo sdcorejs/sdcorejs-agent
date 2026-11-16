@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py", line 116, in <module>
+    'inspection': png_info(data),
+                  ^^^^^^^^^^^^^^
+  File "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py", line 40, in png_info
+    assert zlib.crc32(tag + payload) & 0xffffffff == crc
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

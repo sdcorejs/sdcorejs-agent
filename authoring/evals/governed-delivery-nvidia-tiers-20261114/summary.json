@@ -1,0 +1,727 @@
+{
+  "receipt_type": "Independent audit receipt, not an official NVIDIA evaluation report",
+  "created_at": "2026-11-14T09:40:32.137519+00:00",
+  "audit_status": "INCOMPLETE",
+  "evaluated_repository": "/workspace/sdcorejs-agent",
+  "target_revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "evaluator": {
+    "name": "NVIDIA SkillEvaluator",
+    "version": "0.9.0",
+    "source_commit": "f5bf6c1f3666699fd145612a2e9162e9721db3f9",
+    "cli": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+    "source_changes": false,
+    "runtime_diagnostics": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/runtime-diagnostics.stdout.txt"
+  },
+  "readiness": [
+    {
+      "command_label": "doctor-tier2",
+      "exit_code": 1,
+      "status": "FAIL",
+      "rows": [
+        {
+          "check": "CLI package",
+          "status": "pass",
+          "detail": "skillevaluator 0.9.0"
+        },
+        {
+          "check": "Embedding provider",
+          "status": "fail",
+          "detail": "No provider is configured."
+        },
+        {
+          "check": "LLM provider",
+          "status": "fail",
+          "detail": "No provider is configured."
+        }
+      ]
+    },
+    {
+      "command_label": "doctor-tier3-docker",
+      "exit_code": 1,
+      "status": "FAIL",
+      "rows": [
+        {
+          "check": "CLI package",
+          "status": "pass",
+          "detail": "skillevaluator 0.9.0"
+        },
+        {
+          "check": "Public LLM provider",
+          "status": "fail",
+          "detail": "No provider is configured."
+        },
+        {
+          "check": "Harbor agents",
+          "status": "pass",
+          "detail": "codex"
+        },
+        {
+          "check": "docker prerequisite",
+          "status": "pass",
+          "detail": "ready"
+        }
+      ]
+    },
+    {
+      "command_label": "doctor-tier3-local",
+      "exit_code": 1,
+      "status": "FAIL",
+      "rows": [
+        {
+          "check": "CLI package",
+          "status": "pass",
+          "detail": "skillevaluator 0.9.0"
+        },
+        {
+          "check": "Public LLM provider",
+          "status": "fail",
+          "detail": "No provider is configured."
+        },
+        {
+          "check": "Harbor agents",
+          "status": "pass",
+          "detail": "codex"
+        },
+        {
+          "check": "local prerequisite",
+          "status": "fail",
+          "detail": "bubblewrap at /usr/bin/bwrap failed its smoke test (bwrap: setting up uid map: Read-only file system)"
+        }
+      ]
+    }
+  ],
+  "targets": [
+    {
+      "name": "sdcorejs-architecture",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-architecture",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-architecture/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-architecture/SKILL.md",
+          "bytes": 10101,
+          "sha256": "b8a46deaa9df56634a59939812396c9642e0d0ce33dfff39f1d67c62dbdd536d"
+        }
+      ],
+      "tier2": {
+        "status": "BLOCKED",
+        "attempted": true,
+        "command_label": "tier2-sdcorejs-architecture",
+        "exit_code": 1,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-brainstorming",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-brainstorming",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-brainstorming/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-brainstorming/SKILL.md",
+          "bytes": 21678,
+          "sha256": "2c3fcf83ec87f90b810cafd07774700c816bc640e551d9942b91ecd9385127d1"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-documentation",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-documentation",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-documentation/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-documentation/SKILL.md",
+          "bytes": 15967,
+          "sha256": "ad2824823b67148d7e4402b3d61b737d5958ca768e6e46b6fef996ea8614f715"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-execute-plan",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-execute-plan",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-execute-plan/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-execute-plan/SKILL.md",
+          "bytes": 26907,
+          "sha256": "bbc23c37a311e9454f4d1f856f1a29d82d9b3fd6a2fad6fbda38b6204a8c4497"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-explore",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-explore",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-explore/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-explore/SKILL.md",
+          "bytes": 20736,
+          "sha256": "0c1cb4bae337f2d567e4ef4d93754c977fe1ecff704bd69ff48a9d748746af09"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-plan",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-plan",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-plan/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-plan/SKILL.md",
+          "bytes": 20344,
+          "sha256": "cd838ae9e289efbebe2d2784a1360487445d3a3b7e82ab6e41f6539ac33e00d4"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-product",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-product",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-product/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-product/SKILL.md",
+          "bytes": 21944,
+          "sha256": "44ce4dc5a652c344ae3f33c686d1bf0767bd8ca9b1ec527138ea26c867672d2e"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-ship",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-ship",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-ship/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-ship/SKILL.md",
+          "bytes": 24248,
+          "sha256": "32fea584b9e51e96c3a47334db25a9acea091b8d6038f1a7ad48203b11a926e4"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-spec",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-spec",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-spec/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-spec/SKILL.md",
+          "bytes": 21612,
+          "sha256": "aefc28a7c6968d76e45637266687af9fbafe581105550bb0b74948ae2a53ea75"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    },
+    {
+      "name": "sdcorejs-test",
+      "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test",
+      "files": [
+        {
+          "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "resolved_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "bytes": 13370,
+          "sha256": "f41979ac7c84a4374b4519b289f2561b7ca70da7d8f920c86b11ee21e4361fd6"
+        }
+      ],
+      "tier2": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "command_label": null,
+        "exit_code": null,
+        "reason": "No embedding or LLM provider is configured in the inherited exported environment.",
+        "official_score": null,
+        "official_verdict": null,
+        "official_report_paths": []
+      },
+      "tier3": {
+        "status": "NOT RUN",
+        "attempted": false,
+        "reason": "No public LLM provider is configured.",
+        "official_score": null,
+        "official_verdict": null,
+        "skill_lift": null
+      }
+    }
+  ],
+  "tier2_attempt_count": 1,
+  "tier2_not_run_count": 9,
+  "tier3_live_attempt_count": 0,
+  "requested_official_formats": [
+    "json",
+    "markdown"
+  ],
+  "official_report_paths": [],
+  "missing_reports_reason": "The official Tier 2 CLI raises the provider configuration error before emit_reports; no report was emitted.",
+  "shared_blocker_basis": {
+    "file": "/workspace/work/skill-install/nvidia-skillevaluator/src/skillevaluator/tier_workflows.py",
+    "line": 128,
+    "sha256": "46679c3aa86e7f5d1743b117bf0387851a61b0ec67d973415f884302a3f019d2",
+    "explanation": "run_tier2_workflow first checks that the target is a skill, then resolves embedding and LLM providers at lines 140-141 before running content deduplication. These providers are environment-wide. All ten target SKILL.md files exist and their frontmatter names match their directories. The remaining nine were not attempted."
+  },
+  "source_binding": {
+    "before": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/input-hashes-before.json",
+    "after": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/input-hashes-after.json",
+    "targets_and_dependencies_unchanged": true,
+    "dependency_scope": "Conservative: complete canonical and Claude shared reference trees, canonical target SKILL.md files, audit instructions and loaded NVIDIA skill references.",
+    "dependency_file_count": 775
+  },
+  "commands": [
+    {
+      "label": "tier2-help",
+      "started_at": "2026-11-14T09:36:48.856694+00:00",
+      "ended_at": "2026-11-14T09:36:49.898728+00:00",
+      "elapsed_seconds": 1.042,
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+        "tier2",
+        "--help"
+      ],
+      "command": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator tier2 --help",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 0,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/tier2-help.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/tier2-help.stderr.txt",
+      "stdout_sha256": "32af2b75738381ce7b2e6bacc195ce36669f01cd2b93a1209a040aacaaddef3f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "version",
+      "started_at": "2026-11-14T09:36:48.833367+00:00",
+      "ended_at": "2026-11-14T09:36:49.930961+00:00",
+      "elapsed_seconds": 1.098,
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+        "--version"
+      ],
+      "command": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator --version",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 0,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/version.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/version.stderr.txt",
+      "stdout_sha256": "c9ed8ea3ec3b9b0cbaa8ce73790d7dd32d23b6772f13a4ff6536c52c11d6063f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "doctor-tier2",
+      "started_at": "2026-11-14T09:36:48.826926+00:00",
+      "ended_at": "2026-11-14T09:36:49.948843+00:00",
+      "elapsed_seconds": 1.122,
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+        "doctor",
+        "--tier",
+        "2"
+      ],
+      "command": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator doctor --tier 2",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 1,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/doctor-tier2.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/doctor-tier2.stderr.txt",
+      "stdout_sha256": "c5dd4a6c9bd0510d12fb0d75fdf4857855d71fed2e77aa589f7f72799d65ee5e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "doctor-tier3-local",
+      "started_at": "2026-11-14T09:36:48.772226+00:00",
+      "ended_at": "2026-11-14T09:36:53.929739+00:00",
+      "elapsed_seconds": 5.158,
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+        "doctor",
+        "--tier",
+        "3",
+        "--env-mode",
+        "local",
+        "-a",
+        "codex"
+      ],
+      "command": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator doctor --tier 3 --env-mode local -a codex",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 1,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/doctor-tier3-local.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/doctor-tier3-local.stderr.txt",
+      "stdout_sha256": "390cba03863198c133eb29aacc7a2f3d8bf54c48609f05908af55b612e9e5ef5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "doctor-tier3-docker",
+      "started_at": "2026-11-14T09:36:48.922680+00:00",
+      "ended_at": "2026-11-14T09:36:54.059119+00:00",
+      "elapsed_seconds": 5.136,
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+        "doctor",
+        "--tier",
+        "3",
+        "--env-mode",
+        "docker",
+        "-a",
+        "codex"
+      ],
+      "command": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator doctor --tier 3 --env-mode docker -a codex",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 1,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/doctor-tier3-docker.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/doctor-tier3-docker.stderr.txt",
+      "stdout_sha256": "f57ec2319ba36db12df83471aa01c783ef50b1a947c291d1a86e1e176d4497df",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "snapshot-before",
+      "started_at": "2026-11-14T09:37:58.718411+00:00",
+      "ended_at": "2026-11-14T09:37:59.365533+00:00",
+      "elapsed_seconds": 0.647,
+      "argv": [
+        "python3",
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/snapshot_inputs.py",
+        "before"
+      ],
+      "command": "python3 /workspace/work/sdcorejs-nvidia-remaining-20261114/audit/snapshot_inputs.py before",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 0,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/snapshot-before.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/snapshot-before.stderr.txt",
+      "stdout_sha256": "e0b96f345e16397edf53e837d816310a799ee36ace816853becd82e665877d49",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "tier2-sdcorejs-architecture",
+      "started_at": "2026-11-14T09:38:05.192447+00:00",
+      "ended_at": "2026-11-14T09:38:06.296897+00:00",
+      "elapsed_seconds": 1.104,
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator",
+        "tier2",
+        "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-architecture",
+        "-r",
+        "json,markdown",
+        "-o",
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/reports/tier2-sdcorejs-architecture"
+      ],
+      "command": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/skillevaluator tier2 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-architecture -r json,markdown -o /workspace/work/sdcorejs-nvidia-remaining-20261114/audit/reports/tier2-sdcorejs-architecture",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 1,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/tier2-sdcorejs-architecture.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/tier2-sdcorejs-architecture.stderr.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "10cac66346c0296cdc391eabdf7e164a87aa7908158b87c6cba0ec389be823ca"
+    },
+    {
+      "label": "snapshot-after",
+      "started_at": "2026-11-14T09:38:59.982816+00:00",
+      "ended_at": "2026-11-14T09:39:00.253912+00:00",
+      "elapsed_seconds": 0.271,
+      "argv": [
+        "python3",
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/snapshot_inputs.py",
+        "after"
+      ],
+      "command": "python3 /workspace/work/sdcorejs-nvidia-remaining-20261114/audit/snapshot_inputs.py after",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 0,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/snapshot-after.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/snapshot-after.stderr.txt",
+      "stdout_sha256": "dfcc5ed8053ae9b9784cf4c36bd55dead86edc4970032cc48ff3579d15eee8d9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime-diagnostics",
+      "started_at": "2026-11-14T09:39:19.436668+00:00",
+      "ended_at": "2026-11-14T09:39:19.564103+00:00",
+      "elapsed_seconds": 0.127,
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/python",
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/runtime_diagnostics.py"
+      ],
+      "command": "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/python /workspace/work/sdcorejs-nvidia-remaining-20261114/audit/runtime_diagnostics.py",
+      "cwd": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cwd",
+      "environment_overrides": {
+        "XDG_CACHE_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache",
+        "XDG_CONFIG_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/config",
+        "XDG_DATA_HOME": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/data",
+        "UV_CACHE_DIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/cache/uv",
+        "TMPDIR": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/tmp",
+        "PYTHON_DOTENV_DISABLED": "1",
+        "ANONYMIZED_TELEMETRY": "false",
+        "DO_NOT_TRACK": "1",
+        "NO_COLOR": "1",
+        "COLUMNS": "180"
+      },
+      "provider_environment": "Inherited exported environment only; no authfile or .env retrieval.",
+      "exit_code": 0,
+      "stdout": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/runtime-diagnostics.stdout.txt",
+      "stderr": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/raw/runtime-diagnostics.stderr.txt",
+      "stdout_sha256": "10c86b61d96e0adf6d839244907e6eabb403fe86f0f50db933868856e0907cb8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "command_log": "/workspace/work/sdcorejs-nvidia-remaining-20261114/audit/commands.jsonl",
+  "limits": [
+    "This receipt does not contain an official Tier 2 or Tier 3 score, target verdict, publication verdict, or live behavioral evidence.",
+    "No inter-skill catalog comparison was attempted; the Tier 2 command requested intra-skill deduplication.",
+    "Docker prerequisite readiness does not prove agent model readiness or that a live trial can start.",
+    "No Tier 3 dataset generation, dataset validation, or live baseline/with-skill evaluation was performed by this audit assignment.",
+    "Tier 1 was outside this assignment and was not rerun.",
+    "No provider model verification or paid model inference was reached."
+  ],
+  "next_required_input": "Legitimate exported LLM and embedding provider configuration. A provider plus model-compatible agent configuration is required for Tier 3; reviewed datasets are also required before live trials.",
+  "handling": {
+    "writes": "Only this audit directory; target repository and evaluator sources read-only.",
+    "credentials": "Inherited exported environment only; no authfiles or .env files read and no provider credentials fabricated.",
+    "isolation": "Workspace-local XDG cache/config/data and temporary paths; PYTHON_DOTENV_DISABLED=1; HOME and CODEX_HOME were not repurposed.",
+    "independence": "No previous audit verdicts, benchmarks, or other agents' results were read; no subagents were used."
+  }
+}

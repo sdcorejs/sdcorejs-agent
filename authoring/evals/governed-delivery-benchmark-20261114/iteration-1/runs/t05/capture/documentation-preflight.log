@@ -1,0 +1,27 @@
+{
+  "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+  "repository_role": "standalone",
+  "technical_doc_path": ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md",
+  "entry_state": "missing",
+  "generated_at": "2026-11-14T09:07:26.329Z",
+  "action": {
+    "mode": "write-technical-doc",
+    "writes": true,
+    "ticket_id": null
+  },
+  "classification": {
+    "kind": "governed-change",
+    "action": "full-workflow",
+    "entry_gate": "brainstorm-first",
+    "review_baseline": {
+      "required": true,
+      "risks": [],
+      "checks": [
+        "instruction-scope",
+        "text-hygiene"
+      ],
+      "reason": "changed surfaces require a proportional baseline regardless of diff size"
+    },
+    "reason": "scope or behavior is not bounded enough for fast-fix"
+  }
+}

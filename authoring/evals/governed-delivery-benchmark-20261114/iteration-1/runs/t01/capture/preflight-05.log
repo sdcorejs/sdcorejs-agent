@@ -1,0 +1,3 @@
+$ git diff --cached -- AGENTS.md
+
+exit_code=0

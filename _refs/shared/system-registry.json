@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "registry_version": "1.1.0",
+  "registry_version": "1.2.0",
   "generic_harness_fallback": {
     "track": "general",
     "executor": "sdcorejs-execute-plan",
@@ -227,7 +227,11 @@
     "repair-report",
     "release-evidence",
     "project-config",
-    "task-breakdown"
+    "task-breakdown",
+    "project-blueprint",
+    "ticket-snapshot",
+    "ticket-asset",
+    "ticket-delivery"
   ],
   "artifact_roots": {
     "product_documents": ".sdcorejs/product",
@@ -237,7 +241,9 @@
     "documentation": ".sdcorejs/documentation",
     "architecture": ".sdcorejs/architecture",
     "conventions": ".sdcorejs/conventions",
-    "project_workspaces": ".sdcorejs/projects"
+    "project_workspaces": ".sdcorejs/projects",
+    "blueprints": ".sdcorejs/blueprints",
+    "tickets": ".sdcorejs/tickets"
   },
   "legacy_artifact_roots": {
     "product_documents": "product",

@@ -1,0 +1,49 @@
+{
+  "mode": "candidate",
+  "authority": {
+    "write_allowed": true,
+    "reason": "explicit or approved explore ownership"
+  },
+  "validation": {
+    "ok": true,
+    "status": "incomplete",
+    "errors": [],
+    "gaps": [
+      "permissions",
+      "learning"
+    ],
+    "observed": [
+      "scope",
+      "architecture",
+      "coding",
+      "api-data",
+      "unit-testing",
+      "integration-testing",
+      "e2e-testing",
+      "documentation",
+      "delivery"
+    ]
+  },
+  "classification": "node/node-general",
+  "verified_evidence_references": 40,
+  "manual_policy": "preserved byte-for-byte",
+  "application_tests_and_dependencies": "unchanged",
+  "source_revision": "91f78ce774bd079c2489ccc714064b0422b3de8f",
+  "behavior_selection": {
+    "ok": true,
+    "required": [
+      {
+        "behavior_id": "post-orders",
+        "layer": "api-e2e"
+      }
+    ],
+    "exemptions": [
+      {
+        "behavior_id": "blueprint-initialization",
+        "kind": "documentation",
+        "reason": "Only project guidance and its link changed; source and public boundaries are unchanged. Validate blueprint schema, evidence hashes, link, manual-policy preservation and the bounded diff."
+      }
+    ],
+    "errors": []
+  }
+}

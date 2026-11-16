@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "op-drawer",
+  "name": "Contextual drawer",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "inspect-record",
+    "browse-records"
+  ],
+  "data_shapes": [
+    "flat",
+    "sectioned"
+  ],
+  "applicability": "Inspect or edit briefly without leaving the list.",
+  "avoid_when": "Long repeated reviews benefit from a full split view.",
+  "variants": [
+    {
+      "id": "compact",
+      "layout": "drawer"
+    },
+    {
+      "id": "sections",
+      "layout": "drawer"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "core-patterns",
+    "portal-drawer",
+    "portal-pages"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": "22.3.4",
+    "verification": "Inspect exact installed component exports and pattern source before implementation."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original HTML composition derived from the cited source structure; domain fixtures are illustrative, not requirements."
+}

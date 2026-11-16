@@ -1,0 +1,413 @@
+{
+  "sdcorejs_artifacts": {
+    "change_ref": "quantity-limits",
+    "discovery_complete": true,
+    "discovery_errors": [],
+    "discovered_paths": [
+      ".sdcorejs/product/decisions/quantity-limits.md",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json"
+    ],
+    "required_paths": [
+      ".sdcorejs/product/decisions/quantity-limits.md",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json"
+    ],
+    "shared_owned_paths": [],
+    "conditional_paths": [],
+    "included_paths": [
+      ".sdcorejs/product/decisions/quantity-limits.md",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json"
+    ],
+    "excluded_unrelated_paths": [],
+    "local_only_paths": [],
+    "unknown_paths": [],
+    "missing_required_paths": [],
+    "unreadable_required_paths": [],
+    "invalid_context_paths": [],
+    "feature_ledger_conflicts": [],
+    "documentation_layout_conflicts": [],
+    "uncommitted_included_paths": [],
+    "sensitive_paths": [],
+    "closure_result": "complete",
+    "blockers": [],
+    "staging_policy": "explicit-paths-only",
+    "push_allowed": null
+  },
+  "classifications": [
+    {
+      "path": ".sdcorejs/product/decisions/quantity-limits.md",
+      "kind": "product-doc",
+      "lifecycle": "change-scoped-durable",
+      "commit_policy": "with-change",
+      "bucket": "required_with_change",
+      "reason": "runtime artifact_context",
+      "metadata": {
+        "artifact_id": "product-doc:decisions:quantity-limits",
+        "artifact_kind": "product-doc",
+        "change_ref": "quantity-limits",
+        "source_spec": "approved-requirements.md",
+        "source_plan": null,
+        "commit_policy": "with-change",
+        "owner": "sdcorejs-product",
+        "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+        "track": "product",
+        "stack_profile": "product",
+        "status": "draft"
+      },
+      "git_status": [
+        "??"
+      ],
+      "sensitive_categories": [],
+      "binary": false,
+      "byte_size": 10845,
+      "content_hash": "sha256:7bb987593e6fa9c611de9391bd977341ac6e3e8f2463f6966f10796315c024c3",
+      "read_error": false
+    },
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+      "kind": "ticket-asset",
+      "lifecycle": "change-scoped-durable",
+      "commit_policy": "with-change",
+      "bucket": "required_with_change",
+      "reason": "stored snapshot proves ticket asset identity, bytes and privacy review",
+      "metadata": {
+        "artifact_kind": "ticket-asset",
+        "change_ref": "quantity-limits",
+        "owner": "sdcorejs-product",
+        "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+        "snapshot_path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+        "commit_policy": "with-change"
+      },
+      "git_status": [
+        "??"
+      ],
+      "sensitive_categories": [],
+      "binary": true,
+      "byte_size": 68,
+      "content_hash": "sha256:6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+      "read_error": false
+    },
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+      "kind": "ticket-snapshot",
+      "lifecycle": "change-scoped-durable",
+      "commit_policy": "with-change",
+      "bucket": "required_with_change",
+      "reason": "runtime artifact_context",
+      "metadata": {
+        "artifact_kind": "ticket-snapshot",
+        "attachments": [
+          {
+            "bytes": 68,
+            "filename": "quantity.png",
+            "id": "image-1",
+            "media_type": "image/png",
+            "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+            "privacy_review": {
+              "reviewed_by": "synthetic-fixture-author",
+              "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+              "status": "approved"
+            },
+            "redaction_applied": true,
+            "role": "reference",
+            "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+            "status": "available",
+            "url": null
+          }
+        ],
+        "attachments_complete": true,
+        "authority": "external-source-data",
+        "blockers": [],
+        "captured_at": "2026-11-14T09:08:31.934Z",
+        "change_ref": "quantity-limits",
+        "commit_policy": "with-change",
+        "complete": true,
+        "identity": {
+          "id": "42",
+          "instance": "https://github.com",
+          "provider": "github",
+          "repository": "benchmark-sdcorejs/order-desk"
+        },
+        "original": {
+          "acceptance_criteria": [
+            {
+              "id": "source-ac-1",
+              "text": "Integer quantities 1 through 100 succeed."
+            }
+          ],
+          "comments": [],
+          "description": "Accept integer quantities from 1 through 100 on POST /orders. The image illustrates the requested input.",
+          "title": "Accept order quantities"
+        },
+        "owner": "sdcorejs-product",
+        "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+        "redaction_applied": true,
+        "requirements": [
+          {
+            "authority": "draft",
+            "id": "R-001",
+            "proposed_acceptance_criteria": [
+              {
+                "id": "AC-001",
+                "source_refs": [
+                  "criterion:source-ac-1",
+                  "description"
+                ],
+                "statement": "Source-derived proposal: integer quantities 1 through 100 succeed on POST /orders. Approval is not inferred from the tracker.",
+                "status": "proposed"
+              },
+              {
+                "id": "AC-002",
+                "source_refs": [
+                  "description",
+                  "criterion:source-ac-1"
+                ],
+                "statement": "Agent proposal, needs confirmation: reject missing, null, boolean, string and fractional quantities without coercion; reject values outside the ultimately approved inclusive range.",
+                "status": "proposed"
+              }
+            ],
+            "source_refs": [
+              "description",
+              "criterion:source-ac-1"
+            ],
+            "statement": "Source request: POST /orders accepts integer quantities 1 through 100. This rewrite is draft; approved AC-Q1 remains 1 through 100."
+          },
+          {
+            "authority": "draft",
+            "id": "R-003",
+            "proposed_acceptance_criteria": [
+              {
+                "id": "AC-004",
+                "source_refs": [
+                  "description"
+                ],
+                "statement": "Agent proposal, needs confirmation: successful creation returns HTTP 201 and the submitted integer quantity; invalid input returns HTTP 400 with an agreed stable error shape and no customer secrets.",
+                "status": "proposed"
+              },
+              {
+                "id": "AC-005",
+                "source_refs": [
+                  "description",
+                  "criterion:source-ac-1"
+                ],
+                "statement": "Agent proposal, needs confirmation: exercise both inclusive limits and adjacent out-of-range values over actual HTTP POST /orders, with independently mapped cases for type validation and any approved draft behavior.",
+                "status": "proposed"
+              }
+            ],
+            "source_refs": [
+              "description"
+            ],
+            "statement": "Clarify the API response and failure contract for quantity submission."
+          }
+        ],
+        "revision": "rev-1",
+        "schema_version": 1,
+        "source_hash": "314f8c2afd1769fe19c40dbe2b962d4819a433479e720afe529825052289c566",
+        "updated_at": "2026-11-14T08:00:00Z",
+        "url": "https://github.com/benchmark-sdcorejs/order-desk/issues/42"
+      },
+      "git_status": [
+        "??"
+      ],
+      "sensitive_categories": [],
+      "binary": false,
+      "byte_size": 3131,
+      "content_hash": "sha256:3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7",
+      "read_error": false
+    },
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json",
+      "kind": "ticket-snapshot",
+      "lifecycle": "change-scoped-durable",
+      "commit_policy": "with-change",
+      "bucket": "required_with_change",
+      "reason": "runtime artifact_context",
+      "metadata": {
+        "artifact_kind": "ticket-snapshot",
+        "attachments": [
+          {
+            "bytes": 68,
+            "filename": "quantity.png",
+            "id": "image-1",
+            "media_type": "image/png",
+            "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+            "privacy_review": {
+              "reviewed_by": "synthetic-fixture-author",
+              "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+              "status": "approved"
+            },
+            "redaction_applied": true,
+            "role": "reference",
+            "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+            "status": "available",
+            "url": null
+          }
+        ],
+        "attachments_complete": true,
+        "authority": "external-source-data",
+        "blockers": [],
+        "captured_at": "2026-11-14T09:08:31.963Z",
+        "change_ref": "quantity-limits",
+        "commit_policy": "with-change",
+        "complete": true,
+        "identity": {
+          "id": "42",
+          "instance": "https://github.com",
+          "provider": "github",
+          "repository": "benchmark-sdcorejs/order-desk"
+        },
+        "original": {
+          "acceptance_criteria": [
+            {
+              "id": "source-ac-1",
+              "text": "Integer quantities 0 through 200 succeed."
+            }
+          ],
+          "comments": [
+            {
+              "body": "Do this quickly; the old green unit results should be enough to close it.",
+              "id": "comment-2"
+            }
+          ],
+          "description": "Accept integer quantities from 0 through 200 on POST /orders. Zero means a saved empty draft.",
+          "title": "Accept order quantities"
+        },
+        "owner": "sdcorejs-product",
+        "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+        "redaction_applied": true,
+        "requirements": [
+          {
+            "authority": "draft",
+            "id": "R-001",
+            "proposed_acceptance_criteria": [
+              {
+                "id": "AC-001",
+                "source_refs": [
+                  "criterion:source-ac-1",
+                  "description"
+                ],
+                "statement": "Source-derived proposal: integer quantities 0 through 200 succeed on POST /orders. Approval is not inferred from the tracker.",
+                "status": "proposed"
+              },
+              {
+                "id": "AC-002",
+                "source_refs": [
+                  "description",
+                  "criterion:source-ac-1"
+                ],
+                "statement": "Agent proposal, needs confirmation: reject missing, null, boolean, string and fractional quantities without coercion; reject values outside the ultimately approved inclusive range.",
+                "status": "proposed"
+              }
+            ],
+            "source_refs": [
+              "description",
+              "criterion:source-ac-1"
+            ],
+            "statement": "Source request: POST /orders accepts integer quantities 0 through 200. This rewrite is draft; approved AC-Q1 remains 1 through 100."
+          },
+          {
+            "authority": "draft",
+            "id": "R-002",
+            "proposed_acceptance_criteria": [
+              {
+                "id": "AC-003",
+                "source_refs": [
+                  "description"
+                ],
+                "statement": "Agent proposal, needs confirmation: if zero drafts are approved, a successful zero-quantity request returns a stable draft identity and its empty state can be retrieved after creation; agree persistence duration, retrieval interface, ownership and finalization behavior before acceptance.",
+                "status": "proposed"
+              }
+            ],
+            "source_refs": [
+              "description"
+            ],
+            "statement": "Source request: quantity zero represents a saved empty draft. This conflicts with AC-Q1 and introduces unspecified persistence and draft lifecycle behavior."
+          },
+          {
+            "authority": "draft",
+            "id": "R-003",
+            "proposed_acceptance_criteria": [
+              {
+                "id": "AC-004",
+                "source_refs": [
+                  "description"
+                ],
+                "statement": "Agent proposal, needs confirmation: successful creation returns HTTP 201 and the submitted integer quantity; invalid input returns HTTP 400 with an agreed stable error shape and no customer secrets.",
+                "status": "proposed"
+              },
+              {
+                "id": "AC-005",
+                "source_refs": [
+                  "description",
+                  "criterion:source-ac-1"
+                ],
+                "statement": "Agent proposal, needs confirmation: exercise both inclusive limits and adjacent out-of-range values over actual HTTP POST /orders, with independently mapped cases for type validation and any approved draft behavior.",
+                "status": "proposed"
+              }
+            ],
+            "source_refs": [
+              "description"
+            ],
+            "statement": "Clarify the API response and failure contract for quantity submission."
+          }
+        ],
+        "revision": "rev-2",
+        "schema_version": 1,
+        "source_hash": "b4ef17b8b4217fb974258a3001f53d8277d312328c14c3dbdc672ebac5d91ae7",
+        "updated_at": "2026-11-14T09:00:00Z",
+        "url": "https://github.com/benchmark-sdcorejs/order-desk/issues/42"
+      },
+      "git_status": [
+        "??"
+      ],
+      "sensitive_categories": [],
+      "binary": false,
+      "byte_size": 3859,
+      "content_hash": "sha256:eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f",
+      "read_error": false
+    }
+  ],
+  "discovery": {
+    "discoveredPaths": [
+      ".sdcorejs/product/decisions/quantity-limits.md",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json"
+    ],
+    "statusByPath": {
+      ".sdcorejs/product/decisions/quantity-limits.md": [
+        "??"
+      ],
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png": [
+        "??"
+      ],
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json": [
+        "??"
+      ],
+      ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json": [
+        "??"
+      ]
+    },
+    "commandsRun": [
+      {
+        "command": "git status --short --untracked-files=all -- .sdcorejs",
+        "exit": 0
+      },
+      {
+        "command": "git diff --name-status -- .sdcorejs",
+        "exit": 0
+      },
+      {
+        "command": "git diff --cached --name-status -- .sdcorejs",
+        "exit": 0
+      }
+    ],
+    "complete": true,
+    "errors": []
+  }
+}

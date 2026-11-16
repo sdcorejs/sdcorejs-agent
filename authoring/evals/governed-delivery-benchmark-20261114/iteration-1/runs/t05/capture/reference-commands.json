@@ -1,0 +1,82 @@
+[
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-user-guide.md",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-technical-doc.md",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/tasklist.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/communication-economy.md",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/intent.mjs",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.md",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/repository-contract.mjs",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/approved-artifact.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py baseline-head git rev-parse HEAD",
+    "exit_code": 0,
+    "result": "Completed successfully",
+    "output_summary": "020550e501e0bb6ba91da9accae65e8238c9432e\nObserved exit code: 0\n"
+  },
+  {
+    "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py baseline-status git status --short",
+    "exit_code": 0,
+    "result": "Completed successfully",
+    "output_summary": "Observed exit code: 0\n"
+  },
+  {
+    "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py baseline-diff git diff -- docs/operator-guide.md",
+    "exit_code": 0,
+    "result": "Completed successfully",
+    "output_summary": "Observed exit code: 0\n"
+  },
+  {
+    "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py repository-identity git config --local --get remote.origin.url",
+    "exit_code": 0,
+    "result": "Completed successfully",
+    "output_summary": "https://github.com/benchmark-sdcorejs/order-desk.git\nObserved exit code: 0\n"
+  },
+  {
+    "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py node-version node --version",
+    "exit_code": 0,
+    "result": "Completed successfully",
+    "output_summary": "v24.22.1\nObserved exit code: 0\n"
+  },
+  {
+    "command": "rg -n -A 100 '^export function (resolveDocumentationWriteTarget|validateDocumentKey|buildCanonicalEntryPath)' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.mjs",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  },
+  {
+    "command": "rg -n -A 90 'function (inferTaskCategory|isFastFixEligible)' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+    "exit_code": 0,
+    "result": "Completed successfully"
+  }
+]

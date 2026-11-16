@@ -1,0 +1,15 @@
+
+> sdcorejs-agent@0.8.0 check:skills
+> node scripts/sync-skills.mjs --check
+
+OK .claude/skills/ is in sync (25 source files)
+OK plugin/skills/ is in sync (25 source files)
+OK .claude/_refs/ is in sync (refs)
+OK plugin/_refs/ is in sync (refs)
+OK codex/skills/ is in sync (25 source files + shared _refs)
+OK .cursor/rules/sdcorejs-agent.mdc is in sync
+OK .claude/sdcorejs-harness.json is in sync
+OK plugin/sdcorejs-harness.json is in sync
+OK codex/sdcorejs-harness.json is in sync
+OK .cursor/sdcorejs-harness.json is in sync
+OK .github/sdcorejs-harness.json is in sync

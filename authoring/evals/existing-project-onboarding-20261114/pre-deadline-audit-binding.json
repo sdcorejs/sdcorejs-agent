@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-11-14T10:35:38.416966+00:00",
+  "revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "manifest": "candidate-repair-manifest.json",
+  "paths": {
+    "skills/shared/workflow/explore.md": "72e91df3ffe098e30c250f23ee06c8647e8a27a1d297a59da36435ddcbec4cf0",
+    "skills/shared/sdlc/04-execute-plan.md": "5f7ff60ae08d8c7bf167f5c839594b02ea7616181eb18b56fb37e6d037e16953",
+    "skills/tracks/test/sdcorejs-test.md": "27ff1c4b673771b368e3350878677c2278449bfffbc58460bf01d4c4bce7f500",
+    "_refs/shared/existing-project-onboarding.md": "f4957e9cd610008e8b4ad4c43ebbf16a1440876f7e2e29101e55d2a2577e78f1",
+    "_refs/shared/project-instructions.mjs": "163805f122824e6f5f0e3cb327a41a2fd03254a323c7fc051965314da402f19b",
+    "_refs/shared/project-runtime.mjs": "7867b76d83c010b1c3fa6a17862b4d2f04005e927dc6cf5444f817d4d5e355e6",
+    "_refs/shared/project-context.md": "0a78718061a420ff07f6fcbf8ba9d501677acc6d98dddc01e3e7128f73619055",
+    "_refs/shared/project-context.mjs": "033f1341b357aeb9199292aa7e4cb6ef0905da0bf41e5aecf9e2afe762206153",
+    "_refs/shared/explore-contract.mjs": "3ccf1af150d2e7c95b5ee5bedd04ca5881fc922ec9f60bac6c99c049bc6538fb",
+    "_refs/shared/explore-context.md": "0216ca661fefc3b645889bfbba3c0a4f189012eac2cbdbd5eb0273bf81da3659",
+    "_refs/shared/explore-env-setup-actions.md": "4d070b9632c0a22b22606371bca804cdababc99a02475979640d1ed412837971",
+    "test/e2e/existing-project-onboarding.test.mjs": "70324614f8775de8eca1771baa4054e4b8ad56136bb41d31986524da03847f76",
+    "package.json": "05d04fca598af4a884e1d0ddc91ff4703087e97c3b8eec9469d252eb14beac9f",
+    ".claude/skills/sdcorejs-explore/SKILL.md": "a86b07657600346bb46b0122d8b9218c4d034cc6be5134c47efc3a332680a362",
+    ".claude/skills/sdcorejs-execute-plan/SKILL.md": "449e5a1474bfd227a01b158f5bc777c44c909143fe5a2f9ff6aa8abdbeb3a431",
+    ".claude/skills/sdcorejs-test/SKILL.md": "dabf057114d712d5e67d64814a1c2b24aa25e6349274ec71aca0be40758614db",
+    "_refs/shared/test-command-discovery.md": "e3f9d04aa57821514759b7a171343c3d04db90bbd732ee8497fbb7c6fb44356a"
+  },
+  "all_match": true
+}

@@ -121,11 +121,15 @@ export function verifyDecisionCoverageApproval(input) {
   try {
     const verified = verifyApprovedArtifact(input?.approved_artifact);
     const metadata = verified.metadata;
+    const explicitApproval = metadata.approval_source === 'user-approved-decision-coverage' &&
+      isNonEmptyString(metadata.approved_by);
+    const delegatedApproval = metadata.approval_source === 'delegated-session-scope' &&
+      metadata.approved_by === null && isNonEmptyString(metadata.instruction_reference) &&
+      metadata.document_review_performed === false;
     if (
       metadata.artifact_kind !== 'plan' ||
       metadata.contract_id !== DECISION_COVERAGE_APPROVAL_CONTRACT ||
-      metadata.approval_source !== 'user-approved-decision-coverage' ||
-      !isNonEmptyString(metadata.approved_by) ||
+      !(explicitApproval || delegatedApproval) ||
       input.approved_artifact.body !== decisionCoverageApprovalBody(input)
     ) {
       throw new Error('decision coverage does not match its approved artifact body and approval metadata');

@@ -1,0 +1,16 @@
+$ npm run test:e2e
+
+> test:e2e
+> node --test test/e2e.test.mjs
+
+✔ POST orders over actual HTTP (87.805427ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 458.048738
+
+exit_code=0

@@ -1,0 +1,27 @@
+{
+  "authority": {
+    "write_allowed": true,
+    "reason": "explicit or approved explore ownership"
+  },
+  "approval_source": "Explicit supplied user task authorizes scoped memory capture",
+  "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+  "inventory": [
+    {
+      "path": ".sdcorejs/memories/workflow/old-payment-advice.md",
+      "metadata": {},
+      "body_loaded": false,
+      "status": "legacy-unverified",
+      "reason": "No verified-lesson schema, repository/applicability or proof fingerprints; unrelated payment scope."
+    }
+  ],
+  "lesson_path": ".sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json",
+  "proof_path": ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md",
+  "planner_status": "ready",
+  "semantic_content_hash": "43a48a758e261cbdd001be6d1a9c8c6dc8e9945350d6d24b0c32980f0ae1d9db",
+  "lesson_byte_sha256": "9860fdab54a459efe6f899169b79f738ff801252d9f0665b26df38caf8282129",
+  "proof_byte_sha256": "24ec1361b6672ebbf1adb4b02d4c7eb625f86f96faa8f2345c19a4d7de6580a7",
+  "lesson_classification": "shared_owned",
+  "proof_classification": "required_with_change",
+  "readback_valid": true,
+  "idempotency": "unchanged"
+}

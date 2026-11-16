@@ -1,0 +1,906 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-14T09:05:03.383335+00:00",
+  "scope": "Independent read-only verification of current sdcorejs-agent working tree; no commits, product source fixes, external tracker writes, live tracker reads, or provider calls.",
+  "result": "Repository checks PASS; NVIDIA keyless Tier 1 mixed (8 PASS, 1 raw FAILED, 1 INCOMPLETE); publication INCOMPLETE; Tier 2/Tier 3 NOT RUN.",
+  "source_binding": {
+    "head": "a71251fc03890326af14afd496d5955cc30ccc20",
+    "file_count": 2353,
+    "unchanged_during_verification": false,
+    "changed_paths": [
+      "authoring/evals/governed-delivery-benchmark-20261114/cases.json",
+      "authoring/evals/governed-delivery-benchmark-20261114/setup.py"
+    ],
+    "before_manifest": "/workspace/work/sdcorejs-benchmark-20261114/verification/source-before.json",
+    "after_manifest": "/workspace/work/sdcorejs-benchmark-20261114/verification/source-after.json",
+    "tree_digest_sha256": "21b1dad2527811f73e0ef13ae8e76c0d64273d693d1fd614e4e90dd97aeb4e5f",
+    "before_file_count": 2351,
+    "after_file_count": 2353,
+    "existing_files_unchanged": true,
+    "added_paths": [
+      "authoring/evals/governed-delivery-benchmark-20261114/cases.json",
+      "authoring/evals/governed-delivery-benchmark-20261114/setup.py"
+    ],
+    "removed_paths": [],
+    "modified_existing_paths": [],
+    "addition_attribution": "Parent benchmark artifacts created concurrently; parent confirmed. Verification agent made no repository changes. These paths are not bound product-source or scanner target inputs.",
+    "all_ten_scanned_targets_unchanged": true
+  },
+  "versions": {
+    "skillevaluator": "0.9.0",
+    "evaluator_source_commit": "f5bf6c1f3666699fd145612a2e9162e9721db3f9",
+    "installed_python_source_matches_checkout": true,
+    "matching_python_file_count": 289,
+    "python": "3.12.14",
+    "node": "v24.22.1",
+    "npm": "11.9.0",
+    "codex": "0.166.0-alpha.1",
+    "skillspector": "2.13.4",
+    "gitleaks": "8.30.0",
+    "bandit": "1.9.4",
+    "semgrep": "1.185.0",
+    "pip_audit": "2.10.1"
+  },
+  "repository_checks": {
+    "preflight": "PASS",
+    "core": {
+      "result": "PASS",
+      "tests": 861,
+      "failed": 0,
+      "skipped": 0,
+      "command_source": "package.json scripts.test:e2e:repository node --test phase only, before && npm run test:e2e:cleanup",
+      "skill_authoring_test_included": true
+    },
+    "focused_governed_delivery": {
+      "result": "PASS",
+      "tests": 85,
+      "failed": 0,
+      "skipped": 0
+    },
+    "deterministic_authoring": {
+      "result": "PASS",
+      "scenarios": 10,
+      "provider_calls": 0
+    },
+    "mirrors": "PASS",
+    "text_hygiene": {
+      "result": "PASS",
+      "scanned_files": 1984
+    },
+    "executable_references": {
+      "result": "PASS",
+      "classified_files": 10,
+      "cleanup_python_syntax": "PASS in-memory compile; no native execution proof",
+      "extra_environment": {
+        "SDCOREJS_CLEANUP_PYTHON": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3"
+      }
+    },
+    "git_diff_check": "PASS"
+  },
+  "tier1": {
+    "mode": "--no-llm, default profile, all applicable checks; no suppressions or waivers",
+    "scanner_health": "PASS (exit 0)",
+    "results": [
+      {
+        "target": "sdcorejs-architecture",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-architecture",
+        "sha256": "b8a46deaa9df56634a59939812396c9642e0d0ce33dfff39f1d67c62dbdd536d",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 87.8,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 9,
+          "low": 10
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-architecture/skillevaluator-tier1.json",
+        "security_findings": [
+          {
+            "finding_id": "SEF-4fa9ee24f23af2cf405b",
+            "occurrence_id": "SEO-b2894203d722011ed5b9",
+            "category": "SECURITY",
+            "severity": "medium",
+            "check_name": "Autonomous Decision Making (EA2)",
+            "message": "Excessive Agency: auto-approve",
+            "file_path": "SKILL.md",
+            "line_number": 170,
+            "line_content": "\nRun a separated read-only architecture review. Resolve deterministic contract\nblockers before presentation. Present the lean draft and ask for explicit user\napproval; the validator never auto-approve",
+            "suggestion": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation. Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+            "metadata": {
+              "skillspector_confidence": 0.85,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          }
+        ]
+      },
+      {
+        "target": "sdcorejs-brainstorming",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-brainstorming",
+        "sha256": "2c3fcf83ec87f90b810cafd07774700c816bc640e551d9942b91ecd9385127d1",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 83.8,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 10,
+          "low": 9
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-brainstorming/skillevaluator-tier1.json",
+        "security_findings": []
+      },
+      {
+        "target": "sdcorejs-documentation",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-documentation",
+        "sha256": "ad2824823b67148d7e4402b3d61b737d5958ca768e6e46b6fef996ea8614f715",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 88.0,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 8,
+          "low": 10
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-documentation/skillevaluator-tier1.json",
+        "security_findings": []
+      },
+      {
+        "target": "sdcorejs-execute-plan",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-execute-plan",
+        "sha256": "bbc23c37a311e9454f4d1f856f1a29d82d9b3fd6a2fad6fbda38b6204a8c4497",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 83.8,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 12,
+          "low": 9
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-execute-plan/skillevaluator-tier1.json",
+        "security_findings": [
+          {
+            "finding_id": "SEF-55bbc1f1b2ab31ddd68e",
+            "occurrence_id": "SEO-525023c51875623e97fb",
+            "category": "SECURITY",
+            "severity": "medium",
+            "check_name": "Autonomous Decision Making (EA2)",
+            "message": "Excessive Agency: without approval",
+            "file_path": "SKILL.md",
+            "line_number": 469,
+            "line_content": "- Obey `allowed_paths` and `prohibited_paths`.\n- Use package-manager/script discovery from the plan. Do not mix package\n  managers, invent missing scripts, run unapproved installs, or use `npx --yes`\n",
+            "suggestion": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation. Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+            "metadata": {
+              "skillspector_confidence": 0.75,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          }
+        ]
+      },
+      {
+        "target": "sdcorejs-explore",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-explore",
+        "sha256": "0c1cb4bae337f2d567e4ef4d93754c977fe1ecff704bd69ff48a9d748746af09",
+        "exit": 1,
+        "overall_status": "failed",
+        "overall_passed": false,
+        "incomplete_scans": [],
+        "publication_status": "fail",
+        "quality_score": 86.2,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 9,
+          "low": 10
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-explore/skillevaluator-tier1.json",
+        "security_findings": [
+          {
+            "finding_id": "SEF-7e837c8159b040113c90",
+            "occurrence_id": "SEO-8222f60c72690734b93c",
+            "category": "SECURITY",
+            "severity": "high",
+            "check_name": "Direct Prompt Extraction (P6)",
+            "message": "System Prompt Leakage: output instructions",
+            "file_path": "SKILL.md",
+            "line_number": 75,
+            "line_content": "ed code map and approves its exact owner/path | Explore may write only that bounded map after topology, authoring-repo, redaction, and artifact gates. Never write a repository-wide codegraph. |\n| `tra",
+            "suggestion": "Skill contains instructions that could directly expose system prompts, internal rules, or hidden instructions to users or external parties. Remove any instructions that reveal, print, or output system prompts or internal rules. System instructions should never be exposed to end users.",
+            "metadata": {
+              "skillspector_confidence": 0.85,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          }
+        ]
+      },
+      {
+        "target": "sdcorejs-plan",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-plan",
+        "sha256": "cd838ae9e289efbebe2d2784a1360487445d3a3b7e82ab6e41f6539ac33e00d4",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 87.5,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 11,
+          "low": 9
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-plan/skillevaluator-tier1.json",
+        "security_findings": [
+          {
+            "finding_id": "SEF-f82db3d8e11d5fb9f66e",
+            "occurrence_id": "SEO-2ae406ed1174fa0287b0",
+            "category": "SECURITY",
+            "severity": "medium",
+            "check_name": "Unknown (RP1)",
+            "message": "MCP Rug Pull: npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and pub",
+            "file_path": "SKILL.md",
+            "line_number": 236,
+            "line_content": null,
+            "suggestion": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update. Pin the version: npx @scope/server@1.2.3",
+            "metadata": {
+              "skillspector_confidence": 0.7,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          },
+          {
+            "finding_id": "SEF-fd928b9ac4e2c564a21f",
+            "occurrence_id": "SEO-7b7557198e4e0581c0cb",
+            "category": "SECURITY",
+            "severity": "medium",
+            "check_name": "Autonomous Decision Making (EA2)",
+            "message": "Excessive Agency: without asking",
+            "file_path": "SKILL.md",
+            "line_number": 268,
+            "line_content": "### 5. Present the approval gate\nAfter self-review, resolve authority from `../../_refs/shared/session-authority.md`.\nWith current scoped delegation, summarize the concrete plan and continue to\nstep 6",
+            "suggestion": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation. Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+            "metadata": {
+              "skillspector_confidence": 0.75,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          }
+        ]
+      },
+      {
+        "target": "sdcorejs-product",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-product",
+        "sha256": "44ce4dc5a652c344ae3f33c686d1bf0767bd8ca9b1ec527138ea26c867672d2e",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 86.2,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 9,
+          "low": 10
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-product/skillevaluator-tier1.json",
+        "security_findings": []
+      },
+      {
+        "target": "sdcorejs-ship",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-ship",
+        "sha256": "32fea584b9e51e96c3a47334db25a9acea091b8d6038f1a7ad48203b11a926e4",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 87.5,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 11,
+          "low": 8
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-ship/skillevaluator-tier1.json",
+        "security_findings": [
+          {
+            "finding_id": "SEF-f82db3d8e11d5fb9f66e",
+            "occurrence_id": "SEO-b5747be8e6f385afe7a9",
+            "category": "SECURITY",
+            "severity": "medium",
+            "check_name": "Unknown (RP1)",
+            "message": "MCP Rug Pull: npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and pub",
+            "file_path": "SKILL.md",
+            "line_number": 145,
+            "line_content": null,
+            "suggestion": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update. Pin the version: npx @scope/server@1.2.3",
+            "metadata": {
+              "skillspector_confidence": 0.7,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          }
+        ]
+      },
+      {
+        "target": "sdcorejs-spec",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-spec",
+        "sha256": "aefc28a7c6968d76e45637266687af9fbafe581105550bb0b74948ae2a53ea75",
+        "exit": 1,
+        "overall_status": "failed",
+        "overall_passed": false,
+        "incomplete_scans": [
+          "skillspector"
+        ],
+        "publication_status": "incomplete",
+        "quality_score": 88.8,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 10,
+          "low": 9
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-spec/skillevaluator-tier1.json",
+        "security_findings": [
+          {
+            "finding_id": "SEF-2ef897139a6706c66ecf",
+            "occurrence_id": "SEO-17c0ccd19db9634ee217",
+            "category": "SECURITY",
+            "severity": "high",
+            "check_name": "Incomplete referenced artifact analysis (AE1)",
+            "message": "analysis-evasion: SKILL.md (partial)",
+            "file_path": "SKILL.md",
+            "line_number": 9,
+            "line_content": "**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.",
+            "suggestion": "Referenced artifact SKILL.md was not completely inspected (partial). static_parse_limit (static_patterns_tool_misuse): A security-relevant expression could not be fully resolved by the bounded static parser. Review the reported expression and analyzer's parsing limitation; correct the scanner if it misinterprets valid source, then rerun the scan. Keep required references; incomplete analysis is not proof of malicious evasion.",
+            "metadata": {
+              "skillspector_confidence": 1.0,
+              "skillspector_evidence": {
+                "target_path": "SKILL.md",
+                "target_disposition": "partial",
+                "reasons": [
+                  {
+                    "reason_code": "static_parse_limit",
+                    "phase": "static",
+                    "message": "A security-relevant expression could not be fully resolved by the bounded static parser.",
+                    "analyzers": [
+                      "static_patterns_tool_misuse"
+                    ]
+                  }
+                ]
+              },
+              "skillspector_occurrences": [
+                {
+                  "file": "SKILL.md",
+                  "start_line": 9
+                }
+              ],
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          },
+          {
+            "finding_id": "SEF-fd928b9ac4e2c564a21f",
+            "occurrence_id": "SEO-d91ebf3cc9631a544cc5",
+            "category": "SECURITY",
+            "severity": "medium",
+            "check_name": "Autonomous Decision Making (EA2)",
+            "message": "Excessive Agency: without asking",
+            "file_path": "SKILL.md",
+            "line_number": 283,
+            "line_content": "### 4. Present the approval gate\nAfter self-review, resolve authority from `../../_refs/shared/session-authority.md`.\nWith current scoped delegation, summarize the concrete spec and continue to\nstep 5",
+            "suggestion": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation. Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+            "metadata": {
+              "skillspector_confidence": 0.75,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          },
+          {
+            "finding_id": "SEF-7de5efb97ad85293c526",
+            "occurrence_id": "SEO-1011b89d4ac07ea8f7df",
+            "category": "SECURITY",
+            "severity": "low",
+            "check_name": "Scope Creep (EA3)",
+            "message": "Excessive Agency: expand scope",
+            "file_path": "SKILL.md",
+            "line_number": 49,
+            "line_content": "Read relevant blueprint decisions and the exact Product snapshot path/hash.\nPreserve external wording and provenance in the snapshot, accepted behavior here,\nand mappings in the Product ledger. Evalua",
+            "suggestion": "Skill's behavior or capabilities extend beyond its stated purpose. Scope creep allows an agent to perform actions unrelated to its documented functionality, increasing the attack surface. Limit the skill's scope to its documented purpose. Remove instructions that enable the agent to perform actions outside its stated functionality.",
+            "metadata": {
+              "skillspector_confidence": 0.75,
+              "artifact_type": "skill",
+              "file_role": "agent_instruction",
+              "applicability": "agent-control-path"
+            }
+          }
+        ]
+      },
+      {
+        "target": "sdcorejs-test",
+        "path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test",
+        "sha256": "f41979ac7c84a4374b4519b289f2561b7ca70da7d8f920c86b11ee21e4361fd6",
+        "exit": 0,
+        "overall_status": "passed",
+        "overall_passed": true,
+        "incomplete_scans": [],
+        "publication_status": "incomplete",
+        "quality_score": 86.8,
+        "quality_grade": "B",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 8,
+          "low": 10
+        },
+        "report": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-test/skillevaluator-tier1.json",
+        "security_findings": []
+      }
+    ],
+    "manual_assessment": [
+      {
+        "target": "sdcorejs-explore",
+        "severity": "high",
+        "check": "P6",
+        "location": ".claude/skills/sdcorejs-explore/SKILL.md:75",
+        "classification": "contextual false positive; raw gate FAILED retained",
+        "evidence": "The env-setup-readonly row requests local setup instructions from README/config/examples. It does not request system prompts or hidden rules. Exact row unchanged from HEAD line 73; baseline comparison saved separately."
+      },
+      {
+        "target": "sdcorejs-spec",
+        "severity": "high",
+        "check": "AE1",
+        "location": ".claude/skills/sdcorejs-spec/SKILL.md:392",
+        "classification": "scanner limitation; INCOMPLETE retained",
+        "evidence": "SkillSpector static_patterns_tool_misuse could not resolve expansion_boundary, offsets 17044\u201318005, source lines 392\u2013413. It marks the only target component partial. The span is an approved-spec Markdown template and handoff prose unchanged from HEAD. Direct scanner exit 0 does not override its is_complete=false report or evaluator exit 1."
+      },
+      {
+        "target": "sdcorejs-architecture",
+        "severity": "medium",
+        "check": "EA2",
+        "location": ".claude/skills/sdcorejs-architecture/SKILL.md:170",
+        "classification": "contextual false positive",
+        "evidence": "Actual instruction: ask for explicit user approval; the validator never auto-approves."
+      },
+      {
+        "target": "sdcorejs-execute-plan",
+        "severity": "medium",
+        "check": "EA2",
+        "location": ".claude/skills/sdcorejs-execute-plan/SKILL.md:469",
+        "classification": "contextual false positive",
+        "evidence": "Actual instruction prohibits unapproved installs and npx --yes without approval."
+      },
+      {
+        "target": "sdcorejs-plan",
+        "severity": "medium",
+        "check": "RP1, EA2",
+        "location": ".claude/skills/sdcorejs-plan/SKILL.md:236",
+        "classification": "contextual false positive",
+        "evidence": "Lines 235\u2013238 prohibit hardcoded npm/npx defaults and downloading probes without approval. Lines 265\u2013271 permit continuing only under current scoped delegation, record the real instruction reference, and block scope growth."
+      },
+      {
+        "target": "sdcorejs-ship",
+        "severity": "medium",
+        "check": "RP1",
+        "location": ".claude/skills/sdcorejs-ship/SKILL.md:145",
+        "classification": "contextual false positive",
+        "evidence": "Rules prohibit universal npm/npx defaults and auto-download probes without explicit approval."
+      },
+      {
+        "target": "sdcorejs-spec",
+        "severity": "medium/low",
+        "check": "EA2, EA3",
+        "location": ".claude/skills/sdcorejs-spec/SKILL.md:283",
+        "classification": "contextual false positive",
+        "evidence": "Lines 280\u2013286 require current scoped delegation and otherwise an explicit decision. New line 49 explicitly prohibits silently expanding scope."
+      }
+    ],
+    "publication_status": "incomplete for every target",
+    "scope_limit": "The 10 generated skill directories contain SKILL.md only. SkillSpector and Gitleaks ran. Bandit/Semgrep code analysis, pip-audit dependency analysis, and script lint were not applicable to the target folders; their readiness is not a scan of shared _refs code."
+  },
+  "tier2": {
+    "status": "NOT RUN",
+    "reason": "No configured provider/embedding credentials and base evaluator lacks LLM SDK extras."
+  },
+  "tier3": {
+    "status": "NOT RUN",
+    "readiness": {
+      "environment_presence_only": {
+        "SKILL_EVAL_LLM_PROVIDER": false,
+        "SKILL_EVAL_LLM_MODEL": false,
+        "SKILL_EVAL_LLM_BASE_URL": false,
+        "SKILL_EVAL_LLM_API_KEY": false,
+        "NVIDIA_API_KEY": false,
+        "OPENAI_API_KEY": false,
+        "ANTHROPIC_API_KEY": false,
+        "AWS_REGION": false,
+        "AWS_DEFAULT_REGION": false,
+        "AWS_ACCESS_KEY_ID": false,
+        "AWS_SECRET_ACCESS_KEY": false,
+        "AWS_SESSION_TOKEN": false,
+        "AWS_PROFILE": false,
+        "SKILL_EVAL_EMBEDDING_PROVIDER": false
+      },
+      "provider_label": "unset",
+      "modules": {
+        "harbor": false,
+        "openai": false,
+        "anthropic": false,
+        "litellm": false,
+        "boto3": false,
+        "dotenv": false
+      },
+      "executables": {
+        "codex": "/opt/codex/bin/codex",
+        "claude": null,
+        "claude-code": null,
+        "opencode": null,
+        "docker": "/usr/local/bin/docker",
+        "bwrap": "/usr/bin/bwrap",
+        "sandbox-exec": null,
+        "harbor": null
+      },
+      "auth_files_read": false,
+      "provider_calls": false,
+      "target_evals_present": {
+        "sdcorejs-architecture": false,
+        "sdcorejs-brainstorming": false,
+        "sdcorejs-documentation": false,
+        "sdcorejs-execute-plan": false,
+        "sdcorejs-explore": false,
+        "sdcorejs-plan": false,
+        "sdcorejs-product": false,
+        "sdcorejs-ship": false,
+        "sdcorejs-spec": false,
+        "sdcorejs-test": false
+      }
+    },
+    "doctor_docker_exit": 1,
+    "doctor_local_exit": 1,
+    "doctor_failure": "ModuleNotFoundError: No module named harbor",
+    "runtime_verified": false,
+    "provider_calls": 0,
+    "auth_files_read": false,
+    "parent_fresh_agent_ab_is_nvidia_tier3": false
+  },
+  "advisory_interpretation": [
+    "Canonical source accepts only name, description, and required-actions (scripts/sync-skills.mjs:409); Claude generation maps semantic actions to allowed-tools (:189\u2013203). Generated Claude targets were evaluated, not canonical source. Do not add version/author/tags to source merely to satisfy generic scoring: current repository contract rejects them.",
+    "Missing per-skill version/author/tags/license and generic Instructions/Examples/Prerequisites/Limitations/Troubleshooting headings are template/repository metadata advisories. Root release metadata and LICENSE exist. These are not independently substantiated behavior defects.",
+    "Harness root warnings for Codex/Hermes/OpenClaw on .claude targets are expected target/harness mismatches. allowed-tools is not a security permission boundary; actual session authority remains required.",
+    "Description budgets and long bodies are real size observations, but runtime truncation depends on harness/context configuration. Evaluator reports 10,320 description characters across 25 skills and 504 lines for execute-plan. Treat as discoverability/maintenance follow-up, not proved live failure.",
+    "No security defect was independently substantiated from the reported lexical matches. The raw Explore failure and Spec parser incompleteness remain unresolved scanner gate outcomes."
+  ],
+  "not_run": [
+    {
+      "check": "native cleanup suite",
+      "reason": "Workspace and /tmp are overlayfs; no trusted ext4/APFS fixture was provided. Per task instruction, known native cleanup failure was not retried and no filesystem provisioned."
+    },
+    {
+      "check": "full npm test / framework golden suites",
+      "reason": "Task requested repository-core phase and focused verification; Angular/NestJS/NextJS golden suites and native cleanup are not part of this result."
+    },
+    {
+      "check": "LLM rubric/security, Tier 2, NVIDIA Tier 3",
+      "reason": "No configured provider credentials/SDK extras/datasets. No inference or model catalog call made."
+    }
+  ],
+  "scanner_installation": {
+    "directory": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling",
+    "environment_configuration": "/workspace/work/sdcorejs-benchmark-20261114/verification/scanner-environment.json",
+    "skillspector_wheel_sha256": "c5e7f290897c65018013a6e37022fabdd2ba1aeeb4994b65df2de8b0d536bea0",
+    "gitleaks_archive_sha256": "79a3ab579b53f71efd634f3aaf7e04a0fa0cf206b7ed434638d1547a2470a66e",
+    "method": "Evaluator pinned checksum-verified provisioning; uv tool installs in dedicated workspace tool/cache/bin roots. Explicit documented scanner executable overrides avoid managed uv subprocess dropping cache variables. No HOME or CODEX_HOME changes."
+  },
+  "commands": [
+    {
+      "label": "preflight",
+      "command": "node authoring/tools/check-prerequisites.mjs",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:56:59.683894+00:00",
+      "seconds": 2.387,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/preflight.log"
+    },
+    {
+      "label": "repository-core",
+      "command": "node --test test/e2e/content-skill.test.mjs test/e2e/audit-contract-regression.test.mjs test/e2e/audit-template-producers.test.mjs test/e2e/audit-workflow-behavior.test.mjs test/e2e/ai-agent-identity-contract.test.mjs test/e2e/ai-agent-track-contract.test.mjs test/e2e/angular-production-contract.test.mjs test/e2e/architecture-contract.test.mjs test/e2e/artifact-path-convention.test.mjs test/e2e/cli-adapters.test.mjs test/e2e/communication-economy.test.mjs test/e2e/convergence-contract.test.mjs test/e2e/convention-artifact-lifecycle.test.mjs test/e2e/convention-contract.test.mjs test/e2e/convention-review.test.mjs test/e2e/debug-contract.test.mjs test/e2e/decision-coverage-contract.test.mjs test/e2e/design-handoff-contract.test.mjs test/e2e/documentation-layout-contract.test.mjs test/e2e/entrypoint-smoke.test.mjs test/e2e/explore-topology.test.mjs test/e2e/git-closure-contract.test.mjs test/e2e/golden-target-app.test.mjs test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/module-e2e-contract.test.mjs test/e2e/nextjs-production-contract.test.mjs test/e2e/npm-publication-contract.test.mjs test/e2e/parallel-dispatch-protocol.test.mjs test/e2e/parallel-opportunity.test.mjs test/e2e/product-ledger-contract.test.mjs test/e2e/product-task-breakdown-contract.test.mjs test/e2e/product-task-breakdown-cli.test.mjs test/e2e/product-task-breakdown-flow-contract.test.mjs test/e2e/production-readiness-contract.test.mjs test/e2e/mirror-refs-resolution.test.mjs test/e2e/project-context-artifact-lifecycle.test.mjs test/e2e/repair-contract.test.mjs test/e2e/review-contract.test.mjs test/e2e/ship-readiness-contract.test.mjs test/e2e/simplify-protected-contract.test.mjs test/e2e/simplify-skill-contract.test.mjs test/e2e/skill-authoring-contract.test.mjs test/e2e/skill-pack-runner.test.mjs test/e2e/static-visual-composer.test.mjs test/e2e/test-track-contract.test.mjs test/e2e/toolchain-compatibility.test.mjs test/e2e/validation-map-contract.test.mjs test/e2e/visual-companion-runtime.test.mjs test/e2e/uiux-knowledge.test.mjs test/e2e/uiux-review-regression.test.mjs test/e2e/uiux-skill-creator-regression.test.mjs authoring/evals/uiux/evidence.test.mjs test/e2e/visual-offer-policy.test.mjs test/e2e/visual-offer-behavior.test.mjs test/e2e/review-behavior-fixtures.test.mjs test/e2e/review-risk-contract.test.mjs test/e2e/review-test-adequacy.test.mjs test/e2e/review-agent-evaluation.test.mjs test/e2e/project-bootstrap-contract.test.mjs test/e2e/project-bootstrap-filesystem.test.mjs test/e2e/static-analysis-compatibility-contract.test.mjs test/e2e/authoring-prerequisites.test.mjs test/e2e/blueprint-learning-contract.test.mjs test/e2e/documentation-profile.test.mjs test/e2e/ticket-intake-contract.test.mjs test/e2e/governed-delivery-integration.test.mjs",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:57:02.072287+00:00",
+      "seconds": 21.803,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/repository-core.log"
+    },
+    {
+      "label": "focused-governed-delivery",
+      "command": "npm run test:e2e:governed-delivery",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:57:23.875503+00:00",
+      "seconds": 1.204,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/focused-governed-delivery.log"
+    },
+    {
+      "label": "check-skills",
+      "command": "npm run check:skills",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:57:25.090504+00:00",
+      "seconds": 2.352,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/check-skills.log"
+    },
+    {
+      "label": "check-text-hygiene",
+      "command": "npm run check:text-hygiene",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:57:27.443694+00:00",
+      "seconds": 1.273,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/check-text-hygiene.log"
+    },
+    {
+      "label": "check-executable-references",
+      "command": "npm run check:executable-references",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:57:28.718345+00:00",
+      "seconds": 1.307,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/check-executable-references.log"
+    },
+    {
+      "label": "diff-check",
+      "command": "git diff --check",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:57:30.025749+00:00",
+      "seconds": 0.055,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/diff-check.log"
+    },
+    {
+      "label": "provision-pinned-scanners",
+      "command": "/home/agent/.local/share/uv/tools/skillevaluator/bin/python -c 'from skillevaluator.utils.scanner_install import ensure_skillspector_wheel,ensure_gitleaks; import sys; errors=[ensure_skillspector_wheel(),ensure_gitleaks()]; print(errors); sys.exit(any(errors))'",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:58:15.818557+00:00",
+      "seconds": 7.509,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/provision-pinned-scanners.log"
+    },
+    {
+      "label": "install-skillspector",
+      "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv tool install /workspace/work/sdcorejs-benchmark-20261114/verification/tooling/runtimes/skillspector/2.13.4/skillspector-2.13.4-py3-none-any.whl",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:58:23.328160+00:00",
+      "seconds": 9.71,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/install-skillspector.log"
+    },
+    {
+      "label": "install-semgrep",
+      "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv tool install semgrep",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:58:33.038806+00:00",
+      "seconds": 19.725,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/install-semgrep.log"
+    },
+    {
+      "label": "install-pip-audit",
+      "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv tool install pip-audit",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:58:52.764898+00:00",
+      "seconds": 4.815,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/install-pip-audit.log"
+    },
+    {
+      "label": "tier3-readiness-inventory",
+      "command": "/home/agent/.local/share/uv/tools/skillevaluator/bin/python /workspace/work/sdcorejs-benchmark-20261114/verification/readiness.py",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:59:02.902913+00:00",
+      "seconds": 0.227,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier3-readiness-inventory.log"
+    },
+    {
+      "label": "tier3-doctor-docker",
+      "command": "/home/agent/.local/bin/skillevaluator doctor --tier 3 --env-mode docker -a codex",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 1,
+      "started": "2026-11-14T08:59:03.129947+00:00",
+      "seconds": 2.722,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier3-doctor-docker.log"
+    },
+    {
+      "label": "tier3-doctor-local",
+      "command": "/home/agent/.local/bin/skillevaluator doctor --tier 3 --env-mode local -a codex",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 1,
+      "started": "2026-11-14T08:59:05.852424+00:00",
+      "seconds": 2.622,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier3-doctor-local.log"
+    },
+    {
+      "label": "versions",
+      "command": "/home/agent/.local/share/uv/tools/skillevaluator/bin/python -c 'import importlib.metadata,json,subprocess; print(json.dumps({'\"'\"'evaluator'\"'\"':importlib.metadata.version('\"'\"'skillevaluator'\"'\"'),'\"'\"'python'\"'\"':__import__('\"'\"'sys'\"'\"').version,'\"'\"'node'\"'\"':subprocess.check_output(['\"'\"'node'\"'\"','\"'\"'--version'\"'\"'],text=True).strip(),'\"'\"'npm'\"'\"':subprocess.check_output(['\"'\"'npm'\"'\"','\"'\"'--version'\"'\"'],text=True).strip(),'\"'\"'codex'\"'\"':subprocess.check_output(['\"'\"'codex'\"'\"','\"'\"'--version'\"'\"'],text=True).strip(),'\"'\"'evaluator_source'\"'\"':subprocess.check_output(['\"'\"'git'\"'\"','\"'\"'-C'\"'\"','\"'\"'/workspace/work/skill-install/nvidia-skillevaluator'\"'\"','\"'\"'rev-parse'\"'\"','\"'\"'HEAD'\"'\"'],text=True).strip()},indent=2))'",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:59:08.474996+00:00",
+      "seconds": 0.334,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/versions.log"
+    },
+    {
+      "label": "filesystem-types",
+      "command": "stat -f -c '%m %T' /workspace /tmp",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:59:08.808833+00:00",
+      "seconds": 0.004,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/filesystem-types.log"
+    },
+    {
+      "label": "tier1-health",
+      "command": "/home/agent/.local/bin/skillevaluator health-check --tier 1 --checks security,code-integrity,dependency",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:58:57.580014+00:00",
+      "seconds": 18.7,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-health.log"
+    },
+    {
+      "label": "tier1-sdcorejs-architecture",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-architecture --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-architecture",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:59:16.286942+00:00",
+      "seconds": 12.674,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-architecture.log"
+    },
+    {
+      "label": "tier1-sdcorejs-brainstorming",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-brainstorming --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-brainstorming",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:59:28.961732+00:00",
+      "seconds": 11.735,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-brainstorming.log"
+    },
+    {
+      "label": "check-executable-references-python",
+      "command": "npm run check:executable-references",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T08:59:49.048505+00:00",
+      "seconds": 1.404,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/check-executable-references-python.log"
+    },
+    {
+      "label": "tier1-sdcorejs-documentation",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-documentation --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-documentation",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:59:40.697430+00:00",
+      "seconds": 11.434,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-documentation.log"
+    },
+    {
+      "label": "tier1-sdcorejs-execute-plan",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-execute-plan --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-execute-plan",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T08:59:52.131958+00:00",
+      "seconds": 13.201,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-execute-plan.log"
+    },
+    {
+      "label": "tier1-sdcorejs-explore",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-explore --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-explore",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 1,
+      "started": "2026-11-14T09:00:05.333112+00:00",
+      "seconds": 13.103,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-explore.log"
+    },
+    {
+      "label": "tier1-sdcorejs-plan",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-plan --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-plan",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T09:00:18.436624+00:00",
+      "seconds": 13.164,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-plan.log"
+    },
+    {
+      "label": "tier1-sdcorejs-product",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-product --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-product",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T09:00:31.601722+00:00",
+      "seconds": 12.144,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-product.log"
+    },
+    {
+      "label": "tier1-sdcorejs-ship",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-ship --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-ship",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T09:00:43.746287+00:00",
+      "seconds": 13.672,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-ship.log"
+    },
+    {
+      "label": "tier1-sdcorejs-spec",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-spec --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-spec",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 1,
+      "started": "2026-11-14T09:00:57.419003+00:00",
+      "seconds": 12.836,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-spec.log"
+    },
+    {
+      "label": "tier1-sdcorejs-test",
+      "command": "/home/agent/.local/bin/skillevaluator tier1 /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test --no-llm -r json,markdown -o /workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-test",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T09:01:10.255503+00:00",
+      "seconds": 12.815,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/tier1-sdcorejs-test.log"
+    },
+    {
+      "label": "deterministic-authoring",
+      "command": "node authoring/evals/run-deterministic.mjs",
+      "cwd": "/workspace/sdcorejs-agent",
+      "exit": 0,
+      "started": "2026-11-14T09:01:47.812149+00:00",
+      "seconds": 0.291,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/deterministic-authoring.log"
+    },
+    {
+      "label": "skillspector-spec-diagnostic",
+      "command": "/workspace/work/sdcorejs-benchmark-20261114/verification/tooling/bin/skillspector scan /workspace/sdcorejs-agent/.claude/skills/sdcorejs-spec --format json --no-llm",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/verification",
+      "exit": 0,
+      "started": "2026-11-14T09:02:35.786749+00:00",
+      "seconds": 6.666,
+      "log": "/workspace/work/sdcorejs-benchmark-20261114/verification/skillspector-spec-diagnostic.log"
+    }
+  ],
+  "sanitization": "Only generated source findings, version/path metadata and credential-variable presence booleans are recorded. No credentials or authfiles read; no live tracker content included.",
+  "notes": [
+    "The codex --version probe emitted a read-only-filesystem warning while attempting PATH aliases; it returned 0 and no home write was granted. It was not repeated.",
+    "Only new parent benchmark artifacts appeared during verification: authoring/evals/governed-delivery-benchmark-20261114/cases.json, authoring/evals/governed-delivery-benchmark-20261114/setup.py. All 2,351 pre-existing manifest files and all ten scanned target hashes remained unchanged."
+  ]
+}

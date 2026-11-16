@@ -89,19 +89,23 @@ module output into the portal. A review finding is not an authorized write
 unless the user or approved repair scope selected it.
 ## Step 0 - Context preflight
 
-Before loading the plan or dispatching an executor, assemble `project_context`.
+Before loading the plan or dispatching an executor, assemble `project_context`;
+resolve scoped rules via `../_refs/shared/existing-project-onboarding.md` and required
+local startup via `../_refs/shared/explore-env-setup-actions.md` under session authority.
 
 - Use valid summary sections when present.
-- If the summary is missing, legacy, unknown, or stale, continue with targeted
-  reads. Use a scoped code map only when cross-component relationships remain
-  unclear.
-- Do not refresh a summary merely because it is missing or because execution is
-  write-approved.
+- For missing/legacy/stale summaries, use targeted reads; use a scoped code map
+  only for unresolved cross-component relationships.
+- Missing summaries or write-approved execution alone never authorize refresh.
 - A brand-new approved project initialization may create summary v2 after the
   scaffold exists. An architecture-level change may refresh it only when the
   sequential workflow or integration owner owns that shared write.
-- Treat the approved plan and current evidence as stronger than stored context
-  when they conflict.
+- Approved plans and current evidence take precedence over stored context.
+For initialization or tracked work, apply `../_refs/shared/governed-delivery.md`:
+consume the blueprint, refresh Product's source snapshot, reconcile deltas before
+dependent edits and complete evidence/docs/scoped lessons before branch-ready.
+Keep proposed AC separate and report tracker synchronization independently.
+
 ## Step 0.5 - Working-tree preflight
 
 Before any edit or subagent dispatch, inspect the current working tree and

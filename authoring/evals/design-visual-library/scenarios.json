@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "description": "Change-scoped dialogue scenarios; expected labels are evaluator-only, capabilities are simulated, and no generated assistant responses are authored.",
+  "capabilities": {
+    "native_structured_choice": "supported",
+    "visual_surface": "supported",
+    "static_html_artifact": "supported",
+    "live_visual_companion": "unsupported",
+    "persistent_local_process": "unsupported",
+    "browser_auto_open": "unknown"
+  },
+  "scenarios": [
+    {
+      "id": "positive-queue",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "Support agents process consecutive tickets; we need to decide between a drawer and a side-by-side queue.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "positive-list",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "The records list needs occasional inspection; compare reasonable ways to retain list context.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "positive-detail",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "The record has separate overview, related records and history; we have not chosen how to organize it.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "positive-steps",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "The import flow has confirmed dependent steps: upload, validate, review. Compare viable structures.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "positive-tree",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "A confirmed category hierarchy has three levels; the browsing layout is still open.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "positive-product",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "Our product landing needs to explain its value and show the workspace. Compare feature-led and story-led compositions.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "positive-service",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "Our service website needs a clear overview and process. The layout is still open.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "positive-pricing",
+      "entry": "design",
+      "category": "positive",
+      "turns": [
+        {
+          "user": "The approved brief contains three plans and a feature comparison. Help choose a clear presentation.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "negative-rename",
+      "entry": "brainstorming",
+      "category": "negative",
+      "turns": [
+        {
+          "user": "Rename the Save button to Update; preserve every layout and behavior.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "negative-spacing",
+      "entry": "brainstorming",
+      "category": "negative",
+      "turns": [
+        {
+          "user": "Fix only the 8px gap to match the existing spacing token; no layout changes.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "negative-approved",
+      "entry": "brainstorming",
+      "category": "negative",
+      "turns": [
+        {
+          "user": "Implement the already approved exact layout; do not reopen design decisions.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "negative-text",
+      "entry": "brainstorming",
+      "category": "negative",
+      "turns": [
+        {
+          "user": "Correct the typo in the documentation heading; no UI work is needed.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "negative-brand",
+      "entry": "brainstorming",
+      "category": "negative",
+      "turns": [
+        {
+          "user": "Replace only the incorrect accent token with the existing approved project token.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "negative-blocker",
+      "entry": "brainstorming",
+      "category": "negative",
+      "turns": [
+        {
+          "user": "We do not yet know whether users may see other teams records. The requirement owner must clarify this before choosing a layout.",
+          "expected": "clarify",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "multi-decline-handoff",
+      "entry": "design",
+      "category": "multi-turn",
+      "turns": [
+        {
+          "user": "We need to compare a drawer and split layout for our queue.",
+          "expected": "offer",
+          "requires": "response"
+        },
+        {
+          "user": "No previews for this visual thread. Continue with text.",
+          "expected": "no-repeat",
+          "requires": "offer"
+        },
+        {
+          "user": "Continue in sdcorejs-design with the same queue.",
+          "expected": "no-repeat",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "multi-session-decline",
+      "entry": "design",
+      "category": "multi-turn",
+      "turns": [
+        {
+          "user": "No visual previews in this session. Explain the layout trade-offs in text.",
+          "expected": "no-offer",
+          "requires": "response"
+        },
+        {
+          "user": "Compare another record page layout.",
+          "expected": "no-repeat",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "multi-accepted",
+      "entry": "design",
+      "category": "multi-turn",
+      "turns": [
+        {
+          "user": "Show two editable HTML previews for the queue: drawer and split.",
+          "expected": "preview",
+          "requires": "response"
+        },
+        {
+          "user": "Continue the accepted preview workflow for record detail versus tabs.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "multi-reenable",
+      "entry": "design",
+      "category": "multi-turn",
+      "turns": [
+        {
+          "user": "No previews for this decision; use text.",
+          "expected": "no-offer",
+          "requires": "response"
+        },
+        {
+          "user": "I changed my mind. Show the two HTML queue options.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "multi-choice-not-approval",
+      "entry": "design",
+      "category": "multi-turn",
+      "turns": [
+        {
+          "user": "Show two HTML queue layouts.",
+          "expected": "preview",
+          "requires": "response"
+        },
+        {
+          "user": "I selected the split option in the browser. No production implementation is authorized yet.",
+          "expected": "no-approval",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "multi-delegated",
+      "entry": "design",
+      "category": "multi-turn",
+      "turns": [
+        {
+          "user": "Choose a viable queue layout for me; preserve the current design tokens.",
+          "expected": "no-offer",
+          "requires": "response"
+        },
+        {
+          "user": "Show a single HTML preview of your chosen layout.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "surface-static",
+      "entry": "design",
+      "category": "surface-failure",
+      "capabilities": {
+        "native_structured_choice": "supported",
+        "visual_surface": "supported",
+        "static_html_artifact": "supported",
+        "live_visual_companion": "unsupported",
+        "persistent_local_process": "unsupported",
+        "browser_auto_open": "unknown"
+      },
+      "turns": [
+        {
+          "user": "Show two HTML record layouts using the existing tokens.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "surface-text",
+      "entry": "design",
+      "category": "surface-failure",
+      "capabilities": {
+        "native_structured_choice": "supported",
+        "visual_surface": "unsupported",
+        "static_html_artifact": "unsupported",
+        "live_visual_companion": "unsupported",
+        "persistent_local_process": "unsupported",
+        "browser_auto_open": "unknown"
+      },
+      "turns": [
+        {
+          "user": "Show the layout alternatives; if this runtime cannot deliver HTML, provide the usable text fallback.",
+          "expected": "fallback",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "surface-failed-live",
+      "entry": "design",
+      "category": "surface-failure",
+      "runtime_event": {
+        "live_surface": "failed"
+      },
+      "capabilities": {
+        "native_structured_choice": "supported",
+        "visual_surface": "supported",
+        "static_html_artifact": "supported",
+        "live_visual_companion": "unsupported",
+        "persistent_local_process": "unsupported",
+        "browser_auto_open": "unknown"
+      },
+      "turns": [
+        {
+          "user": "The live companion failed. Continue the requested two-layout preview using supported static HTML.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "surface-single",
+      "entry": "design",
+      "category": "surface-failure",
+      "capabilities": {
+        "native_structured_choice": "supported",
+        "visual_surface": "supported",
+        "static_html_artifact": "supported",
+        "live_visual_companion": "unsupported",
+        "persistent_local_process": "unsupported",
+        "browser_auto_open": "unknown"
+      },
+      "turns": [
+        {
+          "user": "Show one editable HTML preview of the fixed split layout. Do not create alternatives.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    }
+  ]
+}

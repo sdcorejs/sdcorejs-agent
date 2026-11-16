@@ -1,0 +1,3 @@
+Capture check: success
+Trace JSON parses; review preserves source criterion identity, states the test limitation, and omits attachment URL query tokens.
+Application tests: not run.

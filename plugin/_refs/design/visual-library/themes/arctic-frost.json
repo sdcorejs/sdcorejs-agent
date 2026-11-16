@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "arctic-frost",
+  "name": "Arctic Frost",
+  "tokens": {
+    "bg": "#eef4fb",
+    "surface": "#fafafa",
+    "text": "#19304e",
+    "muted": "#465d78",
+    "border": "#748aa7",
+    "accent": "#365989",
+    "accent_text": "#ffffff",
+    "soft": "#d4e4f7",
+    "font": "sans"
+  },
+  "source_refs": [
+    "theme-arctic-frost"
+  ],
+  "adaptation": "Adapted presentation palette to semantic UI roles. Accent/muted tones adjusted for contrast, system font fallback replaces font assets; verify chosen pairs in the consuming UI."
+}

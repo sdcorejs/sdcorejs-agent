@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "change_ref": "normalize-category-null-input",
+  "source_spec": "none",
+  "source_plan": "none",
+  "required_with_change": [
+    {
+      "path": ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md",
+      "kind": "execution-doc",
+      "reason": "Sanitized immutable proof for the scoped lesson"
+    }
+  ],
+  "shared_owned": [
+    {
+      "path": ".sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json",
+      "kind": "memory",
+      "reason": "Explicit user authorization; sole sequential Explore owner"
+    }
+  ],
+  "conditional": [],
+  "local_only": [
+    {
+      "path": "capture/",
+      "kind": "diagnostic",
+      "reason": "Authorized external capture folder; raw outputs and selection controls, never repository instructions"
+    }
+  ],
+  "unrelated_observed": [
+    {
+      "path": ".sdcorejs/memories/workflow/old-payment-advice.md",
+      "reason": "Legacy unrelated payment advice; unchanged and unpromoted"
+    }
+  ]
+}

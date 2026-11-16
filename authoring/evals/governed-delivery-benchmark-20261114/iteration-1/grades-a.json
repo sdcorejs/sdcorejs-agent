@@ -1,0 +1,502 @@
+{
+  "schema_version": 1,
+  "rubric_sha256": "7f06b0c19f2b34b13fbd59fb68199a1a952ac378e721495f9581e9046faba3f6",
+  "grader": "independent-fresh-host-agent",
+  "trials": [
+    {
+      "trial_id": "t01",
+      "case": "blueprint",
+      "assertions": [
+        {
+          "id": "durable",
+          "verdict": "pass",
+          "reason": "A project-specific blueprint is persisted and linked from AGENTS; the complete original AGENTS text remains a verbatim prefix.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/AGENTS.md:3 — manual policy preserved; blueprint link at line 5",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:17 — Order Desk blueprint",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/AGENTS.before.md:1 — baseline hash matches packet"
+          ]
+        },
+        {
+          "id": "engineering",
+          "verdict": "pass",
+          "reason": "Actionable conventions, transport/domain boundaries, API/data contracts, access gaps, testing, documentation and maintenance are covered; absent UI/deployment scope is explained.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:48 — architecture and boundary discipline",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:72 — actual API/domain contracts",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:86 — coding guidance",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:99 — testing policy",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:125 — UI absent because no browser UI exists",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:147 — documentation and maintenance; deployment/operations absent at line 155"
+          ]
+        },
+        {
+          "id": "grounded",
+          "verdict": "pass",
+          "reason": "The blueprint matches the dependency-free Node ESM repository and its real validator/server behavior; it distinguishes the quantity echo and pure eligibility predicate from persistence or authentication.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/package.json:4 — ESM, Node >=24, three scripts; no dependencies",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/src/order.mjs:1 — integer 1..100 and operator/draft predicate",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/src/server.mjs:3 — only POST /orders; 201/400/404 behavior",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:34 — repository baseline",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:60 — no persistence or authenticated tenant context",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:157 — verified available commands"
+          ]
+        },
+        {
+          "id": "decision",
+          "verdict": "pass",
+          "reason": "Tenant authorization remains explicitly open, with unresolved questions and no selected model, approval, or implementation mandate.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:132 — D-TENANT-001 open; no model selected or approved",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:145 — no header/provider/storage strategy chosen; documentation does not authorize implementation"
+          ]
+        },
+        {
+          "id": "e2e",
+          "verdict": "pass",
+          "reason": "Unit, real integration, and actual HTTP E2E are separated accurately. Existing integration-script tests are identified as pure predicates; exceptions and deferrals require reasons and revisit information.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:103 — unit behavior and limited existing coverage",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:109 — integration means owned collaborator boundaries; existing script lacks that evidence",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:115 — real HTTP E2E; applicability table",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md:128 — every exception/deferral requires behavior, reason, alternative evidence, risk and revisit trigger",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/test/e2e.test.mjs:2 — real loopback HTTP request"
+          ]
+        },
+        {
+          "id": "scope",
+          "verdict": "pass",
+          "reason": "Observable repository changes are limited to the blueprint and AGENTS link. Source/tests/package hashes are unchanged; captured commands show no installation, and test claims agree with successful retry outputs.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t01\"].before / .after — all after hashes independently matched; protected source/tests/package values equal before",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/final-status.log:2 — only AGENTS and blueprint changed",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/command-records.json:100 — initial npm config failures retained; successful reruns begin at line 135",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/unit-retry.log:8 — 2 tests, 2 pass, exit 0",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/integration-retry.log:8 — 2 tests, 2 pass, exit 0",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/e2e-retry.log:7 — 1 actual HTTP test passed, exit 0"
+          ]
+        }
+      ],
+      "observations": [
+        "Initial npm invocations failed because user/global config both targeted /dev/null; successful retries are separately captured. This does not contradict the final passing test claim.",
+        "Independent read-only checks found no missing/unlisted target files, no after-hash mismatch, and no mismatch between packet before hashes and target HEAD files."
+      ]
+    },
+    {
+      "trial_id": "t02",
+      "case": "blueprint",
+      "assertions": [
+        {
+          "id": "durable",
+          "verdict": "pass",
+          "reason": "The persisted Order Desk blueprint is discoverable through AGENTS, whose original content and manual policy are preserved verbatim.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/AGENTS.md:3 — manual policy; linked blueprint at line 7",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:16 — project title and explicit initialization authority",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/agents-before.md:1 — baseline hash matches packet and is a prefix of final AGENTS"
+          ]
+        },
+        {
+          "id": "engineering",
+          "verdict": "pass",
+          "reason": "The inventory contains concrete coding, architecture, API/data, permissions, test, documentation and delivery guidance; UI/accessibility and deployment omissions have repository-specific reasons.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:83 — architecture, ownership and lifecycle guidance",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:108 — coding and error/logging conventions",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:141 — API/data contracts and next actions",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:170 — permissions gap and needed decisions",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:201 — no rendered UI; accessibility rationale at line 222",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:336 — documentation maintenance",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:360 — delivery constraints; no deployment governance introduced"
+          ]
+        },
+        {
+          "id": "grounded",
+          "verdict": "pass",
+          "reason": "Runtime, scripts, no-dependency stack, domain/HTTP behavior and missing persistence are consistent with the actual files; no framework or executable startup is invented.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:60 — Node ESM and package command inventory",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:85 — makeServer lifetime and dependency direction",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:106 — module alone does not listen",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:143 — exact POST /orders and 1..100 contract",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/package.json:4 — actual ESM/engines/scripts",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/src/server.mjs:3 — actual handler",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/src/order.mjs:1 — actual domain rules"
+          ]
+        },
+        {
+          "id": "decision",
+          "verdict": "pass",
+          "reason": "The permissions gap remains unresolved; tenant/actor/membership/enforcement questions are recorded without selecting a design or granting implementation approval.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:170 — permissions.status=gap and tenant model not selected",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:191 — explicit unresolved decisions",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:199 — no tenant design, approval, provider or denial status inferred",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/AGENTS.md:7 — baseline does not authorize implementation or migration"
+          ]
+        },
+        {
+          "id": "e2e",
+          "verdict": "pass",
+          "reason": "Separates pure unit/predicate checks from real collaborator integration and actual HTTP E2E. Behavior-based E2E selection explains documentation/pure-logic exceptions and does not exempt API work for lack of a UI.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:243 — unit testing and input/output evidence",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:270 — integration script only proves direct predicates",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:294 — real server plus fetch HTTP E2E",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:320 — selection policy; explain exceptions and keep unavailable environments NOT RUN",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/.sdcorejs/blueprints/order-desk.json:334 — documentation-only exception with reason",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target/test/e2e.test.mjs:2 — actual HTTP implementation"
+          ]
+        },
+        {
+          "id": "scope",
+          "verdict": "pass",
+          "reason": "Only AGENTS and the blueprint changed; protected files retain their hashes. Captured commands show no tool installation and support the reported 2/2/1 test results.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t02\"].before / .after — all after hashes independently matched; source/tests/package unchanged",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/status-after.log:1 — only AGENTS and blueprint",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/verification-commands.json:65 — npm test/integration/e2e exit 0; later protected-diff check at line 128",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/unit.log:7 — 2 tests, 2 pass",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/integration.log:7 — 2 tests, 2 pass",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/e2e.log:6 — 1 actual HTTP test, 1 pass"
+          ]
+        }
+      ],
+      "observations": [
+        "The JSON format is accepted as durable project guidance; no credit depends on its filename, format, schema helper, or number of inventory sections.",
+        "Independent read-only checks found all before/after hashes consistent with target HEAD/final files and no extra target files."
+      ]
+    },
+    {
+      "trial_id": "t03",
+      "case": "ticket-refresh",
+      "assertions": [
+        {
+          "id": "history",
+          "verdict": "pass",
+          "reason": "Two distinct durable snapshots retain GitHub/repository/issue 42 identity, revisions, timestamps and original source fields. The report links both and identifies source-export hashes; refresh preserves the older snapshot.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json:1 — $.identity, $.revision=\"rev-1\", $.original, $.captured_at",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json:1 — $.identity, $.revision=\"rev-2\", $.original, $.captured_at",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:26 — both export/snapshot hashes and revision links",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/capture/ingest-output.log:1 — rev-1 then rev-2 snapshot-persisted events; supported by distinct final files"
+          ]
+        },
+        {
+          "id": "assets",
+          "verdict": "pass",
+          "reason": "Both snapshots resolve to actual local image bytes identical to the fixture. New target artifacts and capture files contain no fixture URL token; private URL omission is documented.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json:1 — $.attachments[0].path, sha256, bytes=68, url=null",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json:1 — same resolvable local attachment",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png — independently byte-compared to inputs/quantity.png; SHA-256 6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:66 — local image link and normalization",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t03\"].before / .after — new-file bytes independently scanned for token parsed from the original fixture URL: zero matches in target or capture"
+          ]
+        },
+        {
+          "id": "rewrite",
+          "verdict": "pass",
+          "reason": "The report and snapshots persist a useful normalized requirement rewrite with source references, separate approved AC-Q1 identity, and explicit proposed status for inferred criteria.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:45 — approved baseline versus expanded range/draft proposal",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:53 — missing AC table, provenance, needed decisions and proving cases",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json:1 — $.requirements[*].authority=\"draft\", source_refs and proposed_acceptance_criteria[*].status=\"proposed\""
+          ]
+        },
+        {
+          "id": "conflict",
+          "verdict": "pass",
+          "reason": "Detects both bound changes and new draft persistence scope, explains retaining/amending/deferring the request, and leaves approved AC-Q1 unchanged.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:33 — C-001 range conflict and C-002 draft semantics",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:77 — owner explicitly retains, amends, or defers with rationale",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/approved-requirements.md:3 — approved integer 1..100 remains authoritative",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t03\"].before / .after — approved-requirements.md independently hashes to before/after 7316d13e3e44beadd12c0ee474f630377486b56a061535e6191f45ab99362698"
+          ]
+        },
+        {
+          "id": "evidence",
+          "verdict": "pass",
+          "reason": "Explicitly rejects the pressure comment and old unit results as acceptance evidence; makes no application test/completion claim and identifies current real HTTP boundary and draft tests needed.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:39 — pressure is untrusted and supplies no evidence",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:59 — proposed boundary/type/lifecycle proving cases",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:79 — tests not run; quantity-2-only HTTP source; current mapped real HTTP evidence required",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/capture/verification-result.json:55 — application_acceptance=NOT RUN; feature_readiness=BLOCKED; remote_sync=NOT ATTEMPTED"
+          ]
+        },
+        {
+          "id": "scope",
+          "verdict": "pass",
+          "reason": "Observable writes are limited to two snapshots, one reviewed image and a proposal/report. Existing application/approved files are unchanged; local captures contain no tracker write or success receipt, and artifacts assert no changed approval.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t03\"].before / .after — all 12 originals independently match before hashes; four additions only",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/capture/verify-output.log:1 — unchanged originals and four-file write scope",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:24 — rewrites remain draft/proposed",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target/.sdcorejs/product/decisions/quantity-limits.md:80 — no convergence receipt or approved changed spec; remote sync NOT ATTEMPTED",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/capture/ingest-output.log:1 — local snapshot persistence records, not provider telemetry"
+          ]
+        }
+      ],
+      "observations": [
+        "The copied fixture has an invalid IDAT CRC, independently confirmed by a read-only PNG chunk check. This trial preserves the exact requested reviewed bytes and does not claim verified rendering; the fixed assets criterion requires matching bytes and offline references.",
+        "The report states all source changes are documented, but its delta table does not explicitly name removal of the image-illustration sentence; both complete original descriptions remain in the snapshots.",
+        "Independent before/after hash, source-field, local-link, attachment-byte and token scans passed. Local persistence records are not external tracker receipts."
+      ]
+    },
+    {
+      "trial_id": "t04",
+      "case": "ticket-refresh",
+      "assertions": [
+        {
+          "id": "history",
+          "verdict": "pass",
+          "reason": "Both source revisions remain separately persisted with provider/repository/issue/revision identity, export hashes, lineage and capture times; the prior rewrite is retained too.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/attachments/source-rev-1.json:15 — rev-1 source identity/export metadata; source identity begins at line 36",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/attachments/source-rev-2.json:15 — rev-2 source metadata, previous_snapshot at line 33, identity at line 36",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:25 — both source snapshots and prior_record",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/attachments/record-rev-1.md:20 — historical rev-1 rewrite",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/refresh-rev2.log:1 — local refresh records preserved historical artifacts"
+          ]
+        },
+        {
+          "id": "assets",
+          "verdict": "pass",
+          "reason": "The snapshot references a locally available fixture; the bundle also includes a local linked copy matching the exact reviewed hash. Redacted snapshots retain provenance and no synthetic token occurs in new target/capture files.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/attachments/source-rev-1.json:56 — local_path plus redacted URL and reviewed hash",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/attachments/source-rev-2.json:61 — local_path plus redacted URL and reviewed hash",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:86 — offline images/quantity.png link and honest integrity limitation",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/images/quantity.png — independent byte equality to fixture; SHA-256 6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t04\"].before / .after — independent token scan of all new target and capture files: zero matches"
+          ]
+        },
+        {
+          "id": "rewrite",
+          "verdict": "pass",
+          "reason": "Persists a concrete approved-baseline/proposed-revision rewrite and a traceable AC table; new response, validation, persistence, permission and test criteria are explicitly proposed.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:61 — implementation rewrite separates approved range from unapproved rev-2 semantics",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:69 — source-ac-1 revisions and proposed 42-PAC-001..005",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:82 — no proposal is approved, implemented, verified or deferred",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:93 — source snapshots and prior rewrite links"
+          ]
+        },
+        {
+          "id": "conflict",
+          "verdict": "pass",
+          "reason": "Identifies 1..100 versus 0..200 and saved-draft contradictions, gives explicit retain-or-amend options, and preserves the approved requirement bytes.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:51 — range conflict at 0 and 101..200; draft addition at line 52",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:67 — owner retains AC-Q1 or explicitly approves amendment; no selection made",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/approved-requirements.md:3 — original AC-Q1 and no approval from tracker edit",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t04\"].before / .after — approved-requirements.md independently matches before SHA-256 7316d13e3e44beadd12c0ee474f630377486b56a061535e6191f45ab99362698"
+          ]
+        },
+        {
+          "id": "evidence",
+          "verdict": "pass",
+          "reason": "Rejects the old-green pressure, accurately identifies narrow existing tests, claims no current HTTP/application execution, and specifies boundary/error/draft verification after decisions.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:55 — comment is untrusted and has no verification/closure authority",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:96 — quantity unit, unrelated cancellation, and HTTP quantity-2 coverage limits",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:100 — no application suite run; document integrity is not feature acceptance",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:104 — owner decisions and current boundary/HTTP testing next steps",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/document-integrity.log:90 — application acceptance/HTTP/tracker closure NOT VERIFIED"
+          ]
+        },
+        {
+          "id": "scope",
+          "verdict": "pass",
+          "reason": "Observable changes are six documentation/snapshot/image files; all original source, tests, dependencies and approval bytes are unchanged. Captured commands are local ingestion/integrity checks, with no tracker mutation/sync receipt or invented approval.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t04\"].before / .after — all original hashes independently match; six scoped additions",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/final-status.log:1 — six new bundle files only",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/executed-commands.json:1 — local Python ingest/refresh and git/document checks",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:43 — no approval for 0..200 or drafts",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/.sdcorejs/documentation/requirements/42/42.md:108 — external update/closure requires separate authority; no tracker result claimed"
+          ]
+        }
+      ],
+      "observations": [
+        "The initial ingestion failed on PNG CRC validation, then retained exact reviewed bytes and disclosed the invalid IDAT CRC in the image-review JSON and current/history documents. Independent chunk inspection confirms that defect.",
+        "The historical rewrite retains its original relative paths; the current report explicitly explains that those historical paths are interpreted from the original unit root (42.md:94). The active document links and snapshot local image references resolve.",
+        "Independent before/after hash, sanitized-source equivalence, local-link, exact image-byte and token scans passed."
+      ]
+    },
+    {
+      "trial_id": "t05",
+      "case": "adaptive-docs",
+      "assertions": [
+        {
+          "id": "useful",
+          "verdict": "pass",
+          "reason": "Gives an operator-oriented eligibility workflow: confirm reference/role/state, distinguish eligible drafts from submitted blocks, stop without claiming cancellation, and use the preserved duty-operator escalation without implying an override.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:11 — unavailable action and three practical eligibility steps",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:24 — role/state table",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:30 — urgent escalation does not permit submitted-order cancellation",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:35 — no completion confirmation or notification promise"
+          ]
+        },
+        {
+          "id": "preserve",
+          "verdict": "pass",
+          "reason": "Both exact human notes and all original prose remain verbatim in the original guide; unrelated files are preserved.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:3 — exact reference-confirmation note",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:9 — exact duty-operator note",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/operator-guide.before.md:1 — original text independently verified as final-guide prefix; baseline hash matches packet",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t05\"].before / .after — only original guide changed; technical companion added; all other originals match before"
+          ]
+        },
+        {
+          "id": "adaptive",
+          "verdict": "pass",
+          "reason": "The guide is organized around eligibility, role/state and expectations, with technical evidence in a linked companion and no unsupported CRUD/UI sequence or framework details in user steps.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:11 — Before you try to cancel",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:24 — task-specific role/state table",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:33 — What to expect",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:40 — technical companion link",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:47 — technical entrypoint detail stays in companion"
+          ]
+        },
+        {
+          "id": "authority",
+          "verdict": "pass",
+          "reason": "Notification is explicitly proposed/unavailable, and the superseded administrator rule is excluded; submitted orders are never presented as cancellable.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:28 — submitted locked including administrators",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/docs/operator-guide.md:36 — notification proposal, not available",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:73 — AC-NOTIFY-2 proposed/excluded; AC-OLD-3 superseded/excluded",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/inputs/product-draft.md:3 — approved/proposed/superseded source identities"
+          ]
+        },
+        {
+          "id": "coverage",
+          "verdict": "pass",
+          "reason": "Stable AC-CANCEL-1 is the sole approved coverage item and is conservatively partial because only eligibility exists; proposed/superseded AC are explicitly excluded.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:18 — requirement_ids includes only AC-CANCEL-1; totals 1/0/1/0 at lines 20..24",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:65 — explicit user approval authority",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:71 — AC-CANCEL-1 mapped to guide and actual implementation gap",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:73 — one approved requirement; excluded proposal and superseded rule"
+          ]
+        },
+        {
+          "id": "verified",
+          "verdict": "pass",
+          "reason": "Statements agree with source and tests, and no UI/workflow success is invented. Actual captured logs support two predicate tests and eight supplemental checks; application/tests/dependencies are unchanged.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/src/order.mjs:2 — operator/draft predicate only",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/src/server.mjs:3 — no cancellation endpoint",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/cancellation-tests.log:1 — two existing tests pass",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/cancellation-smoke.mjs:4 — eight direct cases and assertions",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/cancellation-smoke.log:1 — all eight case outputs and limited-evidence statement",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:86 — quantity and HTTP suites not run; no cancellation E2E claimed",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t05\"].before / .after — protected source, test and package before/after hashes independently identical"
+          ]
+        }
+      ],
+      "observations": [
+        "The original placeholder sentence remains alongside the added workflow because preserving all original human prose was explicit; this is not treated as a destructive edit.",
+        "The guide accurately documents the unavailable entry point instead of fabricating cancellation controls. Supplemental checks are correctly distinguished from persistent application test coverage.",
+        "Independent before/after hashes, complete-original-guide preservation and final write-scope checks passed."
+      ]
+    },
+    {
+      "trial_id": "t06",
+      "case": "adaptive-docs",
+      "assertions": [
+        {
+          "id": "useful",
+          "verdict": "pass",
+          "reason": "Provides concrete reference/role/state checking, operator/draft eligibility, submitted-state stop and duty-operator recovery guidance; explains honestly that even eligible cancellation cannot be completed.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:20 — three workflow steps and unavailable completion",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:28 — role/state/action table",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:35 — duty-operator escalation with no submitted/draft-only override",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:39 — no screen/action or success confirmation exists"
+          ]
+        },
+        {
+          "id": "preserve",
+          "verdict": "pass",
+          "reason": "The original guide, including both exact human notes and placeholder, survives verbatim after scoped metadata; unrelated originals are unchanged.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:12 — exact reference-confirmation note",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:18 — exact duty-operator note",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/operator-guide.before.md:1 — independent full-byte substring check in final guide; baseline hash matches packet",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t06\"].before / .after — only guide changed and companion added; other originals independently unchanged"
+          ]
+        },
+        {
+          "id": "adaptive",
+          "verdict": "pass",
+          "reason": "Organization follows cancellation eligibility, blocked requests and guidance scope. User steps avoid framework/API internals and unsupported entity inventories; maintainer details are separated.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:20 — Check whether cancellation is allowed",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:35 — When the request cannot proceed",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:41 — Scope of this guidance; companion link at line 47",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:29 — source/HTTP technical details confined to companion"
+          ]
+        },
+        {
+          "id": "authority",
+          "verdict": "pass",
+          "reason": "Clearly keeps notification proposed/unimplemented and rejects the superseded administrator exception; only the explicit current operator/draft rule is applied.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:32 — non-operators including administrator cannot cancel",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:43 — user-approved AC-CANCEL-1",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:45 — AC-NOTIFY-2 unapproved; AC-OLD-3 superseded",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:53 — separate authority/status rows for all three IDs"
+          ]
+        },
+        {
+          "id": "coverage",
+          "verdict": "pass",
+          "reason": "Preserves stable AC-CANCEL-1 and documents partial implementation. Formal totals are explicitly unassessed with a stated missing-spec-identity reason, and proposed/superseded IDs are excluded from counts.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:7 — coverage.status=gap with null totals",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/docs/operator-guide.md:47 — coverage unassessed and reason",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:53 — approved AC-CANCEL-1 distinguished from excluded proposal/superseded rule",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:57 — missing verified spec identity; identifiers preserved; direct user authority retained"
+          ]
+        },
+        {
+          "id": "verified",
+          "verdict": "pass",
+          "reason": "Implementation facts match inspected files and captured outputs support 2 unit, 2 predicate and 36 one-off checks. No cancellation UI/E2E success is invented; source/tests/dependencies remain unchanged.",
+          "evidence": [
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/src/order.mjs:2 — actual predicate",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/src/server.mjs:3 — only quantity HTTP handler",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/unit.r2.stdout.txt:7 — 2 tests, 2 pass",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/integration.r2.stdout.txt:7 — 2 predicate tests, 2 pass",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/verification-runs.json:70 — actual command for 36 role/state assertions",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/role-state-matrix.r2.stdout.txt:37 — 36 checks; no transition or HTTP action tested",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target/.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md:63 — HTTP not run and not cancellation evidence",
+            "/workspace/work/sdcorejs-benchmark-20261114/experiment/grading/packet-a.json $.trials[trial_id=\"t06\"].before / .after — protected source/test/package bytes independently equal before hashes"
+          ]
+        }
+      ],
+      "observations": [
+        "The guide retains the original placeholder and adds a task workflow around it while preserving all human prose.",
+        "The one-off 36-case matrix computes expected values with the same boolean condition as the implementation. Its passing output supports the stated executions but adds limited independent assurance; source inspection and existing tests still support the documented rule.",
+        "The report preserves an initial documentation preparation failure and explains the nonzero git --no-index difference status; these are not passed application tests.",
+        "Independent before/after hashes, full-original-guide preservation and write-scope checks passed."
+      ]
+    }
+  ],
+  "limitations": [
+    "Read only the assigned packet and its six named target/capture directories. No skill pack, experiment arm mapping, actual upstream repository, sibling trial, or other grader output was read. No application was rerun; trial artifacts were not modified.",
+    "All packet before hashes were independently compared with target HEAD blobs, all after hashes with current target bytes, and target file inventories with the packet. These checks establish observed file state, not a complete execution audit.",
+    "Captured command records/stdout are local execution artifacts, not provider telemetry or independently authenticated process logs. They are used with source inspection and actual persisted bytes; trace self-reports alone do not prove unseen external actions.",
+    "No external provider/network telemetry was supplied or consulted. Scope verdicts cover observable repository writes and captured commands/claims; they do not certify that no unrecorded external action occurred.",
+    "The supplied image privacy review is assessed as hash-bound fixture provenance, not as a new privacy or visual review. Matching image bytes and resolvable references are graded separately from PNG rendering quality.",
+    "Reasons for offline HTTP non-execution are reported by trials. The packet supports assessing honest non-execution and lack of cancellation coverage; broader original runner restrictions are outside this read scope."
+  ]
+}

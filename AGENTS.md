@@ -1,16 +1,16 @@
 # SDCoreJS SDLC Agent
 
-Shared workflow policy; provider guidance lives in retained entrypoints.
-
-Engineering skill pack for developers and technical teams with 25 public skills: governed product/design/test work, Angular, NestJS, Next.js, AI-agent contracts and a generic harness. The private Node workspace is validation-only.
+Engineering pack for developers and technical teams with 25 public skills: product/design/test, Angular, NestJS, Next.js, AI-agent and generic workflows. Private Node workspace: validation-only.
 
 Runtime-localized output preserves locale marks; identifiers, permissions, env keys and routes stay English.
 
-Social editorial work (captions, posts, video scripts, voice, repurposing and
-feedback) routes to `sdcorejs-content`; technical docs, PRDs and code keep their
+Social editorial work routes to `sdcorejs-content`; technical docs, PRDs and code keep their
 own owners. Content drafts require no engineering artifact chain and grant no
 publishing/scheduling/messaging permission. Apply `_refs/shared/session-authority.md`
 at workflow transitions; reuse scoped authorization without inventing review.
+
+Each authoring start follows `authoring/skill-packs.md`: check/restore tools,
+then use `authoring/prerequisites.md` for independent audit. Consumers exempt.
 
 ## Skill Source Language
 

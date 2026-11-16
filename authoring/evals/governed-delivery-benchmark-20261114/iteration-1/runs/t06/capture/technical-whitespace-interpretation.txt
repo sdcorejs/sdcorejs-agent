@@ -1,0 +1,1 @@
+No whitespace diagnostics; --no-index implies difference exit status 1 for the new file. The earlier wrapper incorrectly required 0.

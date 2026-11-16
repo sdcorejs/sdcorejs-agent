@@ -1,0 +1,47 @@
+WARNING  Using explicit Semgrep executable override from                        
+         SKILLEVALUATOR_SEMGREP_PATH:                                           
+         /workspace/work/sdcorejs-benchmark-20261114/verification/tooling/uv-too
+         ls/semgrep/bin/semgrep                                                 
+WARNING  Using explicit skillspector executable override from                   
+         SKILLEVALUATOR_SKILLSPECTOR_PATH:                                      
+         /workspace/work/sdcorejs-benchmark-20261114/verification/tooling/uv-too
+         ls/skillspector/bin/skillspector                                       
+[1/11] schema ...
+[1/11] schema done in 0.0s (ok, 4 warning(s))
+[2/11] version ...
+[2/11] version done in 0.0s (ok)
+[3/11] security ...
+INFO     Running skillspector on                                                
+         /workspace/sdcorejs-agent/.claude/skills/sdcorejs-product              
+INFO     Running skillspector:                                                  
+         /workspace/work/sdcorejs-benchmark-20261114/verification/tooling/uv-too
+         ls/skillspector/bin/skillspector scan                                  
+         /workspace/sdcorejs-agent/.claude/skills/sdcorejs-product --format     
+         json...                                                                
+[3/11] security done in 9.7s (ok)
+[4/11] pii ...
+[4/11] pii done in 0.1s (ok)
+[5/11] license ...
+[5/11] license done in 0.0s (ok, 1 warning(s))
+[6/11] code-integrity ...
+INFO     Running Gitleaks:                                                      
+         /workspace/work/sdcorejs-benchmark-20261114/verification/tooling/runtim
+         es/gitleaks/8.30.0/gitleaks detect --source . --report-format...       
+[6/11] code-integrity done in 0.6s (ok, 1 warning(s))
+[7/11] dependency ...
+[7/11] dependency done in 0.0s (ok)
+[8/11] unicode ...
+[8/11] unicode done in 0.0s (ok)
+[9/11] quality ...
+[9/11] quality done in 0.0s (ok, 9 warning(s))
+[10/11] lint ...
+[10/11] lint done in 0.0s (ok)
+[11/11] harness ...
+[11/11] harness done in 0.1s (ok, 15 warning(s))
+llm skipped: LLM checks disabled by --no-llm.
+json report: 
+/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-product/
+skillevaluator-tier1.json
+markdown report: 
+/workspace/work/sdcorejs-benchmark-20261114/verification/tier1/sdcorejs-product/
+skillevaluator-tier1.md

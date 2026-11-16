@@ -1072,7 +1072,7 @@ test('aggregate frontmatter serializes untrusted scalar values safely', () => {
   const result = buildAggregateUserGuide({
     files: {
       '.sdcorejs/documentation/user-guides/orders/orders.md':
-        '---\ncoverage: { total: 0, met: 0, partial: 0, missing: 0 }\n---\n# Orders\n',
+        '---\ncoverage: { status: selected, total: 0, met: 0, partial: 0, missing: 0 }\n---\n# Orders\n',
     },
     projectTitle: 'Project\nowner: attacker',
     generatedAt: '2026-07-29\ncommit_policy: never',
@@ -1103,7 +1103,7 @@ commit_policy: with-change
 owner: sdcorejs-documentation
 module: orders
 title: Orders
-coverage: { total: 3, met: 2, partial: 1, missing: 0 }
+coverage: { status: selected, total: 3, met: 2, partial: 1, missing: 0 }
 ---
 
 # Orders - User Guide
@@ -1143,7 +1143,7 @@ Anchor: #screens
     '.sdcorejs/documentation/user-guides/users.md': `---
 module: users
 title: Users
-coverage: { total: 1, met: 1, partial: 0, missing: 0 }
+coverage: { status: selected, total: 1, met: 1, partial: 0, missing: 0 }
 ---
 
 # Users
@@ -1180,7 +1180,7 @@ Legacy transitional entry.
 
   assert.equal(result.ok, true);
   assert.deepEqual(result.modules.map((module) => module.key), ['orders', 'users']);
-  assert.deepEqual(result.coverage, { total: 4, met: 3, partial: 1, missing: 0 });
+  assert.deepEqual(result.coverage, { status: 'selected', total: 4, met: 3, partial: 1, missing: 0 });
   assert.match(result.output, /!\[List\]\(user-guides\/orders\/images\/list\.png\)/);
   assert.match(result.output, /!\[Detail\]\[detail-image\]/);
   assert.match(
@@ -1391,7 +1391,7 @@ test('aggregate heading normalization ignores headings inside fenced code', () =
     files: {
       '.sdcorejs/documentation/user-guides/orders/orders.md': `---
 title: Orders
-coverage: { total: 0, met: 0, partial: 0, missing: 0 }
+coverage: { status: selected, total: 0, met: 0, partial: 0, missing: 0 }
 ---
 \`\`\`\`markdown
 # Example heading
@@ -1903,9 +1903,9 @@ test('canonical documentation prose carries repository ownership, visual provena
   const sitePackage = JSON.parse(sitePackageText);
   const rootNodeRange = '^22.22.3 || ^24.15.0 || >=26.0.0';
   assert.equal(rootPackage.engines.node, rootNodeRange);
-  assert.equal(sitePackage.engines.node, '>=22.12.0');
+  assert.equal(sitePackage.engines.node, '>=22.23.4');
   assert.ok((readme + adoption).includes(`Node.js \`${rootNodeRange}\``));
-  assert.match(readme + adoption, /Node\.js `>=22\.12\.0`/);
+  assert.match(readme + adoption, /Node\.js `>=22\.23\.4`/);
   assert.match(readme + adoption, /Node\.js `18\.20\.8` compatibility exception/);
   assert.match(readme + adoption, /standalone Visual Companion built-ins-only tests/);
   assert.match(readme + adoption, /does not extend the supported root toolchain/);

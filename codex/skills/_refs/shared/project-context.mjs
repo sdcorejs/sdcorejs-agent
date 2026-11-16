@@ -6,6 +6,7 @@ import { access, readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { collectProjectInstructions } from './project-instructions.mjs';
 import {
   parseConventionDocument,
   projectConventionContext,
@@ -110,6 +111,9 @@ export async function assembleProjectContext({
     categories: conventionCategories,
     moduleIds: conventionModuleIds,
   });
+  const instructions = await collectProjectInstructions(targetRoot, {
+    targetPaths: explicitFiles.map(target => typeof target === 'string' ? normalizeRelativePath(target) : target),
+  });
 
   return {
     project_context: {
@@ -127,6 +131,7 @@ export async function assembleProjectContext({
       },
       related_artifacts: relatedArtifacts,
       memory_policy: { authority: 'advisory', current_source_precedence: true },
+      instructions,
       conventions,
       code_context: codeContext,
       current_evidence: {
@@ -694,6 +699,8 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
     handoffs: [],
     tasks: [],
     memories: [],
+    blueprints: [],
+    tickets: [],
   };
   const base = path.join(root, '.sdcorejs');
   if (!(await exists(base))) return buckets;
@@ -707,8 +714,10 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
 
   for (const relative of candidates) {
     if (relative === 'tasks/current-session.md' || relative.startsWith('tasks/sessions/')) continue;
+    if (relative.startsWith('tickets/') && !/\/(?:snapshots|delivery)\//u.test(relative)) continue;
     const absolute = path.join(base, relative);
-    const head = (await readFile(absolute, 'utf8').catch(() => '')).slice(0, 8000);
+    const raw = await readFile(absolute, 'utf8').catch(() => '');
+    const head = relative.endsWith('.json') ? raw : raw.slice(0, 8000);
     const metadata = parseRelationshipMetadata(head);
     const relationshipValues = [
       metadata.artifact_id,
@@ -719,6 +728,9 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
       metadata.source_spec,
       metadata.source_plan,
       metadata.parent_repository_id,
+      ...(Array.isArray(metadata.applicability?.keywords) ? metadata.applicability.keywords : []),
+      ...(Array.isArray(metadata.applicability?.modules) ? metadata.applicability.modules : []),
+      ...(Array.isArray(metadata.applicability?.paths) ? metadata.applicability.paths : []),
     ]
       .filter(isNonEmptyString)
       .map((value) => value.toLowerCase());
@@ -732,12 +744,23 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
           relationshipValues.some((value) => value === token || value.includes(token)) ||
           relative.toLowerCase().includes(token),
       );
+    // Prevention lessons intentionally outlive their originating ticket. A
+    // current change_ref must not hide a matching lesson from an older fix.
+    const applicability = ['keywords', 'modules', 'paths'].flatMap((key) =>
+      Array.isArray(metadata.applicability?.[key]) ? metadata.applicability[key] : [],
+    ).filter(isNonEmptyString).map((value) => value.toLowerCase());
+    const lessonScopeMatch = relative.startsWith('memories/') && tokens.some(
+      (token) => applicability.some((value) => value === token || value.includes(token)),
+    );
     const relevant =
+      /^blueprints\/[a-z0-9]+(?:-[a-z0-9]+)*\.json$/u.test(relative) ||
+      lessonScopeMatch ||
       relationshipMatch ||
       (normalizedChangeRef === '' && tokens.length === 0) ||
       scopedMetadataMatch;
     if (!relevant) continue;
-    if (relative.startsWith('memories/') && !relationshipMatch && !scopedMetadataMatch) continue;
+    if (relative.startsWith('memories/') && !relationshipMatch && !scopedMetadataMatch && !lessonScopeMatch) continue;
+    if (relative.startsWith('tickets/') && !relationshipMatch && !scopedMetadataMatch) continue;
     const repoPath = `.sdcorejs/${normalizeRelativePath(relative)}`;
     if (relative.startsWith('specs/')) buckets.specs.push(repoPath);
     else if (relative.startsWith('plans/')) buckets.plans.push(repoPath);
@@ -745,11 +768,19 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
     else if (relative.startsWith('handoffs/')) buckets.handoffs.push(repoPath);
     else if (relative.startsWith('tasks/')) buckets.tasks.push(repoPath);
     else if (relative.startsWith('memories/')) buckets.memories.push(repoPath);
+    else if (relative.startsWith('blueprints/')) buckets.blueprints.push(repoPath);
+    else if (relative.startsWith('tickets/')) buckets.tickets.push(repoPath);
   }
   return buckets;
 }
 
 function parseRelationshipMetadata(content) {
+  if (content.trimStart().startsWith('{')) {
+    try {
+      const value = JSON.parse(content);
+      return value && !Array.isArray(value) && typeof value === 'object' ? value : {};
+    } catch { return {}; }
+  }
   const block = extractFrontmatter(content);
   const metadata = {};
   for (const line of block.split(/\r?\n/u)) {

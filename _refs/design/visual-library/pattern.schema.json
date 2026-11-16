@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Visual pattern record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "surfaces",
+    "jobs",
+    "data_shapes",
+    "applicability",
+    "avoid_when",
+    "variants",
+    "states",
+    "responsive",
+    "source_refs",
+    "component_mapping",
+    "accessibility",
+    "adaptation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^(op|web)-[a-z-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "data_shapes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "applicability": {
+      "type": "string",
+      "minLength": 1
+    },
+    "avoid_when": {
+      "type": "string",
+      "minLength": 1
+    },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "layout"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "layout": {
+            "enum": [
+              "list",
+              "tree",
+              "split",
+              "detail",
+              "form",
+              "wizard",
+              "drawer",
+              "hierarchy",
+              "product",
+              "service",
+              "pricing",
+              "editorial"
+            ]
+          }
+        }
+      }
+    },
+    "states": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "data",
+          "loading",
+          "empty",
+          "no-results",
+          "error",
+          "permission-denied"
+        ]
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wide",
+        "narrow"
+      ],
+      "properties": {
+        "wide": {
+          "type": "string",
+          "minLength": 1
+        },
+        "narrow": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "source_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "component_mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "core_version_evidence",
+        "verification"
+      ],
+      "properties": {
+        "status": {
+          "const": "candidate"
+        },
+        "core_version_evidence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verification": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "accessibility": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "adaptation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_locators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_ref",
+          "key",
+          "values"
+        ],
+        "properties": {
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "values": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

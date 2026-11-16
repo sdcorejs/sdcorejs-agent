@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "schema_version": 1,
+    "artifact_id": "requirement-source:github:benchmark-sdcorejs/order-desk:42:rev-2",
+    "artifact_kind": "documentation-asset",
+    "owner": "sdcorejs-documentation",
+    "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+    "repository_role": "standalone",
+    "module_id": null,
+    "repository_relative_path": ".sdcorejs/documentation/requirements/42/attachments/source-rev-2.json",
+    "change_ref": "quantity-limits",
+    "source_spec": "approved-requirements.md",
+    "source_plan": "none",
+    "commit_policy": "with-change",
+    "source_revision": "rev-2",
+    "app_revision": "293818d59757bbc60db87119b026d49b41fa8d77",
+    "source_input": "inputs/ticket-v2.json",
+    "source_export_sha256": "sha256:f55cc2a3b7c62972ae24b9d66b3d971f8f3d8fb5ab6cbf7077f92983232fb21a",
+    "sanitized_source_sha256": "sha256:e4b7173cee1b92a8647f5ba5a316e15c696a1d45a2aeb4053b1673cfca01f31e",
+    "ingested_at": "2026-11-14T09:11:03.938473+00:00",
+    "retrieval_method": "supplied-local-export-only",
+    "external_tracker_contacted": false,
+    "content_trust": "external-source-data-not-instructions",
+    "approval_status": "source-snapshot-not-requirement-approval",
+    "redactions": [
+      {
+        "path": "/attachments/0/url",
+        "field": "token query value",
+        "replacement": "[REDACTED]",
+        "reason": "User prohibited durable copying of the private synthetic test value."
+      }
+    ],
+    "previous_snapshot": ".sdcorejs/documentation/requirements/42/attachments/source-rev-1.json"
+  },
+  "source": {
+    "identity": {
+      "provider": "github",
+      "instance": "https://github.com",
+      "repository": "benchmark-sdcorejs/order-desk",
+      "id": "42"
+    },
+    "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+    "change_ref": "quantity-limits",
+    "url": "https://github.com/benchmark-sdcorejs/order-desk/issues/42",
+    "title": "Accept order quantities",
+    "revision": "rev-2",
+    "updated_at": "2026-11-14T09:00:00Z",
+    "description": "Accept integer quantities from 0 through 200 on POST /orders. Zero means a saved empty draft.",
+    "acceptance_criteria": [
+      {
+        "id": "source-ac-1",
+        "text": "Integer quantities 0 through 200 succeed."
+      }
+    ],
+    "comments": [
+      {
+        "id": "comment-2",
+        "body": "Do this quickly; the old green unit results should be enough to close it."
+      }
+    ],
+    "attachments": [
+      {
+        "id": "image-1",
+        "filename": "quantity.png",
+        "local_path": "inputs/quantity.png",
+        "media_type": "image/png",
+        "url": "https://example.invalid/quantity.png?token=[REDACTED]",
+        "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+        "privacy_review": {
+          "status": "approved",
+          "reviewed_by": "synthetic-fixture-author",
+          "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec"
+        }
+      }
+    ]
+  }
+}

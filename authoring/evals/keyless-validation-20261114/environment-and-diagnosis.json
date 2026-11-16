@@ -1,0 +1,131 @@
+{
+  "node": "v24.22.1",
+  "npm": "10.9.2",
+  "docker": "29.9.2",
+  "filesystem": {
+    "workspace": "overlayfs",
+    "temporary": "overlayfs"
+  },
+  "angular": {
+    "status": "BLOCKED_ENVIRONMENT",
+    "raw_golden_exit_code": 1,
+    "classification": {
+      "debug_mode": "environment-config",
+      "bug_class": "environment",
+      "stack_profile": "plain-angular",
+      "repro_status": "local-confirmed"
+    },
+    "hypothesis_ledger": [
+      {
+        "hypothesis": "Generated TypeScript or template build error",
+        "result": "falsified for the observed failing step",
+        "evidence": "typecheck, validate:templates and build all exited 0"
+      },
+      {
+        "hypothesis": "Chrome cannot launch under current sandbox configuration",
+        "result": "root",
+        "evidence": "Chrome aborts before executing browser tests: SUID sandbox helper is not configured correctly; crashpad database path error also appears"
+      }
+    ],
+    "steps": [
+      {
+        "command": "npm install --ignore-scripts --no-audit --no-fund",
+        "exit_code": 0
+      },
+      {
+        "command": "npm run typecheck",
+        "exit_code": 0
+      },
+      {
+        "command": "npm run validate:templates",
+        "exit_code": 0
+      },
+      {
+        "command": "npm run build",
+        "exit_code": 0
+      },
+      {
+        "command": "npm test",
+        "exit_code": 1
+      }
+    ],
+    "separate_lint": {
+      "command": [
+        "npm",
+        "--prefix",
+        "/tmp/sdcorejs-angular-golden-0cP78V/golden",
+        "run",
+        "lint"
+      ],
+      "exit_code": 0
+    },
+    "sandbox_binary_observation": "4755 nobody /usr/lib/chromium/chrome-sandbox",
+    "browser_test_assertions_executed": false,
+    "source_changes": [],
+    "fixture_hashes": {
+      "angular.json": "88a96f7149f282ab7b8eccd5c7f5a76664ad3036006b00a490a97672568085fe",
+      "package.json": "2006235ec2a0a7de01286e3e67e605093552abb1633b93991aa73db7082889cc",
+      "scripts/lint.mjs": "83c234b8e235b8395154e3d69e2ece5f50ac3f3d2785bf98061b77d74a14299c",
+      "scripts/validate-template.mjs": "a012b95f2e44d319b8c4630c6f41881e417855b2fef2984708882ed670f3fe4f",
+      "src/app/app.config.ts": "96d5d9f8fb8a67df0f236c40341856dac2b05abb1057653804972bbf2eea22e9",
+      "src/app/app.html": "1e473880909964214cc597e0d963c63d3905dfe8d4c7b026ff141312ce9c4f67",
+      "src/app/app.routes.ts": "1f45bb30301dbad788dc1470edfc8434a4aebfb40689e15ad7611ac70f0a724a",
+      "src/app/app.spec.ts": "03f75fb524302f823963e002c766d6eb80ef32a06de7c538a600d95c2bbd92b3",
+      "src/app/app.ts": "c85ef8ca74fefda93bba7d42cfbe39daab5f3d84f650a5267b65caa40c66bd43",
+      "src/index.html": "88b7c344445e9d21fee537b96d1b04644c2c9eb988c4aba98302b3f2db2ebb16",
+      "src/main.ts": "8179ca8600eeb5c5bd459b778da3f55eb093f958748463047d6d3be1b1ed6789",
+      "src/styles.css": "2962b955b6555f16d7c88fb953cd750aa33acd50d57e528478970e3b531ad0cb",
+      "tsconfig.app.json": "2da6fc9f18b6535ce6056c95a00faf3badcd920ebef212719199da73e916187f",
+      "tsconfig.json": "0c9884bfc52ae852268b3403b6689b4b7c5af713c81fa71fba8342ecbebde55b",
+      "tsconfig.spec.json": "4235e3256dd6ba675d4a507c58ec039faedf0fe1d554c6836428a873c26d2067",
+      "package-lock.json": "ca6644759f340d2bd81a78541f3a5cb64bf859d3a704bf0df58c3585edeaf98f"
+    },
+    "fixture_removed": true,
+    "diagnostic_sha256": "e91e7ef0d52c79bbb5e1504024498182c0323e5e7d3bad2850fc6a3cd6c8b8f1"
+  },
+  "container_cleanup": [
+    {
+      "command": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "label=com.docker.compose.project=sdcorejs-nestjs-69931",
+        "--format",
+        "{{.Names}} {{.Status}}"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": [
+        "docker",
+        "network",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=sdcorejs-nestjs-69931",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "command": [
+        "docker",
+        "volume",
+        "ls",
+        "--filter",
+        "label=com.docker.compose.project=sdcorejs-nestjs-69931",
+        "--format",
+        "{{.Name}}"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "native_cleanup": {
+    "status": "NOT_RUN",
+    "reason": "Trusted ext4/APFS fixture parent unavailable; workspace and /tmp are overlayfs. Only portable/read-only cleanup tests ran."
+  }
+}

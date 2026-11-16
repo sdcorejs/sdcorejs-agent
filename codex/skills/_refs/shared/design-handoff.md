@@ -1,5 +1,16 @@
 # Design Handoff Contract
 
+For pattern-library feedback, optionally carry `visual_selection: {screen,
+response, result}`. Produce `result` with `createVisualSelection` from
+`_refs/design/visual-library/selection.mjs` against the current v2 screen.
+Validation recomputes the result and rejects changed screen/library hashes or
+altered authority. Keep the editable HTML hash in `editable_source`. Choice
+feedback leaves existing artifact ownership and approval checks in force.
+For this optional evidence, exactly one final option must match the HTML source
+hash (`sha256:v1:` plus its `editable_preview_sha256`). A wrong layout/source
+hash is `VISUAL_SELECTION_SOURCE_MISMATCH`. Verify the actual file at that path;
+the pure validator validates supplied metadata and does not read the filesystem.
+
 Use this contract for every durable Design handoff. Its deterministic helper is
 `_refs/shared/design-handoff.mjs`. Resolve track/profile, artifact kind,
 repository role, ownership scope, and canonical artifact roots from

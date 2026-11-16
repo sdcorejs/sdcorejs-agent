@@ -1,0 +1,4 @@
+import { test } from 'node:test'; import assert from 'node:assert/strict'; import { normalizeCategory } from '../src/category.mjs';
+test('null is empty',()=>assert.equal(normalizeCategory(null),'')); test('undefined is empty',()=>assert.equal(normalizeCategory(undefined),'')); test('trim and lowercase',()=>assert.equal(normalizeCategory('  Tools  '),'tools'));
+
+// hypothetical test-file drift control

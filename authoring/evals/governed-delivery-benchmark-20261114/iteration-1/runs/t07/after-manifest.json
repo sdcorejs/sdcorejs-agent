@@ -1,0 +1,16 @@
+{
+  ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md": "24ec1361b6672ebbf1adb4b02d4c7eb625f86f96faa8f2345c19a4d7de6580a7",
+  ".sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json": "9860fdab54a459efe6f899169b79f738ff801252d9f0665b26df38caf8282129",
+  ".sdcorejs/memories/workflow/old-payment-advice.md": "ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58",
+  "AGENTS.md": "2f9e532e6a305ed9d5c96a318a2e5ea7cf141fcdaa36240cb344d9f7f9bfb5d0",
+  "README.md": "11e3210c55398d28ef64ae53ec66d3cee4e0444b117f626ceb747db7522c33eb",
+  "inputs/fix.diff": "6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9",
+  "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2",
+  "src/category.mjs": "4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5",
+  "src/order.mjs": "bb5c638bd489b6fe973245f69c35ed98e29432017f9ac9137a21710f5b66f256",
+  "src/server.mjs": "a3f4fb914f5508fc2d833245fc1411b1b4035725eb8ca62f9146c347280be1c9",
+  "test/category.test.mjs": "40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537",
+  "test/e2e.test.mjs": "6cf15b0f74a3d8d3d7e3af7b675a493c08370136385364399195f95dc534fd1a",
+  "test/integration.test.mjs": "07a4969505499bf537d5e5c99e8d0e0a09688d8ee3c8a7bb4069d992d6355645",
+  "test/unit.test.mjs": "0ac7b1fd52c152ccb0c36da2d4c88fc78bd836ce362787a97649e0c67a8e1865"
+}

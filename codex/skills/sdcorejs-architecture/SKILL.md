@@ -40,6 +40,12 @@ Route adjacent intents without stealing them:
 Architecture does not own file-by-file order, task sequencing, production
 code, executed test evidence, release decisions, or convention persistence.
 
+For project initialization or baseline changes, read the applicable blueprint
+from `../_refs/shared/project-blueprint.md`. Resolve observed versus accepted
+boundaries against current source and approved decisions. Return canonical
+architecture references for the blueprint inventory; do not duplicate an editable
+architecture authority or migrate an existing project merely to match a template.
+
 ## Preconditions
 
 - An immutable approved spec and its complete `spec_context` are available.

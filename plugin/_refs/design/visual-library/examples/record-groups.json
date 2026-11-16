@@ -1,0 +1,27 @@
+{
+  "id": "record-groups",
+  "question": "How should the record be organized?",
+  "patterns": [
+    {
+      "pattern_id": "op-detail",
+      "variant": "overview",
+      "label": "Overview",
+      "summary": "Display summary and information together.",
+      "best_when": "Most fields are relevant together",
+      "tradeoff": "A large record needs scrolling"
+    },
+    {
+      "pattern_id": "op-detail",
+      "variant": "tabs",
+      "label": "Tabbed detail",
+      "summary": "Switch between separate record groups.",
+      "best_when": "Groups are useful at different times",
+      "tradeoff": "Hidden groups require an extra action"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the business requirements before offering.",
+  "criteria": [
+    "Find the right information quickly",
+    "Keep related groups together"
+  ]
+}

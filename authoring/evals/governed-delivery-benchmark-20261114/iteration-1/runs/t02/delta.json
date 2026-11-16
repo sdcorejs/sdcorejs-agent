@@ -1,0 +1,9 @@
+{
+  "added": [
+    ".sdcorejs/blueprints/order-desk.json"
+  ],
+  "deleted": [],
+  "modified": [
+    "AGENTS.md"
+  ]
+}

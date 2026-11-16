@@ -1,0 +1,6 @@
+PASS: complete original operator guide preserved byte-for-byte as prefix
+PASS: only authorized operator guide and technical companion changed; source, tests, dependencies and inputs unchanged
+PASS: all 10 local document links resolve inside target; UTF-8, whitespace and screenshot-link checks passed
+PASS: scoped documentation metadata and conservative approved-only coverage counts present
+{"path": "docs/operator-guide.md", "sha256": "fe3af7d77b812a6006444047d3bd5d1210a06e094c7ada3e90662087201edaa8"}
+{"path": ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md", "sha256": "8703039bd21a6f72ef401eed78356ccab9505172f9a5d08799705d402d0543f6"}

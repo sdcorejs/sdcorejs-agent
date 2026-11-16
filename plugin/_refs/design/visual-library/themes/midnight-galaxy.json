@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "midnight-galaxy",
+  "name": "Midnight Galaxy",
+  "tokens": {
+    "bg": "#21172f",
+    "surface": "#2b1e3e",
+    "text": "#e6e6fa",
+    "muted": "#c2b7d4",
+    "border": "#9381b2",
+    "accent": "#c6afe5",
+    "accent_text": "#21172f",
+    "soft": "#3c2c53",
+    "font": "sans"
+  },
+  "source_refs": [
+    "theme-midnight-galaxy"
+  ],
+  "adaptation": "Adapted presentation palette to semantic UI roles. Accent/muted tones adjusted for contrast, system font fallback replaces font assets; verify chosen pairs in the consuming UI."
+}

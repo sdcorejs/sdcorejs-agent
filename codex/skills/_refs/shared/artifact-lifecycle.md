@@ -7,6 +7,29 @@ writes, verifies, stages, commits, or pushes those artifacts.
 `_refs/shared/artifact-lifecycle.mjs` provides a deterministic, read-only
 discovery and classification helper. It never stages or commits files.
 
+Blueprints use `.sdcorejs/blueprints/<kebab>.json` and the shared-owned
+`project-blueprint` kind; read-only discovery cannot grant write ownership.
+Product snapshots, assets and delivery receipts use the registry ticket root and
+`ticket-snapshot`, `ticket-asset`, `ticket-delivery` kinds. Validate canonical
+identity paths, JSON metadata, matching `change_ref` and exact filename/byte
+hashes. Metadata cannot claim a ticket kind outside that root. Asset promotion
+resolves a stored same-change snapshot, matching path/hash/size and, for binary
+images, a privacy review bound to those bytes. Runtime bucket assertions alone
+cannot promote an image. Reference images never become real UI test evidence.
+Ticket files or parent paths that are symlinks fail closed. Preserve immutable
+snapshots across refreshes; raw downloads and failed unreviewed captures remain
+local diagnostics. See `../product/ticket-intake.md` for the writer protocol.
+Delivery plans and receipts pass `readTicketDelivery` and resolve their exact
+stored complete source snapshot. Identity, revision, source hash, owner and
+change must match; an absent source or cross-ticket receipt remains unknown.
+Closure follows validated snapshot attachments and delivery source references,
+including already committed files. Available attachments require actual local
+bytes; missing or modified bytes block closure. Ignored, uncommitted ticket files
+cannot satisfy push closure merely because their bytes exist locally.
+An included snapshot or delivery record also blocks closure when a required
+dependency is classified as local-only or unrelated. Keep that dependency
+excluded; never promote private bytes to make the record deliverable.
+
 ## Contents
 
 - [Lifecycle Classes](#lifecycle-classes)
@@ -176,6 +199,10 @@ When several producers run, merge contexts by `change_ref` and path:
   ownership is proven, otherwise keep it `conditional`;
 - unrelated and local-only observations never become required by merging.
 
+Contradictory inclusion and exclusion buckets block closure through
+`conflicting_context_paths`. Exclusion takes precedence while the conflict is
+unresolved, so a required-path claim cannot promote local-only bytes.
+
 ## Producer Rules
 
 - Approved specs, approved architectures, plans, execution docs, Product documents, product ledgers,
@@ -301,6 +328,8 @@ sdcorejs_artifacts:
   local_only_paths: []
   unknown_paths: []
   missing_required_paths: []
+  excluded_required_paths: []
+  conflicting_context_paths: []
   unreadable_required_paths: []
   invalid_context_paths: []
   feature_ledger_conflicts: []

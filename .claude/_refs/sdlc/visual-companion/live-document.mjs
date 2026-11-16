@@ -7,6 +7,8 @@
  * gate on executable behaviour.
  */
 
+import { PATTERN_STYLES } from '../../design/visual-library/styles.mjs';
+import { visualScreenDigest } from '../../design/visual-library/selection.mjs';
 import { CLIENT_SCRIPT, CLIENT_SCRIPT_HASH } from './client-script.mjs';
 import { LIMITS, contentSecurityPolicy } from './protocol.mjs';
 import { isMultiSelect } from './screen.mjs';
@@ -79,7 +81,7 @@ function documentShell({ locale, title, body }) {
     `<!doctype html><html lang="${escapeHtml(locale)}"><head><meta charset="utf-8">` +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
     `<meta http-equiv="Content-Security-Policy" content="${escapeHtml(contentSecurityPolicy(CLIENT_SCRIPT_HASH))}">` +
-    `<title>${escapeHtml(title)}</title><style>${STYLES}</style></head><body>${body}` +
+    `<title>${escapeHtml(title)}</title><style>${STYLES}${PATTERN_STYLES}</style></head><body>${body}` +
     `<script>${CLIENT_SCRIPT}</script></body></html>`
   );
 }
@@ -101,6 +103,7 @@ export function renderLiveDocument(screen, { locale, messages, sessionId, screen
     `<main data-visual-companion data-mode="${escapeHtml(screen.type)}" ` +
     `data-session-id="${escapeHtml(sessionId)}" data-screen-id="${escapeHtml(screen.screen_id)}" ` +
     `data-screen-revision="${Number(screenRevision)}" ` +
+    (screen.schema_version === 2 ? `data-screen-digest="${visualScreenDigest(screen)}" ` : '') +
     `data-min-reconnect-ms="${LIMITS.min_reconnect_ms}" data-max-reconnect-ms="${LIMITS.max_reconnect_ms}" ` +
     `data-paused-after-ms="${LIMITS.paused_after_ms}" data-max-queue="${LIMITS.max_queued_client_events}"` +
     `${messageAttributes(text)}>` +

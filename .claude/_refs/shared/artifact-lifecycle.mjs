@@ -2,10 +2,12 @@
 
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { access, readFile } from 'node:fs/promises';
+import { access, lstat, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { systemRegistry } from './system-registry.mjs';
+import { classifyTicketArtifactPath, readTicketSnapshot, readTicketDelivery } from '../product/ticket-intake.mjs';
 import {
   ARCHITECTURE_ARTIFACT_ROOT,
   DESIGN_ARTIFACT_ROOT,
@@ -36,6 +38,8 @@ import {
 const execFileAsync = promisify(execFile);
 
 const DOCUMENTATION_ROOT_PREFIX = `${DOCUMENTATION_ROOT}/`;
+const BLUEPRINT_ROOT = systemRegistry.artifact_roots.blueprints;
+const TICKET_ROOT = systemRegistry.artifact_roots.tickets;
 
 /**
  * Conversation-local runtime root.
@@ -93,6 +97,10 @@ export function isVisualCompanionRuntimePath(value) {
 }
 
 const ARTIFACT_KIND_BY_PATH = [
+  [new RegExp(`^${escapeForPattern(BLUEPRINT_ROOT)}/`, 'i'), 'project-blueprint'],
+  [new RegExp(`^${escapeForPattern(TICKET_ROOT)}/[^/]+/snapshots/`, 'i'), 'ticket-snapshot'],
+  [new RegExp(`^${escapeForPattern(TICKET_ROOT)}/[^/]+/assets/`, 'i'), 'ticket-asset'],
+  [new RegExp(`^${escapeForPattern(TICKET_ROOT)}/[^/]+/delivery/`, 'i'), 'ticket-delivery'],
   [/^\.sdcorejs\/specs\//i, 'spec'],
   [new RegExp(`^${escapeForPattern(ARCHITECTURE_ARTIFACT_ROOT)}/`, 'i'), 'architecture'],
   [/^\.sdcorejs\/plans\//i, 'plan'],
@@ -121,6 +129,7 @@ const ARTIFACT_KIND_BY_PATH = [
  * sequential or fan-in integration owner's job, merged once.
  */
 const SHARED_KINDS = new Set([
+  'project-blueprint',
   'convention',
   'memory',
   'persona',
@@ -130,6 +139,9 @@ const SHARED_KINDS = new Set([
   'task-breakdown',
 ]);
 const CHANGE_SCOPED_KINDS = new Set([
+  'ticket-snapshot',
+  'ticket-asset',
+  'ticket-delivery',
   'architecture',
   'design-asset',
   'design-handoff',
@@ -190,6 +202,37 @@ export async function buildArtifactClosure({
     // Text-only consumers never receive binary bytes.
     discoveredContents.set(relativePath, file.binary ? '' : file.text);
   }
+  const closurePaths = [...new Set([
+    ...discovery.discoveredPaths,
+    ...runtimeBuckets.required_with_change.filter((item) => classifyTicketArtifactPath(item)?.ok),
+  ])];
+  const ticketDependencyPaths = new Set();
+  // Follow validated local source relationships even when those files are
+  // already committed. A manifest alone never proves its referenced bytes exist.
+  for (let index = 0; index < closurePaths.length; index += 1) {
+    const relativePath = closurePaths[index];
+    let file = discoveredFiles.get(relativePath);
+    if (!file) {
+      file = await readArtifactFile(targetRoot, relativePath);
+      discoveredFiles.set(relativePath, file);
+    }
+    const ticket = classifyTicketArtifactPath(relativePath);
+    if (!ticket?.ok || ticket.kind === 'ticket-asset' || file.read_error) continue;
+    if (['local_only', 'unrelated'].includes(findRuntimeBucket(relativePath, runtimeBuckets))) continue;
+    try {
+      const record = ticket.kind === 'ticket-snapshot'
+        ? readTicketSnapshot(Buffer.from(file.text), file.path)
+        : readTicketDelivery(Buffer.from(file.text), file.path);
+      if (!normalizeRef(changeRef) || normalizeRef(record.change_ref) !== normalizeRef(changeRef)) continue;
+      const related = ticket.kind === 'ticket-snapshot'
+        ? record.attachments.filter((item) => item.status === 'available').map((item) => item.path)
+        : [record.source.snapshot_path];
+      for (const relatedPath of related) {
+        ticketDependencyPaths.add(relatedPath);
+        if (!closurePaths.includes(relatedPath)) closurePaths.push(relatedPath);
+      }
+    } catch { /* Classification below reports invalid source or delivery bytes. */ }
+  }
   const projectedDocumentationContents =
     await collectProjectedDocumentationContents(
       targetRoot,
@@ -205,7 +248,7 @@ export async function buildArtifactClosure({
   );
   const featureChangeRefs = featureLedgers.byFeature;
 
-  for (const relativePath of discovery.discoveredPaths) {
+  for (const relativePath of closurePaths) {
     const file = discoveredFiles.get(relativePath) ?? emptyArtifactFile(relativePath);
     const content = file.binary ? '' : file.text;
     const metadata = file.binary ? {} : parseArtifactFrontmatter(content);
@@ -218,6 +261,13 @@ export async function buildArtifactClosure({
       runtimeBuckets,
       featureChangeRefs,
     });
+    const ticket = classifyTicketArtifactPath(relativePath);
+    if (ticket?.ok) {
+      classification = await validateStoredTicketArtifact({
+        root: targetRoot, file, ticket, metadata, classification,
+        changeRef, runtimeBuckets,
+      });
+    }
     const duplicate = documentationDuplicates.byPath.get(relativePath);
     if (duplicate?.state === 'equivalent-legacy') {
       classification = unrelated(
@@ -266,9 +316,9 @@ export async function buildArtifactClosure({
     }));
 
   const missingRequiredPaths = [];
-  for (const requiredPath of runtimeBuckets.required_with_change) {
+  for (const requiredPath of new Set([...runtimeBuckets.required_with_change, ...ticketDependencyPaths])) {
     if (await exists(path.join(targetRoot, requiredPath))) continue;
-    if (await existsAtHead(targetRoot, requiredPath)) continue;
+    if (!ticketDependencyPaths.has(requiredPath) && await existsAtHead(targetRoot, requiredPath)) continue;
     missingRequiredPaths.push(requiredPath);
   }
 
@@ -291,13 +341,24 @@ export async function buildArtifactClosure({
     ...sharedOwnedPaths,
     ...conditionalIncludedPaths,
   ]);
+  // Exclusion is not permission to publish an incomplete dependent record.
+  // Keep local/private bytes out of staging, and block the closure instead.
+  const excludedRequiredPaths = [...ticketDependencyPaths]
+    .filter((dependencyPath) => !includedPaths.includes(dependencyPath))
+    .sort();
   const uncommittedIncludedPaths = includedPaths.filter((item) =>
     discovery.discoveredPaths.includes(item)
   );
+  for (const requiredPath of includedPaths.filter((item) => classifyTicketArtifactPath(item)?.ok)) {
+    if (!uncommittedIncludedPaths.includes(requiredPath) &&
+        !(await existsAtHead(targetRoot, requiredPath))) uncommittedIncludedPaths.push(requiredPath);
+  }
   const blockers = [];
   if (invalidContextPaths.length > 0) blockers.push('artifact_context contains an invalid or out-of-root path');
+  if (runtimeBuckets.conflicting_paths.length > 0) blockers.push('artifact_context contains conflicting inclusion and exclusion');
   if (discoveryFailures.length > 0) blockers.push('artifact discovery failed');
   if (missingRequiredPaths.length > 0) blockers.push('required artifact missing');
+  if (excludedRequiredPaths.length > 0) blockers.push('required ticket dependency is excluded from artifact closure');
   if (unknownPaths.length > 0) blockers.push('unknown artifact may belong to the change');
   if (sensitivePaths.length > 0) blockers.push('secret or PII screening requires remediation');
   if (unreadableRequiredPaths.length > 0) {
@@ -331,8 +392,10 @@ export async function buildArtifactClosure({
       local_only_paths: localOnlyPaths,
       unknown_paths: unknownPaths,
       missing_required_paths: missingRequiredPaths,
+      excluded_required_paths: excludedRequiredPaths,
       unreadable_required_paths: unreadableRequiredPaths,
       invalid_context_paths: invalidContextPaths,
+      conflicting_context_paths: runtimeBuckets.conflicting_paths,
       feature_ledger_conflicts: featureLedgers.conflicts,
       documentation_layout_conflicts: documentationDuplicates.conflicts,
       uncommitted_included_paths: mode === 'push' ? uncommittedIncludedPaths : [],
@@ -420,6 +483,30 @@ export function classifyArtifact({
   const commitPolicy = metadata.commit_policy ?? defaultCommitPolicy(kind);
   const runtimeBucket = findRuntimeBucket(normalizedPath, runtimeBuckets);
   const runtimeEntry = findRuntimeEntry(normalizedPath, runtimeBuckets);
+
+  if (kind === 'project-blueprint' || normalizedPath.startsWith(`${BLUEPRINT_ROOT}/`)) {
+    const canonical = new RegExp(`^${escapeForPattern(BLUEPRINT_ROOT)}/[a-z0-9]+(?:-[a-z0-9]+)*\\.json$`, 'u');
+    if (kind !== 'project-blueprint' || !canonical.test(normalizedPath)) {
+      return unknown(normalizedPath, kind, metadata, 'invalid blueprint path or kind');
+    }
+  }
+  if (kind.startsWith('ticket-') || normalizedPath.startsWith(`${TICKET_ROOT}/`)) {
+    const ticket = classifyTicketArtifactPath(normalizedPath);
+    if (!ticket?.ok || ticket.artifact_kind !== kind) {
+      return unknown(normalizedPath, kind, metadata, 'invalid ticket path or kind');
+    }
+    // Binary bytes are promoted only by buildArtifactClosure after resolving
+    // an actual stored snapshot manifest and its byte-bound privacy review.
+    if (kind === 'ticket-asset') {
+      return unknown(normalizedPath, kind, metadata, 'ticket asset requires stored snapshot provenance');
+    }
+    if (artifactChangeRef && requestedChangeRef && artifactChangeRef !== requestedChangeRef) {
+      return unrelated(normalizedPath, kind, metadata, 'ticket belongs to another change');
+    }
+    if (!artifactChangeRef || artifactChangeRef !== requestedChangeRef) {
+      return unknown(normalizedPath, kind, metadata, 'ticket lacks matching change relationship');
+    }
+  }
 
   // Documentation-layout promotion rules are scoped to the documentation root so
   // they are not applied to Product or Design artifacts, which have their own
@@ -604,6 +691,12 @@ export function classifyArtifact({
 }
 
 export function parseArtifactFrontmatter(text) {
+  if (text.trimStart().startsWith('{')) {
+    try {
+      const value = JSON.parse(text);
+      return value && !Array.isArray(value) && typeof value === 'object' ? value : {};
+    } catch { return {}; }
+  }
   const match = text.replace(/^\uFEFF/, '').match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!match) return {};
   const metadata = {};
@@ -679,6 +772,14 @@ function emptyArtifactFile(relativePath) {
  */
 async function readArtifactFile(root, relativePath) {
   const normalizedPath = normalizePath(relativePath);
+  if (normalizedPath.startsWith(`${TICKET_ROOT}/`)) {
+    let current = root;
+    for (const segment of normalizedPath.split('/')) {
+      current = path.join(current, segment);
+      const stat = await lstat(current).catch(() => null);
+      if (!stat || stat.isSymbolicLink()) return emptyArtifactFile(normalizedPath);
+    }
+  }
   const buffer = await readFile(path.join(root, normalizedPath)).catch(() => null);
   if (!buffer) return emptyArtifactFile(normalizedPath);
   const binaryExtension = isBinaryArtifactPath(normalizedPath);
@@ -694,6 +795,59 @@ async function readArtifactFile(root, relativePath) {
     sha256: `sha256:${createHash('sha256').update(buffer).digest('hex')}`,
     read_error: false,
   };
+}
+
+async function validateStoredTicketArtifact({ root, file, ticket, metadata, classification, changeRef, runtimeBuckets }) {
+  const reject = (reason) => unknown(file.path, ticket.kind, metadata, reason);
+  if (file.read_error || file.sha256 !== `sha256:${ticket.sha256}`) {
+    return reject('ticket content does not match its immutable filename hash');
+  }
+  if (ticket.kind === 'ticket-snapshot') {
+    try { readTicketSnapshot(Buffer.from(file.text), file.path); }
+    catch { return reject('ticket snapshot integrity or identity is invalid'); }
+    return classification;
+  }
+  if (ticket.kind === 'ticket-delivery') {
+    try {
+      const delivery = readTicketDelivery(Buffer.from(file.text), file.path);
+      const sourceFile = await readArtifactFile(root, delivery.source.snapshot_path);
+      const source = readTicketSnapshot(Buffer.from(sourceFile.text), sourceFile.path);
+      if (source.content_hash !== delivery.source.snapshot_hash || source.source_hash !== delivery.source.source_hash ||
+          source.revision !== delivery.source.revision || source.owner_repository_id !== delivery.owner_repository_id ||
+          source.change_ref !== delivery.change_ref || !source.complete) {
+        return reject('ticket delivery does not match its complete stored source snapshot');
+      }
+      return classification;
+    } catch { return reject('ticket delivery integrity, identity or stored source is invalid'); }
+  }
+  const excluded = findRuntimeBucket(file.path, runtimeBuckets);
+  if (excluded === 'local_only' || excluded === 'unrelated') {
+    return { ...classification, bucket: excluded, lifecycle: lifecycleForBucket(excluded), commit_policy: policyForBucket(excluded) };
+  }
+  const directory = `${TICKET_ROOT}/${ticket.identity_hash}/snapshots`;
+  const candidates = (await readdir(path.join(root, directory)).catch(() => []))
+    .filter((name) => /^[a-f0-9]{64}\.json$/u.test(name)).sort();
+  for (const name of candidates) {
+    const snapshotFile = await readArtifactFile(root, `${directory}/${name}`);
+    let snapshot;
+    try { snapshot = readTicketSnapshot(Buffer.from(snapshotFile.text), snapshotFile.path); }
+    catch { continue; }
+    if (normalizeRef(snapshot.change_ref) !== normalizeRef(changeRef) || !snapshot.owner_repository_id) continue;
+    const attachment = snapshot.attachments?.find((entry) => entry.path === file.path);
+    if (!attachment || attachment.status !== 'available' || attachment.sha256 !== ticket.sha256 ||
+        attachment.bytes !== file.bytes || attachment.redaction_applied !== true || attachment.role !== ticket.role) continue;
+    if (file.binary && (attachment.privacy_review?.status !== 'approved' ||
+        attachment.privacy_review?.sha256 !== ticket.sha256 || !attachment.privacy_review?.reviewed_by?.trim())) continue;
+    if (ticket.role === 'real-ui-evidence' && (attachment.provenance?.source !== 'real-browser' ||
+        !attachment.provenance?.run_id || !attachment.provenance?.case_id ||
+        !attachment.provenance?.associated_HEAD_or_diff)) continue;
+    return required(file.path, ticket.kind, {
+      artifact_kind: ticket.kind, change_ref: snapshot.change_ref,
+      owner: snapshot.owner, owner_repository_id: snapshot.owner_repository_id,
+      snapshot_path: snapshot.path, commit_policy: 'with-change',
+    }, 'stored snapshot proves ticket asset identity, bytes and privacy review');
+  }
+  return reject('ticket asset lacks a valid same-change snapshot with byte-bound review');
 }
 
 /**
@@ -791,12 +945,15 @@ function normalizeRuntimeContext(context) {
   for (const key of keys) {
     result[key] = [];
     for (const item of context?.[key] ?? []) {
-      const candidate = normalizePath(typeof item === 'string' ? item : item.path);
-      if (!candidate) continue;
-      if (!isSafeArtifactPath(candidate)) {
-        result.invalid_paths.push(candidate);
+      const suppliedPath = normalizePath(typeof item === 'string' ? item : item.path);
+      if (!suppliedPath) continue;
+      if (!isSafeArtifactPath(suppliedPath)) {
+        result.invalid_paths.push(suppliedPath);
         continue;
       }
+      // Resolve equivalent relative spellings only after rejecting traversal.
+      // Exclusion and inclusion claims must refer to the same filesystem path.
+      const candidate = path.posix.normalize(suppliedPath);
       result[key].push(candidate);
       if (item && typeof item === 'object') {
         result.entries.set(`${key}:${candidate}`, item);
@@ -804,6 +961,10 @@ function normalizeRuntimeContext(context) {
     }
   }
   result.invalid_paths = unique(result.invalid_paths);
+  const excludedPaths = new Set([...result.local_only, ...result.unrelated_observed]);
+  result.conflicting_paths = unique([
+    ...result.required_with_change, ...result.shared_owned, ...result.conditional,
+  ].filter((candidate) => excludedPaths.has(candidate)));
   return result;
 }
 
@@ -1002,11 +1163,11 @@ export function analyzeDocumentationDuplicates(files) {
 }
 
 function findRuntimeBucket(artifactPath, buckets) {
+  if (buckets.local_only.includes(artifactPath)) return 'local_only';
+  if (buckets.unrelated_observed.includes(artifactPath)) return 'unrelated';
   if (buckets.required_with_change.includes(artifactPath)) return 'required_with_change';
   if (buckets.shared_owned.includes(artifactPath)) return 'shared_owned';
   if (buckets.conditional.includes(artifactPath)) return 'conditional';
-  if (buckets.local_only.includes(artifactPath)) return 'local_only';
-  if (buckets.unrelated_observed.includes(artifactPath)) return 'unrelated';
   return null;
 }
 
@@ -1136,6 +1297,7 @@ function normalizePath(value) {
 function isSafeArtifactPath(value) {
   if (!value.startsWith('.sdcorejs/')) return false;
   if (path.posix.isAbsolute(value)) return false;
+  if (value.endsWith('/') || value.includes('\0')) return false;
   return !value.split('/').includes('..');
 }
 

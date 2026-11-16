@@ -94,6 +94,17 @@ component, state, service/data-access, provider/registration, public API, and
 test evidence. The approved plan must carry the completed frontend architecture
 contract; planning from a generic folder recipe is not sufficient.
 
+### 1.1 Apply the project and ticket contracts
+
+Load related project blueprints and `../../_refs/shared/governed-delivery.md` for init
+or tracked work. Resolve conflicts with current accepted conventions and spec;
+carry blueprint paths/decision versions and immutable ticket snapshot references.
+Schedule initialization blueprint writes under Explore's scoped ownership.
+Map accepted AC to tests using the behavioral E2E policy in
+`../../_refs/shared/project-blueprint.md`. Record a reason and replacement verification
+for each exception. Include source refresh, evidence, adaptive docs and authorized
+lesson capture in the tail; tracker publication remains separately scoped.
+
 ### 2. Check paths
 Before drafting:
 

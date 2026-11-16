@@ -1,0 +1,27 @@
+{
+  "id": "hierarchy-presentation",
+  "question": "Choose how to explore the hierarchy.",
+  "patterns": [
+    {
+      "pattern_id": "op-hierarchy",
+      "variant": "tree",
+      "label": "Expandable tree",
+      "summary": "Navigate branches in context.",
+      "best_when": "Hierarchy is the main task",
+      "tradeoff": "Cross-branch comparison takes navigation"
+    },
+    {
+      "pattern_id": "op-hierarchy",
+      "variant": "matrix",
+      "label": "Selection matrix",
+      "summary": "Compare explicit dimensions in a grid.",
+      "best_when": "The brief already requires a matrix",
+      "tradeoff": "Many dimensions need horizontal scrolling"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the business requirements before offering.",
+  "criteria": [
+    "Preserve the same items and relationships",
+    "Make each selection understandable"
+  ]
+}

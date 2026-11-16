@@ -1,0 +1,6 @@
+$ npm run test:integration
+Exit prior to config file resolving
+cause
+double-loading config "/dev/null" as "global", previously loaded as "user"
+
+exit_code=1

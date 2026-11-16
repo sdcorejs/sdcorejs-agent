@@ -1,0 +1,27 @@
+{
+  "id": "form-flow",
+  "question": "One form, or a guided sequence?",
+  "patterns": [
+    {
+      "pattern_id": "op-form",
+      "variant": "sections",
+      "label": "Grouped form",
+      "summary": "All editable groups stay on one page.",
+      "best_when": "Groups can be completed in any order",
+      "tradeoff": "A long page may need scanning"
+    },
+    {
+      "pattern_id": "op-wizard",
+      "variant": "horizontal",
+      "label": "Guided steps",
+      "summary": "Separate information entry from review.",
+      "best_when": "Confirmed dependencies make sequence useful",
+      "tradeoff": "More transitions and less simultaneous context"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the business requirements before offering.",
+  "criteria": [
+    "Keep every field available",
+    "Make completion and review clear"
+  ]
+}

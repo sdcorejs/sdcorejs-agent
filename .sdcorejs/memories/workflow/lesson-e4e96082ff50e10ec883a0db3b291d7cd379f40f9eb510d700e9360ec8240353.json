@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "memory",
+  "owner": "sdcorejs-explore",
+  "owner_repository_id": "github.com/sdcorejs/sdcorejs-agent",
+  "track": "workflow",
+  "concept_id": "evidence.provenance-before-readiness",
+  "change_ref": "governed-delivery-2026-11-14",
+  "commit_policy": "conditional",
+  "source_revision": "diff:d99e0bca1795a769cacfadd39064b008b21c9407548d6f7d5af4e1926a887d9b",
+  "redaction_applied": true,
+  "problem": "A syntactically valid, content-addressed record could still claim readiness for unrelated, incomplete or unapproved evidence.",
+  "root_cause": "Byte hashes were used without every semantic relationship, persisted-schema invariant, referenced asset and approved-criterion lifecycle being checked at the consuming boundary.",
+  "resolution": "Bind test evidence to the ticket change and repository at every gate; validate loaded snapshot and receipt schemas; verify and include actual referenced asset bytes; select only current approved AC identities and keep unresolved coverage null.",
+  "applicability": {
+    "tracks": [
+      "workflow",
+      "product"
+    ],
+    "modules": [],
+    "boundaries": [
+      "artifact-closure",
+      "ticket-delivery",
+      "documentation-coverage"
+    ],
+    "paths": [
+      "_refs/product/ticket-intake.mjs",
+      "_refs/shared/artifact-lifecycle.mjs",
+      "_refs/documentation/documentation-profile.mjs",
+      "_refs/shared/documentation-layout.mjs"
+    ],
+    "keywords": [
+      "ticket",
+      "evidence",
+      "snapshot",
+      "coverage",
+      "provenance"
+    ]
+  },
+  "regression_protection": {
+    "description": "Retain cross-ticket evidence, rehashed incomplete manifests, moved receipts, missing/ignored assets, proposed AC and legacy/null aggregate coverage controls.",
+    "paths": [
+      "test/e2e/ticket-intake-contract.test.mjs",
+      "test/e2e/governed-delivery-integration.test.mjs",
+      "test/e2e/documentation-profile.test.mjs"
+    ]
+  },
+  "source_fingerprints": [
+    {
+      "path": "_refs/product/ticket-intake.mjs",
+      "sha256": "995d4f71be804568ca3f9f5349c46fa0ea57633f9f410230c8f6337e2a786bb1"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "f8a4a4029d152da969e9c0d5c97b6a575a6adeb995b601fa6559e4256def7acf"
+    },
+    {
+      "path": "_refs/documentation/documentation-profile.mjs",
+      "sha256": "0705ba3c0b652a97e631a3de653a30d967f17811923b2cb97b669b8ba6acb3a3"
+    },
+    {
+      "path": "_refs/shared/documentation-layout.mjs",
+      "sha256": "15fb3316ed23e87f53ebebf15b77701de414db190988d56954fb2f65f6607ccb"
+    },
+    {
+      "path": "test/e2e/ticket-intake-contract.test.mjs",
+      "sha256": "97bf323c9f37acf48119ec7e45c63d746bf6e3ff4e42379868c7bdb6849e0781"
+    },
+    {
+      "path": "test/e2e/governed-delivery-integration.test.mjs",
+      "sha256": "435e79b657f3bc5da073e04477a5163e051725a52822106eebec25652ca3c8ad"
+    },
+    {
+      "path": "test/e2e/documentation-profile.test.mjs",
+      "sha256": "771f3362f7672950c1b983652ffc19c9d507c5120a728a963b20d2dc6054ba16"
+    }
+  ],
+  "verification": {
+    "result": "PASSED",
+    "command": "npm run test:e2e:governed-delivery",
+    "cwd": ".",
+    "source_revision": "diff:d99e0bca1795a769cacfadd39064b008b21c9407548d6f7d5af4e1926a887d9b",
+    "proof": {
+      "path": ".sdcorejs/docs/workflow/2026-11-14-governed-delivery-evidence.json",
+      "sha256": "28a1739525d10171e269e8559a86c20166d6821273326c1e942d2cca6ec1f7b1"
+    }
+  },
+  "proposed_convention": null,
+  "lesson_id": "lesson-e4e96082ff50e10ec883a0db3b291d7cd379f40f9eb510d700e9360ec8240353",
+  "artifact_id": "memory-lesson-e4e96082ff50e10ec883a0db3b291d7cd379f40f9eb510d700e9360ec8240353"
+}

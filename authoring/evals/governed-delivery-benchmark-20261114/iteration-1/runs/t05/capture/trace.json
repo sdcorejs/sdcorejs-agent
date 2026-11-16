@@ -1,0 +1,534 @@
+{
+  "schema_version": 1,
+  "task": "t05",
+  "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+  "skill_pack": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+  "capture_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture",
+  "authority": {
+    "source": "prompt.txt user task",
+    "allowed": [
+      "update docs/operator-guide.md",
+      "appropriate technical companion",
+      "scoped documentation metadata",
+      "local verification captures"
+    ],
+    "excluded": [
+      "code changes",
+      "dependency changes",
+      "network",
+      "external services",
+      "installs",
+      "subagents",
+      "host/home credentials",
+      "other packs/trials/rubric/real repository"
+    ]
+  },
+  "skills": {
+    "frontmatter_loaded": [
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/documentation.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/parallel-dispatch.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/repair-loop.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/subagent-driven-development.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/using-skills.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/01-brainstorming.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/02-spec.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/03-plan.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/04-execute-plan.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/architecture.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/cleanup.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/debug.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/explore.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/git.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/review.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/ship.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/simplify.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/angular/sdcorejs-angular.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/content/sdcorejs-content.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/design/sdcorejs-design.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/nestjs/sdcorejs-nestjs.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/product/sdcorejs-product.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/test/sdcorejs-test.md"
+    ],
+    "body_loaded": [
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/documentation.md"
+    ],
+    "selected_name": "sdcorejs-documentation",
+    "modes": [
+      "write-user-guide (bounded existing guide update)",
+      "write-technical-doc"
+    ]
+  },
+  "references_loaded": [
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/AGENTS.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/runtime-protocols.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/finish-gate.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/session-authority.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-user-guide.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-technical-doc.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/tasklist.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/communication-economy.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/intent.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/repository-contract.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/approved-artifact.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.mjs"
+  ],
+  "source_paths_loaded": [
+    "AGENTS.md",
+    "README.md",
+    "package.json",
+    "docs/operator-guide.md",
+    "src/order.mjs",
+    "src/server.mjs",
+    "test/unit.test.mjs",
+    "test/integration.test.mjs",
+    "test/e2e.test.mjs",
+    "inputs/product-draft.md"
+  ],
+  "initial_read_commands": [
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/prompt.txt",
+      "exit_code": 0,
+      "result": "Loaded isolated task and authorized scope."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/AGENTS.md",
+      "exit_code": 0,
+      "result": "Loaded supplied pack instructions."
+    },
+    {
+      "command": "rg --files /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "result": "Listed permitted pack and target paths only; displayed result was truncated."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nroot = Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills')\nfor path in sorted(root.rglob('*.md')):\n    text = path.read_text()\n    if text.startswith('---\\n'):\n        print(str(path) + '\\n---' + text.split('---', 2)[1] + '---')\nPY",
+      "exit_code": 0,
+      "result": "Loaded skill frontmatter only for dispatch."
+    },
+    {
+      "command": "cat AGENTS.md README.md package.json docs/operator-guide.md src/order.mjs src/server.mjs test/unit.test.mjs test/integration.test.mjs test/e2e.test.mjs inputs/product-draft.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "result": "Read project policy and documentation/source/test evidence; later smaller read recovered truncated source data."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/runtime-protocols.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/finish-gate.md",
+      "exit_code": 0,
+      "result": "Loaded shared workflow references; displayed combined result was truncated and relevant content was subsequently read separately."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/documentation.md",
+      "exit_code": 0,
+      "result": "Loaded selected documentation skill body."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/runtime-protocols.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/session-authority.md",
+      "exit_code": 0,
+      "result": "Loaded shared routing and scoped authority rules."
+    },
+    {
+      "command": "cat test/integration.test.mjs test/e2e.test.mjs inputs/product-draft.md\nrg --files --hidden -g '!node_modules' -g '!.git/**' -g '!inputs/**' .",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "result": "Verified cancellation tests, HTTP test, proposed/superseded criteria, and absence of pre-existing .sdcorejs files."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.md",
+      "exit_code": 0,
+      "result": "Read project-context reference separately."
+    }
+  ],
+  "reference_and_baseline_shell_commands": [
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-user-guide.md",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-technical-doc.md",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/tasklist.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/communication-economy.md",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/intent.mjs",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.md",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/repository-contract.mjs",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/approved-artifact.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py baseline-head git rev-parse HEAD",
+      "exit_code": 0,
+      "result": "Completed successfully",
+      "output_summary": "020550e501e0bb6ba91da9accae65e8238c9432e\nObserved exit code: 0\n"
+    },
+    {
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py baseline-status git status --short",
+      "exit_code": 0,
+      "result": "Completed successfully",
+      "output_summary": "Observed exit code: 0\n"
+    },
+    {
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py baseline-diff git diff -- docs/operator-guide.md",
+      "exit_code": 0,
+      "result": "Completed successfully",
+      "output_summary": "Observed exit code: 0\n"
+    },
+    {
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py repository-identity git config --local --get remote.origin.url",
+      "exit_code": 0,
+      "result": "Completed successfully",
+      "output_summary": "https://github.com/benchmark-sdcorejs/order-desk.git\nObserved exit code: 0\n"
+    },
+    {
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture/run_capture.py node-version node --version",
+      "exit_code": 0,
+      "result": "Completed successfully",
+      "output_summary": "v24.22.1\nObserved exit code: 0\n"
+    },
+    {
+      "command": "rg -n -A 100 '^export function (resolveDocumentationWriteTarget|validateDocumentKey|buildCanonicalEntryPath)' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.mjs",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    },
+    {
+      "command": "rg -n -A 90 'function (inferTaskCategory|isFastFixEligible)' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+      "exit_code": 0,
+      "result": "Completed successfully"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "command": "node --version",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "node-version.log",
+      "output": "v24.22.1\n"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "command": "git status --short",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "baseline-status.log",
+      "output": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--",
+        "docs/operator-guide.md"
+      ],
+      "command": "git diff -- docs/operator-guide.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "baseline-diff.log",
+      "output": ""
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "--get",
+        "remote.origin.url"
+      ],
+      "command": "git config --local --get remote.origin.url",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "repository-identity.log",
+      "output": "https://github.com/benchmark-sdcorejs/order-desk.git\n"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "command": "git rev-parse HEAD",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "baseline-head.log",
+      "output": "020550e501e0bb6ba91da9accae65e8238c9432e\n"
+    },
+    {
+      "argv": [
+        "node",
+        "../capture/preflight.mjs"
+      ],
+      "command": "node ../capture/preflight.mjs",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "documentation-preflight.log",
+      "output": "{\n  \"repository_id\": \"github.com/benchmark-sdcorejs/order-desk\",\n  \"repository_role\": \"standalone\",\n  \"technical_doc_path\": \".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md\",\n  \"entry_state\": \"missing\",\n  \"generated_at\": \"2026-11-14T09:07:26.329Z\",\n  \"action\": {\n    \"mode\": \"write-technical-doc\",\n    \"writes\": true,\n    \"ticket_id\": null\n  },\n  \"classification\": {\n    \"kind\": \"governed-change\",\n    \"action\": \"full-workflow\",\n    \"entry_gate\": \"brainstorm-first\",\n    \"review_baseline\": {\n      \"required\": true,\n      \"risks\": [],\n      \"checks\": [\n        \"instruction-scope\",\n        \"text-hygiene\"\n      ],\n      \"reason\": \"changed surfaces require a proportional baseline regardless of diff size\"\n    },\n    \"reason\": \"scope or behavior is not bounded enough for fast-fix\"\n  }\n}\n"
+    },
+    {
+      "argv": [
+        "node",
+        "--test",
+        "test/integration.test.mjs"
+      ],
+      "command": "node --test test/integration.test.mjs",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "cancellation-tests.log",
+      "output": "\u2714 operator can cancel draft (1.439857ms)\n\u2714 submitted order is locked (0.428302ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 2\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 173.809585\n"
+    },
+    {
+      "argv": [
+        "node",
+        "../capture/preflight.mjs"
+      ],
+      "command": "node ../capture/preflight.mjs",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "documentation-preflight-confirmed.log",
+      "output": "{\n  \"repository_id\": \"github.com/benchmark-sdcorejs/order-desk\",\n  \"repository_role\": \"standalone\",\n  \"technical_doc_path\": \".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md\",\n  \"entry_state\": \"missing\",\n  \"generated_at\": \"2026-11-14T09:08:23.936Z\",\n  \"action\": {\n    \"mode\": \"write-technical-doc\",\n    \"writes\": true,\n    \"ticket_id\": null\n  },\n  \"classification\": {\n    \"kind\": \"small-explicit-low-risk-fix\",\n    \"action\": \"fast-fix\",\n    \"entry_gate\": \"targeted-context\",\n    \"reason\": \"scope, behavior, acceptance, ownership, and verification layer are bounded\",\n    \"review_baseline\": {\n      \"required\": true,\n      \"risks\": [],\n      \"checks\": [\n        \"instruction-scope\",\n        \"text-hygiene\"\n      ],\n      \"reason\": \"changed surfaces require a proportional baseline regardless of diff size\"\n    }\n  }\n}\n"
+    },
+    {
+      "argv": [
+        "node",
+        "../capture/cancellation-smoke.mjs"
+      ],
+      "command": "node ../capture/cancellation-smoke.mjs",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "cancellation-smoke.log",
+      "output": "{\"role\":\"operator\",\"state\":\"draft\",\"expected\":true,\"actual\":true}\n{\"role\":\"operator\",\"state\":\"submitted\",\"expected\":false,\"actual\":false}\n{\"role\":\"administrator\",\"state\":\"draft\",\"expected\":false,\"actual\":false}\n{\"role\":\"administrator\",\"state\":\"submitted\",\"expected\":false,\"actual\":false}\n{\"role\":\"viewer\",\"state\":\"draft\",\"expected\":false,\"actual\":false}\n{\"role\":null,\"state\":\"draft\",\"expected\":false,\"actual\":false}\n{\"role\":\"operator\",\"state\":null,\"expected\":false,\"actual\":false}\n{\"role\":\"operator\",\"state\":\"cancelled\",\"expected\":false,\"actual\":false}\nPassed 8 supplemental predicate checks. These are not persisted application tests or cancellation workflow evidence.\n"
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "command": "git status --short",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "final-status.log",
+      "output": " M docs/operator-guide.md\n?? .sdcorejs/\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "../capture/verify_docs.py"
+      ],
+      "command": "python3 ../capture/verify_docs.py",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "documentation-verification.log",
+      "output": "PASS: complete original operator guide preserved byte-for-byte as prefix\nPASS: only authorized operator guide and technical companion changed; source, tests, dependencies and inputs unchanged\nPASS: all 10 local document links resolve inside target; UTF-8, whitespace and screenshot-link checks passed\nPASS: scoped documentation metadata and conservative approved-only coverage counts present\n{\"path\": \"docs/operator-guide.md\", \"sha256\": \"fe3af7d77b812a6006444047d3bd5d1210a06e094c7ada3e90662087201edaa8\"}\n{\"path\": \".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md\", \"sha256\": \"8703039bd21a6f72ef401eed78356ccab9505172f9a5d08799705d402d0543f6\"}\n"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "command": "git diff --check",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "diff-check.log",
+      "output": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--",
+        "docs/operator-guide.md"
+      ],
+      "command": "git diff -- docs/operator-guide.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "final-diff.log",
+      "output": "diff --git a/docs/operator-guide.md b/docs/operator-guide.md\nindex 08629c7..10448d7 100644\n--- a/docs/operator-guide.md\n+++ b/docs/operator-guide.md\n@@ -7,3 +7,36 @@ Human note: confirm the order reference with the caller before acting.\n The cancellation steps have not been documented yet.\n \n Human note: contact the duty operator for urgent exceptions.\n+\n+### Before you try to cancel\n+\n+Order Desk does not currently provide a way to complete a cancellation. The\n+approved rule allows only an operator to cancel an order that is still a draft;\n+it does not make a cancellation action available in this version.\n+\n+1. Confirm the order reference with the caller before acting.\n+2. Establish your role and the order's current state. If either is unknown, stop\n+   until it is confirmed.\n+3. Use the table below to check eligibility. Even for an eligible draft, stop\n+   here: this version cannot complete the cancellation. Do not tell the caller\n+   that the order has been cancelled.\n+\n+| Your role and order state | What this means |\n+| --- | --- |\n+| Operator; draft | Eligible under the approved rule, but cancellation is not available in this version. |\n+| Any other role; draft | You cannot cancel it. Refer the request to an operator. |\n+| Any role; submitted | Cancellation is blocked. Submitted orders cannot be cancelled, including by administrators. |\n+\n+For urgent exceptions, follow the duty-operator note above. That contact does\n+not grant permission to cancel a submitted order.\n+\n+### What to expect\n+\n+There is no cancellation completion confirmation to rely on in this version.\n+Automatic customer notification is a proposal, not an available feature; do not\n+promise a notification. Only cancellation eligibility has been implemented, so\n+the cancellation workflow is partially covered.\n+\n+Developers and support maintainers can consult the\n+[technical companion](../.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md)\n+for implementation evidence and verification limits.\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "-c",
+        "import json,pathlib; c=pathlib.Path(\"../capture\"); t=json.loads((c/\"trace.json\").read_text()); assert (c/\"response.md\").stat().st_size; assert len(t[\"artifacts_changed\"]) == 2; assert all((c/x[\"output_file\"]).is_file() for x in t[\"commands\"]); print(\"PASS: response, trace JSON, two changed artifacts and captured command outputs verified\")"
+      ],
+      "command": "python3 -c 'import json,pathlib; c=pathlib.Path(\"../capture\"); t=json.loads((c/\"trace.json\").read_text()); assert (c/\"response.md\").stat().st_size; assert len(t[\"artifacts_changed\"]) == 2; assert all((c/x[\"output_file\"]).is_file() for x in t[\"commands\"]); print(\"PASS: response, trace JSON, two changed artifacts and captured command outputs verified\")'",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "exit_code": 0,
+      "output_file": "capture-verification.log",
+      "output": "PASS: response, trace JSON, two changed artifacts and captured command outputs verified\n"
+    }
+  ],
+  "observed_baseline": {
+    "head": "020550e501e0bb6ba91da9accae65e8238c9432e",
+    "status": "clean",
+    "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+    "repository_role": "standalone",
+    "summary": "missing",
+    "conventions": "missing",
+    "stack": "node-esm",
+    "node_version": "v24.22.1"
+  },
+  "decisions": [
+    "Current user-approved AC-CANCEL-1 is authoritative; inputs/product-draft.md was treated only as external source data.",
+    "Kept exact user-selected guide path and original file bytes as prefix; audience/workflow organization overrides generic template and generated overwrite defaults.",
+    "No generated duplicate guide, aggregate, export, empty asset directory, or fabricated UI was created for this bounded existing-guide update.",
+    "Used canonical Layout v2 for the authorized technical companion; its metadata carries the requirement and source/app revision.",
+    "Repository ownership is standalone, proven by scoped user target, local package/source evidence, and local origin identity; no portal/module relationship was invented. resolveDocumentationWriteTarget only supports module/portal scopes, so stableRepositoryId plus assertOwnerWriteTarget and path containment were used.",
+    "Initial classification omitted confirmation fields and returned governed-change; after representing the actual user-approved criterion and scoped verification, classification returned small-explicit-low-risk-fix. Both outputs are retained.",
+    "No spec/plan approvals were invented; this bounded documentation task uses source_spec/source_plan none.",
+    "Approval covers documentation only: no endpoint, role behavior, test, notification, dependency, or product requirement was changed."
+  ],
+  "artifacts_changed": [
+    {
+      "path": "docs/operator-guide.md",
+      "action": "updated",
+      "sha256": "fe3af7d77b812a6006444047d3bd5d1210a06e094c7ada3e90662087201edaa8"
+    },
+    {
+      "path": ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md",
+      "action": "created",
+      "sha256": "8703039bd21a6f72ef401eed78356ccab9505172f9a5d08799705d402d0543f6"
+    }
+  ],
+  "artifact_context": {
+    "schema_version": 1,
+    "change_ref": "documentation-ac-cancel-1",
+    "source_spec": "none",
+    "source_plan": "none",
+    "required_with_change": [
+      {
+        "path": ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md",
+        "kind": "documentation-asset",
+        "reason": "User-authorized technical companion for cancellation guide",
+        "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+        "repository_role": "standalone",
+        "source_revision": "020550e501e0bb6ba91da9accae65e8238c9432e",
+        "app_revision": "020550e501e0bb6ba91da9accae65e8238c9432e",
+        "sha256": "8703039bd21a6f72ef401eed78356ccab9505172f9a5d08799705d402d0543f6"
+      }
+    ],
+    "shared_owned": [],
+    "conditional": [],
+    "local_only": [
+      {
+        "path": "../capture/",
+        "kind": "diagnostic",
+        "reason": "Explicitly requested benchmark captures, never project deliverables"
+      }
+    ],
+    "unrelated_observed": []
+  },
+  "coverage": {
+    "basis": "approved requirement AC-CANCEL-1 only",
+    "total": 1,
+    "met": 0,
+    "partial": 1,
+    "missing": 0,
+    "excluded": {
+      "AC-NOTIFY-2": "proposed/unapproved/unimplemented",
+      "AC-OLD-3": "superseded"
+    }
+  },
+  "verification": {
+    "existing_cancellation_tests": {
+      "result": "PASSED",
+      "count": 2,
+      "output": "cancellation-tests.log"
+    },
+    "supplemental_predicate_checks": {
+      "result": "PASSED",
+      "count": 8,
+      "output": "cancellation-smoke.log",
+      "limitation": "Does not add persistent regression tests or prove a cancellation workflow"
+    },
+    "documentation": {
+      "result": "PASSED",
+      "output": "documentation-verification.log",
+      "local_links": 10
+    },
+    "diff_check": {
+      "result": "PASSED",
+      "output": "diff-check.log"
+    },
+    "final_review": "Reviewed final guide diff and companion for permission/state precision, current versus proposed behavior, preserved prose, source evidence, and honest coverage.",
+    "captures": {
+      "result": "PASSED",
+      "output": "capture-verification.log"
+    }
+  },
+  "limitations": [
+    "Only canCancel eligibility exists. No cancellation endpoint, UI, state mutation or notification is implemented; operational cancellation steps cannot truthfully be provided.",
+    "Existing test:integration runs two direct predicate tests; it is not cancellation HTTP or service integration coverage.",
+    "No persisted role-denial regression test exists. Supplemental checks are captured separately.",
+    "Quantity unit tests skipped as unrelated to cancellation documentation.",
+    "Existing HTTP test skipped: it exercises order quantity rather than cancellation and binds a network listener excluded by the offline task.",
+    "No browser UI or screenshot capture applies; no browser/cancellation end-to-end success claimed.",
+    "No markdown linter is configured; UTF-8, trailing whitespace, metadata, preserved prose, scope and local links checked with capture/verify_docs.py.",
+    "No Git artifact was requested; no staging, commit, push or branch-ready claim was made."
+  ],
+  "capture_artifacts": [
+    "baseline-diff.log",
+    "baseline-files.json",
+    "baseline-head.log",
+    "baseline-status.log",
+    "before-manifest.json",
+    "cancellation-smoke.log",
+    "cancellation-smoke.mjs",
+    "cancellation-tests.log",
+    "capture-verification.log",
+    "commands.jsonl",
+    "diff-check.log",
+    "documentation-preflight-confirmed.log",
+    "documentation-preflight.log",
+    "documentation-verification.log",
+    "final-diff.log",
+    "final-status.log",
+    "node-version.log",
+    "operator-guide.before.md",
+    "preflight.mjs",
+    "reference-commands.json",
+    "repository-identity.log",
+    "response.md",
+    "run_capture.py",
+    "trace.json",
+    "verify_docs.py"
+  ]
+}

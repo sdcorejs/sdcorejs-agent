@@ -1,0 +1,57 @@
+{
+  "source": "sdcorejs-explore",
+  "action": "memories-write-approved",
+  "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target",
+  "target_root_kind": "target-project",
+  "tracks": [
+    "node"
+  ],
+  "stack_profiles": [
+    "node-general"
+  ],
+  "profile_confidence": "high",
+  "profile_evidence": [
+    {
+      "profile": "node-general",
+      "evidence": [
+        "package.json: type module, Node >=24, no dependencies",
+        "src/category.mjs",
+        "test/category.test.mjs: node:test"
+      ]
+    }
+  ],
+  "writes": [
+    {
+      "path": ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md",
+      "approved": true,
+      "approval_source": "Explicit user task authorizes scoped memory capture",
+      "reason": "Verified nullish category regression lesson and supporting proof",
+      "write_outcome": "created with exclusive absent-target precondition and read back"
+    },
+    {
+      "path": ".sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json",
+      "approved": true,
+      "approval_source": "Explicit user task authorizes scoped memory capture",
+      "reason": "Verified nullish category regression lesson and supporting proof",
+      "write_outcome": "created with exclusive absent-target precondition and read back"
+    }
+  ],
+  "freshness": {
+    "summary_status": "missing",
+    "lesson_status": "fresh"
+  },
+  "redaction": {
+    "applied": true,
+    "notes": "Inspected synthetic source and command output; automated screening reported no sensitive content."
+  },
+  "next_skill_hint": {
+    "skill": "none",
+    "reason": "Requested scoped memory capture and selection demonstration completed"
+  },
+  "commands_skipped": [
+    {
+      "command_or_probe": "AGENTS pointer projection",
+      "reason": "Not needed: real read-only Explore discovery finds canonical lesson for a new change reference."
+    }
+  ]
+}

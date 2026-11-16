@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "artifact_id": "requirement-attachment:42:image-1",
+  "artifact_kind": "documentation-asset",
+  "owner": "sdcorejs-documentation",
+  "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+  "repository_role": "standalone",
+  "change_ref": "quantity-limits",
+  "source_spec": "approved-requirements.md",
+  "source_plan": "none",
+  "commit_policy": "with-change",
+  "source_attachment_id": "image-1",
+  "source_path": "inputs/quantity.png",
+  "source_revisions": [
+    "rev-1",
+    "rev-2"
+  ],
+  "file": ".sdcorejs/documentation/requirements/42/images/quantity.png",
+  "media_type": "image/png",
+  "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+  "bytes": 68,
+  "privacy_review": {
+    "status": "approved",
+    "reviewed_by": "synthetic-fixture-author",
+    "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec"
+  },
+  "review_source": "hash-bound review supplied inside both local tracker exports",
+  "persistence_authority": "explicit user request to persist reviewed image bytes",
+  "evidence_origin": "source-attachment-illustration",
+  "real_ui_evidence": false,
+  "acceptance_test_evidence": false,
+  "inspection": {
+    "width": 1,
+    "height": 1,
+    "bit_depth": 8,
+    "color_type": 4,
+    "chunk_crc_valid": false,
+    "invalid_crc_chunks": [
+      "IDAT"
+    ],
+    "zlib_valid": true,
+    "decompressed_bytes": 3,
+    "verified_rendering": false,
+    "limitation": "Retained exact privacy-reviewed source bytes. PNG integrity defect is not repaired or waived by privacy approval."
+  },
+  "url_redaction": "Private query value omitted; see redacted source snapshots."
+}

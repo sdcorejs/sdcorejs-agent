@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-11-12T07:20:10.168Z
+generated_at: 2026-11-16T04:42:27.638Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:7dea6fd5d06fe68bf0d12f55939a06ff64b3237d82b62fe07d7346bdc0055f6a
+  dependency_manifests: sha256:381d0bba7627ede754546ae08a77752894941ede618529dca4f4782723887b62
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -59,6 +59,8 @@ owner: integration-owner
 
 ## Purpose
 
+Existing-project onboarding discovers root/ancestor instructions and host-specific rule candidates with current hashes; the active skill resolves applicability and conflicts. Explore checks local runtime identity/readiness and executes scoped authorized startup, with Execute/Test hooks. See `_refs/shared/existing-project-onboarding.md` and `_refs/shared/explore-env-setup-actions.md`.
+
 `sdcorejs-agent` is the authoring repository for an engineering skill pack
 for developers and technical teams. It defines reusable software-delivery
 workflows for governed architecture and AI-agent applications, Angular,
@@ -73,6 +75,8 @@ repository/plugin adapters for Codex, Claude Code, Cursor, and GitHub Copilot;
 it is not published to npm and has no standalone CLI.
 Source instructions stay English-only; consuming agents localize responses and
 generated project artifacts at runtime.
+
+Project initialization inventories engineering decisions in `.sdcorejs/blueprints/`. Product captures immutable sanitized tracker snapshots and reviewed local assets under `.sdcorejs/tickets/`; accepted behavior stays with Spec. Behavioral E2E and current validation-map evidence govern delivery, while tracker write/readback has separate authority. Documentation selects an audience and scope and preserves manual prose. Explore selectively retrieves verified prevention lessons and keeps convention promotion explicit. The end-to-end contract is `_refs/shared/governed-delivery.md`. Authoring prerequisites and independent NVIDIA evaluation are defined in `authoring/prerequisites.md`; they are not consumer dependencies.
 
 ## Read First
 

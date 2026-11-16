@@ -51,6 +51,21 @@ asks for multiple outputs.
 
 `api-doc` is a subtype of `write-technical-doc`, not a separate skill mode.
 
+## Adaptive scope and safe updates
+
+For user guides or technical docs, load
+`../../_refs/documentation/documentation-profile.md` before choosing an outline. Use
+`selectDocumentationProfile` with inspected evidence and reader intent: module,
+entity, feature, task, role, state or journey. Scope is metadata within the
+existing documentation unit layout. Include only sections supported by behavior;
+framework inventories belong in technical docs, not end-user instructions.
+
+Run `planDocumentationUpdate` against current bytes before replacing content.
+Preserve manual prose; update validated managed blocks or an explicitly generated
+projection with its expected content hash. Unmarked existing text produces a
+bounded proposal, not a destructive full rewrite. Ticket-based requirement views
+reference Product's snapshot and accepted spec; they do not duplicate authority.
+
 ## Global Documentation Rules
 
 - Choose the documentation mode from user intent and source evidence.

@@ -1,0 +1,5 @@
+$ git status --short --untracked-files=all
+ M AGENTS.md
+?? .sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md
+
+exit_code=0

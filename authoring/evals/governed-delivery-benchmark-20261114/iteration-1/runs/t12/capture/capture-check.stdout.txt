@@ -1,0 +1,8 @@
+{
+  "trace_json_valid": true,
+  "required_trace_fields_present": true,
+  "response_contains_verdict_and_draft": true,
+  "all_recorded_verification_commands_exit_zero": true,
+  "all_target_file_hashes_unchanged": true,
+  "no_application_tests_claimed": true
+}

@@ -1,0 +1,12 @@
+{
+  "changed_paths": [
+    ".sdcorejs/memories/node/normalization-category-null-input.md",
+    "AGENTS.md"
+  ],
+  "application_tests_inputs_and_old_memory_unchanged": true,
+  "old_memory_sha256": "ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58",
+  "git_diff_check_exit": 0,
+  "git_status_exit": 0,
+  "new_memory_sha256": "7a0faf2c873e72719481508839c4271fd3977b29d0532fd08e3fc14f89bc6004",
+  "agents_sha256": "8b7627bf762f48e5ea16dcdd8f9d783a867095f10fbe17fe75fd69ed18e65bef"
+}

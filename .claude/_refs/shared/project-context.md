@@ -8,6 +8,16 @@ freshness, context-strategy selection, graph-provider detection, and a
 side-effect-free runtime projection. Skills may call it when the helper is
 available; the contract in this reference remains authoritative.
 
+`related_artifacts.blueprints` lists canonical blueprint candidates for the
+semantic owner to validate through `project-blueprint.mjs`. Ticket snapshots and
+delivery records are selected into `related_artifacts.tickets` only by current
+relationship or request scope; attachment bodies are not context indexes.
+JSON metadata is supported alongside Markdown frontmatter. Prevention lessons
+may match current applicability even when their originating change differs.
+Before using their bodies, apply `learning-loop.mjs` with actual source/proof
+fingerprints. Discovery does not mark a blueprint accepted or a lesson fresh;
+all memory remains advisory and current source evidence takes precedence.
+
 ## Contents
 
 - [Caller Contract](#caller-contract)
@@ -28,7 +38,7 @@ Classify the caller before applying the preflight:
 
 ```text
 caller_context: <skill-name>
-context_mode: read-only | write-approved | summary-read | summary-refresh | code-map-readonly | trace-flow-readonly | env-setup-readonly | recovery-readonly | persona-read | memories-read | conventions-read | documentation-harvest-readonly
+context_mode: read-only | write-approved | summary-read | summary-refresh | code-map-readonly | trace-flow-readonly | env-setup-readonly | runtime-check-readonly | runtime-start-authorized | recovery-readonly | persona-read | memories-read | conventions-read | documentation-harvest-readonly | project-blueprint-read | project-blueprint-write-approved
 side_effects_allowed: true | false
 request_scope: <short task scope>
 ```
@@ -89,6 +99,15 @@ Unknown roots remain read-only until clarified. Authoring repositories may be
 the explicit target, but project-context still makes no writes.
 
 ## Step 2 - Detect Tracks And Profiles
+
+Before applying project conventions, load
+`_refs/shared/existing-project-onboarding.md`. `collectProjectInstructions`
+returns bounded `instructions.sources` with paths/hashes and discovery findings;
+the active skill reads applicable bodies and resolves their scope/conflicts.
+Pass explicit target file paths and repeat discovery on package/scope changes.
+Root-only discovery and a fresh summary never prove nested rules were loaded.
+This preflight never starts a project; runtime-dependent work uses Explore's
+separate `runtime-check-readonly` / `runtime-start-authorized` actions.
 
 Use concrete project evidence to detect applicable tracks and stack profiles:
 
@@ -268,6 +287,14 @@ project_context:
     stale_rule_ids: []
     invalid_paths: []
     unresolved_owner_repositories: []
+  instructions:
+    status: discovered | missing | incomplete
+    target_scope: root-only | target-ancestors
+    resolution: requires-content-review
+    sources: [] # path, kind, scope, applicability, sha256; no instruction bodies
+    consolidation_candidates: [] # same-scope CLAUDE -> AGENTS proposals, source/target hashes; review required, no writes
+    findings: [] # bounded-read or path limitations, not policy conclusions
+    writes_allowed: false
   code_context:
     strategy: summary-only | targeted-read | scoped-code-map | existing-codegraph
     scope: <scope>
@@ -311,6 +338,9 @@ when a valid policy has that extension. Its authority is not-evaluated-read-only
 loading instructions grants no write. Apply effective nested instruction scope
 before any change, and use _refs/shared/project-bootstrap.md only for authorized
 Explore persistence. Missing bootstrap is disabled, not an invitation to install.
+For requested setup, review instruction consolidation candidates and the optional
+pack-adoption notice through `existing-project-onboarding.md`; discovery grants
+neither migration nor installation authority.
 
 ## Selective memory retrieval
 

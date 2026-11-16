@@ -1,0 +1,62 @@
+[
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:06:51.933476+00:00",
+    "output": "preflight-01.log",
+    "output_sha256": "c9bdefb55523cade4d242382081578cff6cb762d170e369c30335c8e21459350"
+  },
+  {
+    "argv": [
+      "git",
+      "status",
+      "--short"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:06:51.942665+00:00",
+    "output": "preflight-02.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--stat"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:06:51.947919+00:00",
+    "output": "preflight-03.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--stat"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:06:51.957640+00:00",
+    "output": "preflight-04.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:06:51.971536+00:00",
+    "output": "preflight-05.log",
+    "output_sha256": "249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81"
+  }
+]

@@ -154,6 +154,8 @@ const REQUIRED_ARTIFACT_ROOTS = [
   'architecture',
   'conventions',
   'project_workspaces',
+  'blueprints',
+  'tickets',
 ];
 const REQUIRED_LEGACY_ARTIFACT_ROOTS = ['product_documents', 'design_artifacts'];
 

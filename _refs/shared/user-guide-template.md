@@ -1,7 +1,8 @@
 # User-Guide Templates (for `sdcorejs-documentation (write-user-guide mode)`)
 
 Templates the documentation skill renders in `write-user-guide` mode. Load
-`_refs/shared/documentation-layout.md` with this template. Per-module guides
+`_refs/shared/documentation-layout.md` and
+`_refs/documentation/documentation-profile.md` with this template. Per-module guides
 live at
 `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md`; the aggregate lives at
 `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`.
@@ -12,7 +13,33 @@ target project's existing browser runner.
 
 Write generated prose in the user's runtime language. Keep this reusable template English-only.
 
-## Per-Module Template (.sdcorejs/documentation/user-guides/<module>/<module>.md)
+## Adaptive Guide Template (.sdcorejs/documentation/user-guides/<module>/<module>.md)
+
+Call `selectDocumentationProfile` before rendering. The module storage unit is
+unchanged; `documentation_scope` selects module, entity, feature, task, role,
+state or journey content and `documentation_audience` records its intended
+reader. Use only returned section IDs supported by inspected source evidence.
+Replace the placeholders below with those sections; do not emit every possible
+section. Technical/API consumers use the technical-doc reference instead.
+
+| Selected scope | Body sections to render from evidence |
+|---|---|
+| `module` | Purpose, capabilities and tasks |
+| `entity` | Records and reader-relevant fields/actions |
+| `feature` | Goal, behavior and outcomes |
+| `task` | Goal, prerequisites, steps and outcome |
+| `role` | Responsibilities, allowed tasks and access restrictions |
+| `state` | State meanings, allowed transitions and outcomes |
+| `journey` | Goal, ordered steps, handoffs and completion |
+
+Screens, field tables and permission tables are optional evidence-based aids.
+Do not manufacture list/detail/create/update screens or require a screenshot
+for a task without a UI. Framework inventories belong in technical docs only.
+The managed body below is suitable for a newly created guide. For an existing
+document, use its established markers/ownership or return a precise proposal;
+never insert these markers around existing human text to claim ownership.
+Keep previous generated-body hashes and exact document hashes as producer
+evidence. Preserve human frontmatter unless a narrow metadata patch is approved.
 
 ````markdown
 ---
@@ -24,74 +51,64 @@ source_plan: <repo-relative-path-or-none>
 commit_policy: with-change
 owner: sdcorejs-documentation
 module: <module>
+documentation_profile_version: 1
+documentation_scope: <selected-scope>
+documentation_audience: <selected-audience>
 title: <Feature title>
-tracks: [angular, nestjs]
+tracks: [<observed-track>]
 generated_at: <ISO8601>
 git_head: <sha>
-routes:
-  - { path: /<module>/<entity>, screen: list, permission: <module>_<entity>:view }
-permissions: [<module>_<entity>:view, <module>_<entity>:create]
-entities:
-  - { name: <Entity>, fields: [code, name] }
-screens: [list, detail, create, update]
-spec_refs: [.sdcorejs/docs/<track>/<ts>-<topic>-spec.md]
+routes: []
+permissions: []
+entities: []
+screens: []
+spec_refs: [<related-approved-spec-path>]
 prd_refs: []
-coverage: { total: 0, met: 0, partial: 0, missing: 0 }
+coverage: { status: gap, total: null, met: null, partial: null, missing: null }
 ---
 
-# <Feature title> - User Guide
+<!-- sdcorejs:managed:guide-body:start -->
+# <Scope title> - User Guide
 
 ## Overview
-<Describe what this module lets the user do, in plain language.>
+<Describe the selected audience's goal and supported behavior in plain language.>
 
-## Screens And Tasks
-### <Screen title> - `/<module>/<entity>`
-- **What the user does:** <task description>
-- **Who can use it:** permission `<module>_<entity>:<action>`
-- **Main fields/buttons:** <list>
-<Render `![<Screen title>](images/<screen>.png)` only when current
+## <Selected profile section title>
+<Explain the evidenced steps, responsibilities, states, handoffs or behavior.
+Render as many supported profile sections as needed, using actual titles.
+Include prerequisites, access restrictions, visible inputs, results and recovery
+only when the source supports them. Omit inapplicable fields or screens.>
+
+<If a verified UI state helps this task, render
+`![<Observed UI state>](images/<screen>.png)` only when current
 `ui_capture_context` verifies the target state, auth provenance, PII screening,
 image hash, change identity, and same-unit containment. Otherwise omit the image
 link.>
 
-## Permission Table
-| Permission code | Task | Who / Role |
-|---|---|---|
-| `<module>_<entity>:view` | View list/detail | <role> |
-| `<module>_<entity>:create` | Create record | <role> |
-
-## Data Reference
-| Field | Type | Required | Constraint |
-|---|---|---|---|
-| code | string | yes | unique |
-| name | string | yes | <=255 |
-
-## Special Actions
-<Workflow / state transition / bulk action / export action. Remove this section when none applies.>
-
-## Core UI Components Used
-<Angular only: list the `@sdcorejs/angular` components/services/directives this module actually uses, with one concrete role per row. Remove this section for non-Angular tracks. This is the same table shown to the user after code generation.>
-| Core UI | Role in this feature |
-|---|---|
-| `SdTable` | Shows the <entity> list with pagination, filtering, and sorting |
-| `SdNotifyService` | Shows success and error feedback |
-| `SdSection` | Groups fields on the detail screen |
-
 ## Coverage vs Requirements
-| # | Requirement (spec/PRD) | Status | Documented in section |
-|---|---|---|---|
-| 1 | <acceptance criterion> | met | Screens And Tasks |
-| 2 | <criterion> | partial | <gap> |
-| 3 | <criterion> | missing | - |
+<Call selectDocumentationCoverage with trusted host current-spec verification
+receipts. Render this table only for selected active accepted ACs. For gap or
+conflict, explain the blocker and retain null counts. Keep PRD/ticket proposals,
+provenance and observed code behavior outside approved coverage.>
+| AC ID | Approved criterion | Current spec identity | Status | Documented in section |
+|---|---|---|---|---|
+| AC-001 | <accepted criterion> | <artifact ID and approval hash> | <evidenced status> | <actual section title or gap> |
 
 ## Illustration Image Checklist
-- [ ] `images/list.png` - list screen
-- [ ] `images/detail.png` - detail screen
+<Omit this entire section when no UI evidence is required.>
+- [ ] `images/<observed-state>.png` - <required state and evidence blocker>
 
 Capture evidence request: `sdcorejs-test (ui-evidence-capture)` using the
 target project's existing runner, environment key reference, logical persona,
 route/target state, and approved output path.
+<!-- sdcorejs:managed:guide-body:end -->
 ````
+
+Pass the rendered content through `planDocumentationUpdate`. On existing guides,
+replace only owned managed bodies with matching prior hashes; keep manual text
+before/after them unchanged. Whole-document replacement needs explicit generated
+ownership bound to the current bytes. An unmarked guide defaults to a proposal,
+and malformed markers or edited generated content conflict without writing.
 
 ## Aggregate Template (.sdcorejs/documentation/sdcorejs-user-guide.md)
 
@@ -104,11 +121,14 @@ source_spec: <repo-relative-path-or-none>
 source_plan: <repo-relative-path-or-none>
 commit_policy: with-change
 owner: sdcorejs-documentation
+documentation_profile_version: 1
+documentation_scope: <scope-supported-by-aggregate-sources>
+documentation_audience: <intended-reader>
 title: <Project name> - User Guide
 generated_at: <ISO8601>
 git_head: <sha>
 modules: [<module1>, <module2>]
-coverage: { total: 0, met: 0, partial: 0, missing: 0 }
+coverage: { status: gap, total: null, met: null, partial: null, missing: null }
 ---
 
 # <Project name> - User Guide
@@ -125,10 +145,20 @@ without frontmatter after structurally rewriting unit-local links for the
 aggregate.>
 
 ## Coverage vs Requirements Summary
+<Sum counts only when each source has selected approved coverage. Propagate
+any gap/conflict with null totals; do not convert missing approval to zero.>
 | Module | Met | Partial | Missing |
 |---|---:|---:|---:|
 | <module1> | 5 | 1 | 0 |
 ````
+
+An aggregate is a generated projection with source provenance. Rebuilding an
+existing aggregate requires a matching whole-document generated-ownership
+receipt or existing managed blocks. If human edits invalidate that receipt,
+retain the aggregate and report a conflict/proposal; never overwrite it
+unconditionally. Remove source managed-marker delimiter lines when composing
+the projection so repeated block IDs from separate guides cannot become nested
+or duplicate ownership claims. Do not remove or rewrite their body content.
 
 ## DOCX/PDF Export (Pandoc)
 

@@ -1,0 +1,4 @@
+$ node /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/verify_doc_intent.mjs
+{"mode":"write-technical-doc","writes":true,"ticket_id":null}
+
+exit_code=0

@@ -125,6 +125,8 @@ test('canonical artifact roots live once in the system registry', () => {
     architecture: '.sdcorejs/architecture',
     conventions: '.sdcorejs/conventions',
     project_workspaces: '.sdcorejs/projects',
+    blueprints: '.sdcorejs/blueprints',
+    tickets: '.sdcorejs/tickets',
   });
   assert.ok(systemRegistry.artifact_kinds.includes('project-config'));
   assert.ok(systemRegistry.artifact_kinds.includes('task-breakdown'));

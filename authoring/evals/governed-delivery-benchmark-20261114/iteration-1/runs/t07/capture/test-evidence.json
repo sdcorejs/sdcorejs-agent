@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "source": "sdcorejs-test",
+  "change_ref": "normalize-category-null-input",
+  "associated_HEAD_or_diff": "11b80db173ba3a0bfd063f5318f24a7ac73ad97a",
+  "status": {
+    "planning": "planned",
+    "authoring": "existing",
+    "executability": "ready",
+    "execution": "executed",
+    "result": "pass",
+    "evidence": "current",
+    "documentation": "not-requested",
+    "blockers": []
+  },
+  "runs": [
+    {
+      "run_id": "category-regression-1",
+      "command": "node --test test/category.test.mjs",
+      "cwd": ".",
+      "runner": "node:test",
+      "command_source": [
+        "package.json scripts.test runner",
+        "test/category.test.mjs"
+      ],
+      "environment_id": "isolated-offline-target",
+      "environment_class": "local",
+      "node_version": "v24.22.1",
+      "evidence_class": "UNIT",
+      "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+      "source_fingerprints": {
+        "src/category.mjs": "4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5",
+        "test/category.test.mjs": "40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537",
+        "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2",
+        "inputs/fix.diff": "6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9"
+      },
+      "associated_HEAD_or_diff": "11b80db173ba3a0bfd063f5318f24a7ac73ad97a",
+      "started_at": "2026-11-14T09:12:26.766237+00:00",
+      "finished_at": "2026-11-14T09:12:27.134974+00:00",
+      "exit_code": 0,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "interrupted": false,
+      "output_digest": "222ef4dcc805efa3b1e43fc4307b8b007d3ef663de50878e015445bda6019ccc",
+      "artifacts_created": [
+        "regression-output.txt",
+        ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md"
+      ],
+      "redactions_applied": true,
+      "stale": false
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "null is empty",
+      "test_ref": "test/category.test.mjs",
+      "requirement": "Nullish input is empty; existing string normalization is preserved",
+      "result": "pass",
+      "evidence_run_id": "category-regression-1"
+    },
+    {
+      "case_id": "undefined is empty",
+      "test_ref": "test/category.test.mjs",
+      "requirement": "Nullish input is empty; existing string normalization is preserved",
+      "result": "pass",
+      "evidence_run_id": "category-regression-1"
+    },
+    {
+      "case_id": "trim and lowercase",
+      "test_ref": "test/category.test.mjs",
+      "requirement": "Nullish input is empty; existing string normalization is preserved",
+      "result": "pass",
+      "evidence_run_id": "category-regression-1"
+    }
+  ],
+  "captures": [],
+  "commands_skipped": [
+    {
+      "command": "npm test; npm run test:integration; npm run test:e2e",
+      "reason": "Unrelated suite coverage is unnecessary for scoped category pure-function regression; no application changes requested or made."
+    }
+  ],
+  "data_lifecycle": {
+    "setup_status": "not-applicable",
+    "cleanup_status": "not-applicable",
+    "residual_data_risk": "none"
+  },
+  "blockers": [],
+  "residual_risks": [
+    "Behavior for non-string, non-nullish values is outside this lesson."
+  ],
+  "redactions_applied": true
+}

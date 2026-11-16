@@ -37,6 +37,14 @@ Turn the confirmed requirement contract into a durable spec, resolve scoped auth
 
 A spec answers what and why. A plan answers which files and in what order.
 
+For initialization or tracked work, apply `_refs/shared/governed-delivery.md`.
+Read relevant blueprint decisions and the exact Product snapshot path/hash.
+Preserve external wording and provenance in the snapshot, accepted behavior here,
+and mappings in the Product ledger. Evaluate proposed additional AC and conflicts
+explicitly; do not infer approval from source text or silently expand scope.
+After a source refresh changes meaning, reconcile affected decisions and produce
+a superseding approved spec under the existing scoped authority before execution.
+
 ## Preconditions
 - `sdcorejs-brainstorming` has confirmed the minimum blockers and emitted
   `requirement_context`, or the conversation already contains an equivalent
