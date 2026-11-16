@@ -19,6 +19,7 @@ pre-commit:
   parallel: false
   commands:
     sync-skills:
+      priority: 1
       # Trigger when source skills OR reference data changed (both are mirrored).
       glob:
         - "skills/**/*.md"
