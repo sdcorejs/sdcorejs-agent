@@ -99,6 +99,10 @@ jobs:
     name: PowerShell Skill Check
     runs-on: windows-latest
     steps:
+      # Preserved evaluation fixtures include nested content-addressed paths.
+      - name: Enable long paths before checkout
+        run: git config --global core.longpaths true
+
       - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
