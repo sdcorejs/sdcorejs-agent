@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "grader": "independent-fresh-host-agent",
+  "task": "/root/benchmark_grade_b",
+  "status": "stopped_after_isolation_boundary_disclosure",
+  "recorded_at_utc": "2026-11-14T09:24:49.374868+00:00",
+  "event_time": {
+    "exact_timestamp_available": false,
+    "sequence": "During grading, after inspecting packet-b.json and assigned target/capture artifacts, before creating any grades-b report. The event was immediately disclosed to the parent; the parent then instructed grading to stop."
+  },
+  "event": {
+    "tool": "collaboration.list_agents",
+    "reason_for_call": "Mistakenly checked agent status while checking for an update.",
+    "outside_authorized_grading_inputs": true,
+    "content_exposed": [
+      "Other grader /root/benchmark_grade_a completion summary: grades-a.json and grades-a.md saved; all 36 assertions passed; hashes and citations checked; limits on external-action verification noted.",
+      "Trial t08 completion summary: three regression tests passed; advisory memory and AGENTS pointer saved; retrieval/stale checks passed; application and older memory unchanged.",
+      "Trial t10 completion summary: read-only review and capture files created; no project or tracker changes; no application tests.",
+      "Trial t11 completion summary: issue blocked because PASS was unrelated, range conflicted, and screenshot was missing; target unchanged.",
+      "Trial t12 completion summary: issue blocked; unsent draft/captures created; target unchanged; no application tests or external writes.",
+      "Root agent running status and this grader running status."
+    ]
+  },
+  "boundary_impact": "Strict blindness was compromised by aggregate other-grader conclusions and trial completion summaries. The other grader reports themselves were not opened.",
+  "arm_mapping": {
+    "experiment_manifest_or_arm_mapping_opened": false,
+    "arm_mapping_inferred": false,
+    "note": "No mapping was sought or inferred from the exposed status summaries. Assigned capture traces contained their own pack-path metadata; those references were not followed."
+  },
+  "actions_after_disclosure": [
+    "Sent disclosure to parent identifying the accidental exposure.",
+    "Received instruction to stop grading and save only this note.",
+    "Stopped grading; no grades-b.json or grades-b.md was produced.",
+    "No trial, application, other grader output, or evidence file was edited; no application was rerun."
+  ]
+}

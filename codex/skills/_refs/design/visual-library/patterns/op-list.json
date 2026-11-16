@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "op-list",
+  "name": "Record list",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "browse-records"
+  ],
+  "data_shapes": [
+    "flat",
+    "filterable"
+  ],
+  "applicability": "Search and compare many records.",
+  "avoid_when": "Sequential deep review needs a split view.",
+  "variants": [
+    {
+      "id": "standard",
+      "layout": "list"
+    },
+    {
+      "id": "summary",
+      "layout": "list"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "core-list",
+    "portal-pages"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": "22.3.4",
+    "verification": "Inspect exact installed component exports and pattern source before implementation."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original HTML composition derived from the cited source structure; domain fixtures are illustrative, not requirements."
+}

@@ -89,7 +89,7 @@ npm run check:text-hygiene
 npm run test:e2e:repository
 ```
 
-Root tooling requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`. The site requires Node `>=22.12.0`. Full E2E needs a prepared environment; read TESTING before assuming every project must run the same checks.
+Root tooling requires Node `^22.22.3 || ^24.15.0 || >=26.0.0`. The site requires Node `>=22.23.4`. Full E2E needs a prepared environment; read TESTING before assuming every project must run the same checks.
 
 ## Next steps
 

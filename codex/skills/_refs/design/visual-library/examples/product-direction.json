@@ -1,0 +1,27 @@
+{
+  "id": "product-direction",
+  "question": "Give the product a clear first impression.",
+  "patterns": [
+    {
+      "pattern_id": "web-product",
+      "variant": "feature-led",
+      "label": "Feature-led composition",
+      "summary": "Pair the proposition with a compact product view.",
+      "best_when": "Visitors need to understand capability quickly",
+      "tradeoff": "Two columns share the first viewport"
+    },
+    {
+      "pattern_id": "web-product",
+      "variant": "story-led",
+      "label": "Story-led composition",
+      "summary": "Lead with a centered proposition and wide product view.",
+      "best_when": "A single message should lead the narrative",
+      "tradeoff": "Details move farther down the page"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the business requirements before offering.",
+  "criteria": [
+    "Explain the product quickly",
+    "Let the workspace tell part of the story"
+  ]
+}

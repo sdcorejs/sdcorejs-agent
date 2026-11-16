@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "forest-canopy",
+  "name": "Forest Canopy",
+  "tokens": {
+    "bg": "#faf9f6",
+    "surface": "#ffffff",
+    "text": "#2d4a2b",
+    "muted": "#52604b",
+    "border": "#7d8471",
+    "accent": "#2d4a2b",
+    "accent_text": "#ffffff",
+    "soft": "#e8ecdf",
+    "font": "serif"
+  },
+  "source_refs": [
+    "theme-forest-canopy"
+  ],
+  "adaptation": "Adapted presentation palette to semantic UI roles. Accent/muted tones adjusted for contrast, system font fallback replaces font assets; verify chosen pairs in the consuming UI."
+}

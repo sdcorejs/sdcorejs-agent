@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "core-patterns",
+      "repository": "sdcorejs/sdcorejs-angular",
+      "revision": "ed1aa5d7dd47991d2ed8ba911b9d69d009928b09",
+      "path": "versions/v19/projects/sdcorejs-angular/modules/pattern/README.md",
+      "url": "https://github.com/sdcorejs/sdcorejs-angular/blob/ed1aa5d7dd47991d2ed8ba911b9d69d009928b09/versions/v19/projects/sdcorejs-angular/modules/pattern/README.md",
+      "sha256": "8c1dc29ab172046a172135331b8c88bd4154d78f3a13d4ffd8bac836c0935264",
+      "license": "MIT",
+      "license_path": "licenses/core.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "core-list",
+      "repository": "sdcorejs/sdcorejs-angular",
+      "revision": "ed1aa5d7dd47991d2ed8ba911b9d69d009928b09",
+      "path": "versions/v19/projects/sdcorejs-angular/modules/pattern/docs/list.md",
+      "url": "https://github.com/sdcorejs/sdcorejs-angular/blob/ed1aa5d7dd47991d2ed8ba911b9d69d009928b09/versions/v19/projects/sdcorejs-angular/modules/pattern/docs/list.md",
+      "sha256": "f2f35aa966d6f91a11ba320673ddc563061edb6ff57f957b905652282a9c2f2e",
+      "license": "MIT",
+      "license_path": "licenses/core.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "core-split",
+      "repository": "sdcorejs/sdcorejs-angular",
+      "revision": "ed1aa5d7dd47991d2ed8ba911b9d69d009928b09",
+      "path": "versions/v19/projects/sdcorejs-angular/modules/pattern/docs/split.md",
+      "url": "https://github.com/sdcorejs/sdcorejs-angular/blob/ed1aa5d7dd47991d2ed8ba911b9d69d009928b09/versions/v19/projects/sdcorejs-angular/modules/pattern/docs/split.md",
+      "sha256": "53dd928334610b4ec9d0454d287dc45c19b00f7c6f06654d3ed52633131bb450",
+      "license": "MIT",
+      "license_path": "licenses/core.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "core-flow",
+      "repository": "sdcorejs/sdcorejs-angular",
+      "revision": "ed1aa5d7dd47991d2ed8ba911b9d69d009928b09",
+      "path": "versions/v19/projects/sdcorejs-angular/modules/pattern/docs/flow.md",
+      "url": "https://github.com/sdcorejs/sdcorejs-angular/blob/ed1aa5d7dd47991d2ed8ba911b9d69d009928b09/versions/v19/projects/sdcorejs-angular/modules/pattern/docs/flow.md",
+      "sha256": "ffcd5f77ba46fb8d928cda255b46acaac17147595ff04dcd19959ce18a88915f",
+      "license": "MIT",
+      "license_path": "licenses/core.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "core-wizard-source",
+      "repository": "sdcorejs/sdcorejs-angular",
+      "revision": "ed1aa5d7dd47991d2ed8ba911b9d69d009928b09",
+      "path": "versions/v19/projects/sdcorejs-angular/modules/pattern/features/import/pages/flow/flow.component.ts",
+      "url": "https://github.com/sdcorejs/sdcorejs-angular/blob/ed1aa5d7dd47991d2ed8ba911b9d69d009928b09/versions/v19/projects/sdcorejs-angular/modules/pattern/features/import/pages/flow/flow.component.ts",
+      "sha256": "7f962bc7aea14f354297e3085ef8c226acfe9d64ed419d7d8c3784b7e60f1c8d",
+      "license": "MIT",
+      "license_path": "licenses/core.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-pages",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "public/catalog/page-patterns.v1.json",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/public/catalog/page-patterns.v1.json",
+      "sha256": "f901bee2bebf2c5f5858753a995f70a7859f86f2dbb9b85fcb9035b714ab7239",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed.",
+      "selected_records": {
+        "key": "id",
+        "values": [
+          "list-standard",
+          "list-grouped-tree",
+          "list-master-detail",
+          "detail-overview",
+          "detail-tabbed",
+          "detail-related-records",
+          "form-simple",
+          "form-sections",
+          "form-line-items",
+          "drawer-compact",
+          "drawer-sections",
+          "roles-tree",
+          "roles-matrix"
+        ]
+      }
+    },
+    {
+      "id": "portal-registry",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/page/catalog/pattern-registry.ts",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/page/catalog/pattern-registry.ts",
+      "sha256": "0aed382d352c89c9b4a0b6a5bfc977394f8f349b31124484f4377783addc7ad4",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-compositions",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/pattern/catalog/pattern-catalog.ts",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/pattern/catalog/pattern-catalog.ts",
+      "sha256": "11af53b491a63c91241373113f163dd364ddb89ffd1b5601acd139679d8331de",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-shell",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/app/configurations/layout.configuration.ts",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/app/configurations/layout.configuration.ts",
+      "sha256": "6659739a04c9eaa62663dbf007b65a78568d1f65580865680beebca85ab16e83",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-tokens",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/styles/reference.scss",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/styles/reference.scss",
+      "sha256": "1ab580f74ba2115823e0035370e9e16ea4ccc78d9e3bd82916ccb6051c1a0fa9",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-split",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/page/features/list-master-detail/list-master-detail.component.html",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/page/features/list-master-detail/list-master-detail.component.html",
+      "sha256": "46840befc80bbdeb04a0a776fcdbf092e3ac44d44001eb397792f887b647efa3",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-form",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/page/features/form-sections/form-sections.component.html",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/page/features/form-sections/form-sections.component.html",
+      "sha256": "9f19d44b5ab11f0f054abd623b91b7015aa82cee811e1d8de90e5dc89999e432",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-tree",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/page/features/list-grouped-tree/list-grouped-tree.component.html",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/page/features/list-grouped-tree/list-grouped-tree.component.html",
+      "sha256": "80850f1c3b1de0a2607dd7abfcd456fbbce669d09863456323a7aa91c51bd476",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-detail",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/page/features/detail-overview/detail-overview.component.html",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/page/features/detail-overview/detail-overview.component.html",
+      "sha256": "07460f5c0be8d352cbf80d28b84a0555ab4e6483a90316101615424eb38c31f4",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-drawer",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/page/features/drawer-compact/drawer-compact.component.html",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/page/features/drawer-compact/drawer-compact.component.html",
+      "sha256": "bfe80a3f0a2b251c114999af8f4fb4e887f0009481b20b21d3001e7edcadc6c4",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "portal-hierarchy",
+      "repository": "sdcorejs/portal-template",
+      "revision": "4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c",
+      "path": "src/modules/page/features/role/components/permission-matrix.component.ts",
+      "url": "https://github.com/sdcorejs/portal-template/blob/4f9b6af51c1b0e139603c4dee7b6b5b62cdb457c/src/modules/page/features/role/components/permission-matrix.component.ts",
+      "sha256": "44dd94c923d92ff4b0fa52bfb457d94b7e091038c7bc7516e31b56a6bd13b1d4",
+      "license": "MIT",
+      "license_path": "licenses/portal.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "uipro-landing",
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "revision": "d643997c82e94742dd3bee43210b0198e8bbba3d",
+      "path": "src/ui-ux-pro-max/data/landing.csv",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/d643997c82e94742dd3bee43210b0198e8bbba3d/src/ui-ux-pro-max/data/landing.csv",
+      "sha256": "9a2edd3bb676c2a58f00ade7a062e285222d4297bfd847c8d5b056f0dbbf52d0",
+      "license": "MIT",
+      "license_path": "licenses/uipro.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed.",
+      "selected_records": {
+        "key": "Pattern ID",
+        "values": [
+          "hero-features-cta",
+          "product-demo-features",
+          "minimal-single-column",
+          "pricing-page-cta",
+          "comparison-table-cta"
+        ]
+      }
+    },
+    {
+      "id": "uipro-styles",
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "revision": "d643997c82e94742dd3bee43210b0198e8bbba3d",
+      "path": "src/ui-ux-pro-max/data/styles.csv",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/d643997c82e94742dd3bee43210b0198e8bbba3d/src/ui-ux-pro-max/data/styles.csv",
+      "sha256": "a9b6cadbd1cb9e7cb8398a3b445e0691d01e42ed5e5efa60a5d0c08c99c8100d",
+      "license": "MIT",
+      "license_path": "licenses/uipro.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed.",
+      "selected_records": {
+        "key": "Style ID",
+        "values": [
+          "minimalism-and-swiss-style",
+          "brutalism"
+        ]
+      }
+    },
+    {
+      "id": "uipro-provenance",
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "revision": "d643997c82e94742dd3bee43210b0198e8bbba3d",
+      "path": "src/ui-ux-pro-max/data/data-provenance.json",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/d643997c82e94742dd3bee43210b0198e8bbba3d/src/ui-ux-pro-max/data/data-provenance.json",
+      "sha256": "e29a3aab8d8418a23f67e00a8e8f3064afe4eea1183540ec4af374ec6f4fc938",
+      "license": "MIT",
+      "license_path": "licenses/uipro.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "theme-ocean-depths",
+      "repository": "anthropics/skills",
+      "revision": "1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064",
+      "path": "skills/theme-factory/themes/ocean-depths.md",
+      "url": "https://github.com/anthropics/skills/blob/1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064/skills/theme-factory/themes/ocean-depths.md",
+      "sha256": "a7ad8eec85341dbfcb2665da827a4b6a4baee08ab3335ac02421f18e6b46b2e2",
+      "license": "Apache-2.0",
+      "license_path": "licenses/anthropic.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "theme-modern-minimalist",
+      "repository": "anthropics/skills",
+      "revision": "1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064",
+      "path": "skills/theme-factory/themes/modern-minimalist.md",
+      "url": "https://github.com/anthropics/skills/blob/1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064/skills/theme-factory/themes/modern-minimalist.md",
+      "sha256": "b8bc572b75948d4df69c401af703b9262ed6820a3ceb270da30a529e92763614",
+      "license": "Apache-2.0",
+      "license_path": "licenses/anthropic.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "theme-arctic-frost",
+      "repository": "anthropics/skills",
+      "revision": "1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064",
+      "path": "skills/theme-factory/themes/arctic-frost.md",
+      "url": "https://github.com/anthropics/skills/blob/1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064/skills/theme-factory/themes/arctic-frost.md",
+      "sha256": "868a75a8fb5b2a61d0f0ab87c437fe632d3cbab6371c418f06aa2816ac109ae0",
+      "license": "Apache-2.0",
+      "license_path": "licenses/anthropic.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "theme-forest-canopy",
+      "repository": "anthropics/skills",
+      "revision": "1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064",
+      "path": "skills/theme-factory/themes/forest-canopy.md",
+      "url": "https://github.com/anthropics/skills/blob/1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064/skills/theme-factory/themes/forest-canopy.md",
+      "sha256": "ecb722efa24688e808b5bf323c334ca2349e989cfddd72ce8400ce5d4c4bd3e7",
+      "license": "Apache-2.0",
+      "license_path": "licenses/anthropic.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "theme-golden-hour",
+      "repository": "anthropics/skills",
+      "revision": "1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064",
+      "path": "skills/theme-factory/themes/golden-hour.md",
+      "url": "https://github.com/anthropics/skills/blob/1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064/skills/theme-factory/themes/golden-hour.md",
+      "sha256": "3444a00df971d3c2f06b665e21a2e9eb5d7d7d6f6281f2758773b8345776a139",
+      "license": "Apache-2.0",
+      "license_path": "licenses/anthropic.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "theme-midnight-galaxy",
+      "repository": "anthropics/skills",
+      "revision": "1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064",
+      "path": "skills/theme-factory/themes/midnight-galaxy.md",
+      "url": "https://github.com/anthropics/skills/blob/1780c5e5a552fd4d1c9d6a7b0cab26b0c2bef064/skills/theme-factory/themes/midnight-galaxy.md",
+      "sha256": "0e134c4c0324df41e34ac314269aa6829cd378cf3c304b31858d0cd158d2f944",
+      "license": "Apache-2.0",
+      "license_path": "licenses/anthropic.txt",
+      "treatment": "adapted",
+      "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "core-portal-filter-layout",
+      "source_refs": [
+        "core-patterns",
+        "portal-pages"
+      ],
+      "detail": "Core pattern E6 separates quick search and external filters; Portal 22.3.4 examples combine them. Resolve with the installed version and accepted project conventions. Preview uses one search location and does not imply Core API compatibility.",
+      "resolution": "consumer-version-and-convention-evidence-required"
+    }
+  ]
+}

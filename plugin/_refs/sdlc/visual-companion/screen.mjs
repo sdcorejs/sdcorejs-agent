@@ -12,13 +12,15 @@
  * screen fragment cannot introduce script, navigation, or a network call.
  */
 
+import { validatePatternPreview } from '../../design/visual-library/library.mjs';
+
 const isObject = (value) =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
 const isText = (value) => typeof value === 'string' && value.length > 0;
 const onlyKeys = (value, keys) => Object.keys(value).every((key) => keys.has(key));
 
 export const SCREEN_TYPES = Object.freeze(['single_select', 'multi_select', 'comparison', 'wireframe']);
-export const PREVIEW_KINDS = Object.freeze(['wireframe', 'svg', 'image', 'flow', 'table']);
+export const PREVIEW_KINDS = Object.freeze(['wireframe', 'svg', 'image', 'flow', 'table', 'pattern']);
 export const WIREFRAME_AREAS = Object.freeze(['header', 'nav', 'sidebar', 'main', 'aside', 'footer']);
 
 export const ID = /^[A-Za-z0-9][A-Za-z0-9_-]*$/u;
@@ -107,6 +109,10 @@ function validatePreview(preview, label, errors) {
   }
   if (!PREVIEW_KINDS.includes(preview.kind)) {
     errors.push(`${label}.kind is invalid`);
+    return;
+  }
+  if (preview.kind === 'pattern') {
+    errors.push(...validatePatternPreview(preview).map(message => `${label}: ${message}`));
     return;
   }
   const allowed = {
@@ -216,7 +222,7 @@ export function validateVisualScreen(screen) {
   if (!isObject(screen)) return ['screen must be an object'];
   if (!onlyKeys(screen, SCREEN_KEYS)) errors.push('screen has unknown properties');
   for (const key of SCREEN_KEYS) if (!(key in screen)) errors.push(`screen.${key} is required`);
-  if (screen.schema_version !== 1) errors.push('screen.schema_version must be 1');
+  if (![1, 2].includes(screen.schema_version)) errors.push('screen.schema_version must be 1 or 2');
   if (!isText(screen.screen_id) || !ID.test(screen.screen_id)) errors.push('screen.screen_id is invalid');
   if (!SCREEN_TYPES.includes(screen.type)) errors.push('screen.type is invalid');
   if (!isText(screen.question)) errors.push('screen.question is required');
@@ -250,6 +256,7 @@ export function validateVisualScreen(screen) {
     if (!ID.test(option.id ?? '')) errors.push(`${label}.id is invalid`);
     if (ids.has(option.id)) errors.push(`${label}.id is duplicated`);
     ids.add(option.id);
+    if (option.preview?.kind === 'pattern' && screen.schema_version !== 2) errors.push(`${label}: pattern requires screen v2`);
     if (option.preview !== undefined) validatePreview(option.preview, `${label}.preview`, errors);
   });
   if (!ids.has(screen.recommendation)) errors.push('screen.recommendation must reference an option id');

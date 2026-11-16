@@ -1,0 +1,1 @@
+PASS: captures parse; recorded verification exists; scoped memory retrieval and stale exclusion passed; existing application/tests/inputs/older memory unchanged; no convention rules created.

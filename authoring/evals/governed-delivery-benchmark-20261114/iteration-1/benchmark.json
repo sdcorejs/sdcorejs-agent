@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "kind": "fresh-host-agent-paired-pilot",
+  "base_revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "rubric_sha256": "7f06b0c19f2b34b13fbd59fb68199a1a952ac378e721495f9581e9046faba3f6",
+  "pack_manifest_sha256": {
+    "p17": "0649373da6af88f53cc3a33ae12c0231724a06de67b9499b6f6a6aa4efeb15ae",
+    "p42": "656cfb60531f0363ac8f27027d13fe80fb0e14c0c8d6bf725fc2d6b5572befa1"
+  },
+  "runtime": {
+    "host_model": "not exposed",
+    "reasoning_effort": "not exposed",
+    "token_usage": null
+  },
+  "repetitions": 1,
+  "summary": {
+    "baseline": {
+      "trials": 6,
+      "fully_passing_trials": 6,
+      "assertions_passed": 36,
+      "assertions_total": 36,
+      "assertion_pass_rate": 1.0,
+      "failed_assertions": 0,
+      "not_assessable_assertions": 0
+    },
+    "candidate": {
+      "trials": 6,
+      "fully_passing_trials": 6,
+      "assertions_passed": 36,
+      "assertions_total": 36,
+      "assertion_pass_rate": 1.0,
+      "failed_assertions": 0,
+      "not_assessable_assertions": 0
+    }
+  },
+  "observed_pass_rate_difference_percentage_points": 0.0,
+  "trials": [
+    {
+      "trial_id": "t01",
+      "case": "blueprint",
+      "arm": "baseline",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 1104,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t02",
+      "case": "blueprint",
+      "arm": "candidate",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 918,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t03",
+      "case": "ticket-refresh",
+      "arm": "candidate",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 1277,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t04",
+      "case": "ticket-refresh",
+      "arm": "baseline",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 1389,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t05",
+      "case": "adaptive-docs",
+      "arm": "baseline",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 1153,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t06",
+      "case": "adaptive-docs",
+      "arm": "candidate",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 834,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t07",
+      "case": "learning",
+      "arm": "candidate",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 1806,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t08",
+      "case": "learning",
+      "arm": "baseline",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 1003,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t09",
+      "case": "readonly-ticket",
+      "arm": "baseline",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 4168,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t10",
+      "case": "readonly-ticket",
+      "arm": "candidate",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 4283,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t11",
+      "case": "delivery-gaps",
+      "arm": "candidate",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 5269,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    },
+    {
+      "trial_id": "t12",
+      "case": "delivery-gaps",
+      "arm": "baseline",
+      "assertions": {
+        "pass": 6,
+        "fail": 0,
+        "not_assessable": 0
+      },
+      "assertion_total": 6,
+      "all_assertions_pass": true,
+      "visible_final_response_bytes": 5518,
+      "token_usage": null,
+      "provider_tool_calls": null,
+      "provider_turns": null
+    }
+  ],
+  "limitations": [
+    "Six-case scoped pilot, one attempt per arm; not the canonical ten-scenario live matrix.",
+    "Fresh host-agent paired evaluation, not NVIDIA Tier 3.",
+    "Logical filesystem isolation and instructions; not a per-agent container security boundary.",
+    "Fixtures are synthetic; no live Jira/GitHub or real product deployment.",
+    "No confidence or statistical-significance claim from one attempt per case.",
+    "Explicit prompts test requested execution, not spontaneous discovery.",
+    "No provider token, turn, tool-call or reliable latency telemetry.",
+    "Image fixture has invalid IDAT CRC; byte preservation is measured, image decoding/rendering is not.",
+    "Traces are agent reports supplemented by command logs and filesystem deltas, not full provider transcripts."
+  ]
+}

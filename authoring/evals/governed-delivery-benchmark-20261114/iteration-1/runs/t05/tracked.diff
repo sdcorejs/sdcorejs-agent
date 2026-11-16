@@ -1,0 +1,41 @@
+diff --git a/docs/operator-guide.md b/docs/operator-guide.md
+index 08629c7..10448d7 100644
+--- a/docs/operator-guide.md
++++ b/docs/operator-guide.md
+@@ -7,3 +7,36 @@ Human note: confirm the order reference with the caller before acting.
+ The cancellation steps have not been documented yet.
+ 
+ Human note: contact the duty operator for urgent exceptions.
++
++### Before you try to cancel
++
++Order Desk does not currently provide a way to complete a cancellation. The
++approved rule allows only an operator to cancel an order that is still a draft;
++it does not make a cancellation action available in this version.
++
++1. Confirm the order reference with the caller before acting.
++2. Establish your role and the order's current state. If either is unknown, stop
++   until it is confirmed.
++3. Use the table below to check eligibility. Even for an eligible draft, stop
++   here: this version cannot complete the cancellation. Do not tell the caller
++   that the order has been cancelled.
++
++| Your role and order state | What this means |
++| --- | --- |
++| Operator; draft | Eligible under the approved rule, but cancellation is not available in this version. |
++| Any other role; draft | You cannot cancel it. Refer the request to an operator. |
++| Any role; submitted | Cancellation is blocked. Submitted orders cannot be cancelled, including by administrators. |
++
++For urgent exceptions, follow the duty-operator note above. That contact does
++not grant permission to cancel a submitted order.
++
++### What to expect
++
++There is no cancellation completion confirmation to rely on in this version.
++Automatic customer notification is a proposal, not an available feature; do not
++promise a notification. Only cancellation eligibility has been implemented, so
++the cancellation workflow is partially covered.
++
++Developers and support maintainers can consult the
++[technical companion](../.sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md)
++for implementation evidence and verification limits.

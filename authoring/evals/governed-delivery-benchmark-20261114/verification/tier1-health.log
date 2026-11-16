@@ -1,0 +1,25 @@
+WARNING  Using explicit Semgrep executable override from                        
+         SKILLEVALUATOR_SEMGREP_PATH:                                           
+         /workspace/work/sdcorejs-benchmark-20261114/verification/tooling/uv-too
+         ls/semgrep/bin/semgrep                                                 
+WARNING  Using explicit skillspector executable override from                   
+         SKILLEVALUATOR_SKILLSPECTOR_PATH:                                      
+         /workspace/work/sdcorejs-benchmark-20261114/verification/tooling/uv-too
+         ls/skillspector/bin/skillspector                                       
+                         SkillEvaluator Doctor (Tier 1)                         
+ Check          Status   Details                                                
+────────────────────────────────────────────────────────────────────────────────
+ CLI package    pass     skillevaluator 0.9.0                                   
+ SkillSpector   pass     2.13.4 at                                              
+                         /workspace/work/sdcorejs-benchmark-20261114/verificat… 
+                         (from SKILLEVALUATOR_SKILLSPECTOR_PATH)                
+ Bandit         pass     1.9.4 at                                               
+                         /home/agent/.local/share/uv/tools/skillevaluator/bin/… 
+ Semgrep        pass     1.185.0 at                                             
+                         /workspace/work/sdcorejs-benchmark-20261114/verificat… 
+                         (from SKILLEVALUATOR_SEMGREP_PATH)                     
+ Gitleaks       pass     8.30.0 at                                              
+                         /workspace/work/sdcorejs-benchmark-20261114/verificat… 
+                         (managed)                                              
+ pip-audit      pass     2.10.1 at                                              
+                         /workspace/work/sdcorejs-benchmark-20261114/verificat… 

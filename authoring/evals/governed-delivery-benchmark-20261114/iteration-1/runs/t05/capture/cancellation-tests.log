@@ -1,0 +1,10 @@
+✔ operator can cancel draft (1.439857ms)
+✔ submitted order is locked (0.428302ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 173.809585

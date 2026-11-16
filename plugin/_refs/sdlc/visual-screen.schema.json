@@ -5,51 +5,148 @@
   "description": "One screen model shared by the live Visual Companion, the standalone static artifact, and the numbered Markdown fallback. The executable model in _refs/sdlc/visual-companion/screen.mjs is authoritative.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "screen_id", "type", "question", "criteria", "options", "recommendation", "fallback_prompt"],
+  "required": [
+    "schema_version",
+    "screen_id",
+    "type",
+    "question",
+    "criteria",
+    "options",
+    "recommendation",
+    "fallback_prompt"
+  ],
   "properties": {
-    "schema_version": { "const": 1 },
-    "screen_id": { "$ref": "#/$defs/id" },
-    "type": { "enum": ["single_select", "multi_select", "comparison", "wireframe"] },
-    "question": { "type": "string", "minLength": 1 },
-    "criteria": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "options": { "type": "array", "minItems": 2, "maxItems": 4, "items": { "$ref": "#/$defs/option" } },
-    "recommendation": { "$ref": "#/$defs/id" },
-    "fallback_prompt": { "type": "string", "minLength": 1 }
+    "schema_version": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "screen_id": {
+      "$ref": "#/$defs/id"
+    },
+    "type": {
+      "enum": [
+        "single_select",
+        "multi_select",
+        "comparison",
+        "wireframe"
+      ]
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "options": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/option"
+      }
+    },
+    "recommendation": {
+      "$ref": "#/$defs/id"
+    },
+    "fallback_prompt": {
+      "type": "string",
+      "minLength": 1
+    }
   },
   "$defs": {
-    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$" },
-    "assetName": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}\\.(?:png|jpe?g|gif|webp|svg)$" },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "assetName": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}\\.(?:png|jpe?g|gif|webp|svg)$"
+    },
     "option": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "label", "summary", "best_when", "tradeoff", "preview_asset"],
+      "required": [
+        "id",
+        "label",
+        "summary",
+        "best_when",
+        "tradeoff",
+        "preview_asset"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/id" },
-        "label": { "type": "string", "minLength": 1 },
-        "summary": { "type": "string", "minLength": 1 },
-        "best_when": { "type": "string", "minLength": 1 },
-        "tradeoff": { "type": "string", "minLength": 1 },
-        "preview_asset": { "type": "string", "minLength": 1 },
-        "preview": { "$ref": "#/$defs/preview" }
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "best_when": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tradeoff": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preview_asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preview": {
+          "$ref": "#/$defs/preview"
+        }
       }
     },
     "preview": {
       "description": "Optional renderable preview. A screen describes what to show and never carries behaviour.",
       "oneOf": [
-        { "$ref": "#/$defs/wireframePreview" },
-        { "$ref": "#/$defs/svgPreview" },
-        { "$ref": "#/$defs/imagePreview" },
-        { "$ref": "#/$defs/flowPreview" },
-        { "$ref": "#/$defs/tablePreview" }
+        {
+          "$ref": "#/$defs/wireframePreview"
+        },
+        {
+          "$ref": "#/$defs/svgPreview"
+        },
+        {
+          "$ref": "#/$defs/imagePreview"
+        },
+        {
+          "$ref": "#/$defs/flowPreview"
+        },
+        {
+          "$ref": "#/$defs/tablePreview"
+        },
+        {
+          "$ref": "../design/visual-library/preview.schema.json"
+        }
       ]
     },
     "wireframePreview": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "regions"],
+      "required": [
+        "kind",
+        "regions"
+      ],
       "properties": {
-        "kind": { "const": "wireframe" },
-        "caption": { "type": "string", "minLength": 1 },
+        "kind": {
+          "const": "wireframe"
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        },
         "regions": {
           "type": "array",
           "minItems": 1,
@@ -57,12 +154,34 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["label", "area"],
+            "required": [
+              "label",
+              "area"
+            ],
             "properties": {
-              "label": { "type": "string", "minLength": 1 },
-              "area": { "enum": ["header", "nav", "sidebar", "main", "aside", "footer"] },
-              "span": { "type": "integer", "minimum": 1, "maximum": 12 },
-              "note": { "type": "string", "minLength": 1 }
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "area": {
+                "enum": [
+                  "header",
+                  "nav",
+                  "sidebar",
+                  "main",
+                  "aside",
+                  "footer"
+                ]
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "note": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }
@@ -71,31 +190,66 @@
     "svgPreview": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "svg"],
+      "required": [
+        "kind",
+        "svg"
+      ],
       "properties": {
-        "kind": { "const": "svg" },
-        "caption": { "type": "string", "minLength": 1 },
-        "svg": { "type": "string", "minLength": 1, "maxLength": 65536 }
+        "kind": {
+          "const": "svg"
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        },
+        "svg": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        }
       }
     },
     "imagePreview": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "asset", "alt"],
+      "required": [
+        "kind",
+        "asset",
+        "alt"
+      ],
       "properties": {
-        "kind": { "const": "image" },
-        "caption": { "type": "string", "minLength": 1 },
-        "asset": { "$ref": "#/$defs/assetName" },
-        "alt": { "type": "string", "minLength": 1 }
+        "kind": {
+          "const": "image"
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        },
+        "asset": {
+          "$ref": "#/$defs/assetName"
+        },
+        "alt": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "flowPreview": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "nodes", "edges"],
+      "required": [
+        "kind",
+        "nodes",
+        "edges"
+      ],
       "properties": {
-        "kind": { "const": "flow" },
-        "caption": { "type": "string", "minLength": 1 },
+        "kind": {
+          "const": "flow"
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        },
         "nodes": {
           "type": "array",
           "minItems": 2,
@@ -103,11 +257,22 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["id", "label"],
+            "required": [
+              "id",
+              "label"
+            ],
             "properties": {
-              "id": { "$ref": "#/$defs/id" },
-              "label": { "type": "string", "minLength": 1 },
-              "role": { "type": "string", "minLength": 1 }
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         },
@@ -118,11 +283,21 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["from", "to"],
+            "required": [
+              "from",
+              "to"
+            ],
             "properties": {
-              "from": { "$ref": "#/$defs/id" },
-              "to": { "$ref": "#/$defs/id" },
-              "label": { "type": "string", "minLength": 1 }
+              "from": {
+                "$ref": "#/$defs/id"
+              },
+              "to": {
+                "$ref": "#/$defs/id"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }
@@ -131,18 +306,73 @@
     "tablePreview": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "columns", "rows"],
+      "required": [
+        "kind",
+        "columns",
+        "rows"
+      ],
       "properties": {
-        "kind": { "const": "table" },
-        "caption": { "type": "string", "minLength": 1 },
-        "columns": { "type": "array", "minItems": 1, "maxItems": 8, "items": { "type": "string", "minLength": 1 } },
+        "kind": {
+          "const": "table"
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
         "rows": {
           "type": "array",
           "minItems": 1,
           "maxItems": 24,
-          "items": { "type": "array", "items": { "type": "string" } }
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 1
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "options": {
+            "items": {
+              "properties": {
+                "preview": {
+                  "not": {
+                    "properties": {
+                      "kind": {
+                        "const": "pattern"
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

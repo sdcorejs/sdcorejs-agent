@@ -1,0 +1,25 @@
+{
+  "fixture": "inputs/quantity.png",
+  "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+  "checks": [
+    {
+      "chunk": "IHDR",
+      "stored_crc": "0xb51c0c02",
+      "computed_crc": "0xb51c0c02",
+      "matches": true
+    },
+    {
+      "chunk": "IDAT",
+      "stored_crc": "0xefa34599",
+      "computed_crc": "0xefa2a75b",
+      "matches": false
+    },
+    {
+      "chunk": "IEND",
+      "stored_crc": "0xae426082",
+      "computed_crc": "0xae426082",
+      "matches": true
+    }
+  ],
+  "effect": "The frozen image fixture has an invalid IDAT CRC. Fixed rubric evaluates faithful local byte capture, not visual decoding. Do not claim image-rendering or screenshot usability coverage. Preserve original fixture; fix in a future separately versioned experiment."
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "golden-hour",
+  "name": "Golden Hour",
+  "tokens": {
+    "bg": "#faf5eb",
+    "surface": "#ffffff",
+    "text": "#4a403a",
+    "muted": "#6f5642",
+    "border": "#9b8062",
+    "accent": "#805400",
+    "accent_text": "#ffffff",
+    "soft": "#f8e8c0",
+    "font": "sans"
+  },
+  "source_refs": [
+    "theme-golden-hour"
+  ],
+  "adaptation": "Adapted presentation palette to semantic UI roles. Accent/muted tones adjusted for contrast, system font fallback replaces font assets; verify chosen pairs in the consuming UI."
+}

@@ -4,6 +4,8 @@ Internal reference loaded by `sdcorejs-documentation` in `write-technical-doc`
 or `document-operation` mode. This file is not a dispatchable skill.
 Load `_refs/shared/documentation-layout.md` before resolving, discovering, or
 migrating a technical document.
+Load `_refs/documentation/documentation-profile.md` before selecting an outline
+or updating existing content; use its pure profile and update helpers.
 
 ## Purpose
 
@@ -57,7 +59,21 @@ write technical docs to `docs/technical/` by default.
 An explicit approved existing path remains authoritative. Layout v2 is the
 SDCoreJS default, not permission to overwrite a project convention.
 
-## Common Technical Doc Types
+## Audience, Scope and Technical Doc Types
+
+Call `selectDocumentationProfile` with the intended technical audience
+(`developer`, `maintainer` or `api-consumer`), optional explicit scope, and
+inspected source-backed evidence. Select module, entity, feature, task, role,
+state or journey scope using the returned predicates. An API-only feature can
+use feature scope with endpoint/auth/payload/error sections and no CRUD screens.
+Document type below refines the selected profile; it does not force a module or
+entity outline. Treat sections as evidence prompts, omitting inapplicable items
+and marking material unknowns. Do not invent pagination, retries or guarantees.
+
+Record `documentation_profile_version: 1`, `documentation_scope` and
+`documentation_audience` with the existing lifecycle/source metadata. Keep
+`technical-docs/<doc-key>/<doc-key>.md`; profile selection adds no directory layer
+and does not change semantic ownership.
 
 | Type | Default location when no convention exists | Required sections |
 |---|---|---|
@@ -104,6 +120,14 @@ Before writing or changing a technical doc:
 4. For code-backed docs, cite real paths and public entrypoints; do not describe files that were not inspected.
 5. For API-backed docs, identify auth, route prefix, request/response shape, errors, pagination/filtering, and permission codes from source evidence.
 6. For architecture docs, separate confirmed facts from inference. Mark inference explicitly when the code does not prove it.
+7. Read the entire existing destination and any trusted producer ownership/body
+   hash receipts. Call `planDocumentationUpdate` before writes. Existing human
+   or unmarked docs default to a scoped patch/proposal; retain their manual
+   content, decisions and frontmatter. A full replacement requires explicit
+   whole-document generated ownership with a matching prior content hash.
+   Managed updates require valid markers, exact document and previous body
+   hashes. Any conflict blocks writing; compare current bytes again at write
+   time. Operation names such as `rewrite` do not bypass this contract.
 
 ## Writing Rules
 
@@ -118,6 +142,17 @@ Before writing or changing a technical doc:
   `<API_KEY>`, `<DATABASE_URL>`, `<PROJECT_ID>`, or `example.com`.
 - Mark destructive or irreversible actions clearly.
 - Treat mojibake as blocking. Fix corrupted text before returning.
+- Place source-backed framework, component, service, directive and dependency
+  inventories here when useful for the technical audience. For Angular, the
+  Core UI table may list actual `@sdcorejs/angular` imports/usages and one
+  feature-specific purpose per row, observed in templates/components. Omit
+  unsupported inventories; these never belong in end-user guides.
+
+When applicable, render the technical inventory from inspected evidence:
+
+| Framework / Core UI unit | Role in this feature | Inspected source |
+|---|---|---|
+| `<actual imported symbol>` | <concrete technical responsibility> | `<source path>` |
 
 ## Operation Rules
 
@@ -128,7 +163,7 @@ Before writing or changing a technical doc:
    creating a missing doc for a new feature.
 3. Validate the key, exact entry shape, case-insensitive collisions, and
    containment before writing.
-4. Build a minimal outline from the doc type table.
+4. Build a minimal outline from the selected profile, refined by the doc type.
 5. Fill each section from inspected evidence.
 6. Add an `Open questions` section when evidence is incomplete.
 
@@ -137,6 +172,8 @@ Before writing or changing a technical doc:
 1. Preserve all confirmed facts, decisions, warnings, and commands.
 2. Improve wording and order without changing semantics.
 3. Keep links and code references valid.
+4. Use a narrow authorized patch for human prose or the managed-update contract
+   for generated sections; preserve unrelated notes and decisions.
 
 ### improve
 

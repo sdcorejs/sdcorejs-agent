@@ -4,6 +4,12 @@ Owner: sdcorejs-explore, after final code writes and convention sync. Review rea
 instructions and emits candidates only. Absence of project_bootstrap in the
 convention policy is disabled; existing projects are not automatically migrated.
 
+Project engineering decisions belong in the detailed blueprint from
+`project-blueprint.md`, not in this managed instruction block. Blueprint setup
+and AGENTS.md projection have separate write authority. Validate the blueprint
+and accepted conventions first; preserve human instructions and link the detailed
+rules. Missing instructions are not permission to generate a boilerplate baseline.
+
 For explicitly approved setup, add this optional policy extension in the owning
 repository's convention policy (which retains its normal identity/capture fields):
 
@@ -43,6 +49,17 @@ newlines; invalid encoding/markers, links/reparse paths, nested Git roots, stale
 hashes and conflicting writers refuse. The helper does not create parent dirs.
 Detailed rules stay under .sdcorejs/conventions; the block carries a relative
 pointer and stable baseline, without machine paths or copied source evidence.
+
+The managed block also records this project's use of the public SDCoreJS Agent
+pack and links its official tool-specific installation. A future coding agent
+checks actual skill availability and recommends setup when missing; the block
+grants no installation or global-config authority. Preserve a known decline and
+use the portable baseline when setup is unavailable. Consumer projects do not
+inherit this pack's internal authoring prerequisites.
+
+For a project with CLAUDE.md instructions, first follow the consolidation proposal
+in `existing-project-onboarding.md`. This managed-block writer changes only its
+approved AGENTS target; it neither merges nor removes human CLAUDE instructions.
 
 Disable future sync by setting mode disabled; this does not delete rules or the
 existing block. Repair malformed markers by proposing an exact bounded patch

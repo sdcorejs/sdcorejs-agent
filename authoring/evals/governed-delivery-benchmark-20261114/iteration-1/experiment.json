@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "base_revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "candidate": "uncommitted working tree frozen before trials",
+  "pack_map": {
+    "p17": "baseline",
+    "p42": "candidate"
+  },
+  "pack_manifest_sha256": {
+    "p17": "0649373da6af88f53cc3a33ae12c0231724a06de67b9499b6f6a6aa4efeb15ae",
+    "p42": "656cfb60531f0363ac8f27027d13fe80fb0e14c0c8d6bf725fc2d6b5572befa1"
+  },
+  "cases_sha256": "7f06b0c19f2b34b13fbd59fb68199a1a952ac378e721495f9581e9046faba3f6",
+  "setup_sha256": "1782eabd072ed4b54f2d43222c5ebcd2af86ba06781f1a2015f4486d9e60e916",
+  "repetitions": 1,
+  "trials": [
+    {
+      "id": "t01",
+      "case": "blueprint",
+      "pack": "p17",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/prompt.txt",
+      "fixture_manifest_sha256": "ffc7496d1ba44e5c7a824eaf014108ebbbf8cc695a545caf9b77129d2ae21644"
+    },
+    {
+      "id": "t02",
+      "case": "blueprint",
+      "pack": "p42",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/prompt.txt",
+      "fixture_manifest_sha256": "ffc7496d1ba44e5c7a824eaf014108ebbbf8cc695a545caf9b77129d2ae21644"
+    },
+    {
+      "id": "t03",
+      "case": "ticket-refresh",
+      "pack": "p42",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/prompt.txt",
+      "fixture_manifest_sha256": "9d2f859796c82767d665d0ae184ad49f01695b4ab379516209db3b72b4ca243e"
+    },
+    {
+      "id": "t04",
+      "case": "ticket-refresh",
+      "pack": "p17",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/prompt.txt",
+      "fixture_manifest_sha256": "9d2f859796c82767d665d0ae184ad49f01695b4ab379516209db3b72b4ca243e"
+    },
+    {
+      "id": "t05",
+      "case": "adaptive-docs",
+      "pack": "p17",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t05/prompt.txt",
+      "fixture_manifest_sha256": "9f3e0cd05e4b04f1c9f763146a295b8401c195fe929975e072981790463797c6"
+    },
+    {
+      "id": "t06",
+      "case": "adaptive-docs",
+      "pack": "p42",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/prompt.txt",
+      "fixture_manifest_sha256": "9f3e0cd05e4b04f1c9f763146a295b8401c195fe929975e072981790463797c6"
+    },
+    {
+      "id": "t07",
+      "case": "learning",
+      "pack": "p42",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/prompt.txt",
+      "fixture_manifest_sha256": "be6f66f114a92ce0005a6235e1f17a38e6391002c7d11ec05d03c745832fd4c4"
+    },
+    {
+      "id": "t08",
+      "case": "learning",
+      "pack": "p17",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/prompt.txt",
+      "fixture_manifest_sha256": "be6f66f114a92ce0005a6235e1f17a38e6391002c7d11ec05d03c745832fd4c4"
+    },
+    {
+      "id": "t09",
+      "case": "readonly-ticket",
+      "pack": "p17",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t09/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t09/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t09/prompt.txt",
+      "fixture_manifest_sha256": "5617c7be3ae9727d4eb432bc8fae7e394cc21ef033b2360d25863c1dec9d53ac"
+    },
+    {
+      "id": "t10",
+      "case": "readonly-ticket",
+      "pack": "p42",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t10/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t10/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t10/prompt.txt",
+      "fixture_manifest_sha256": "5617c7be3ae9727d4eb432bc8fae7e394cc21ef033b2360d25863c1dec9d53ac"
+    },
+    {
+      "id": "t11",
+      "case": "delivery-gaps",
+      "pack": "p42",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/prompt.txt",
+      "fixture_manifest_sha256": "36eda5fc6ba5905b5b623c7a5830d0032aac546f75f071f900519986e82be0f7"
+    },
+    {
+      "id": "t12",
+      "case": "delivery-gaps",
+      "pack": "p17",
+      "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+      "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture",
+      "prompt": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/prompt.txt",
+      "fixture_manifest_sha256": "36eda5fc6ba5905b5b623c7a5830d0032aac546f75f071f900519986e82be0f7"
+    }
+  ],
+  "runtime": {
+    "host_model": "not exposed",
+    "reasoning_effort": "not exposed",
+    "token_usage": null
+  },
+  "limitations": [
+    "Six-case scoped pilot, one attempt per arm; not the canonical ten-scenario live matrix.",
+    "Fresh host-agent paired evaluation, not NVIDIA Tier 3.",
+    "Logical filesystem isolation and instructions; not a per-agent container security boundary.",
+    "Fixtures are synthetic; no live Jira/GitHub or real product deployment."
+  ]
+}

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-product
-description: Product-track executor for PO docs, traceability, and task breakdown. Use for PRDs, user stories, acceptance criteria, feature ledgers, requirement review, traceability matrix, UAT checklists, requirement/implementation/test consistency, or breaking PRDs and stories into fixed-format role tasks with sizing, capacity-based assignment, and approved tracker tickets. Writes .sdcorejs/product/, .sdcorejs/docs/product/, and .sdcorejs/projects/; does not generate app code. Applies across tracks. Runtime-localized.
+description: Product executor for Jira/GitHub ticket snapshots, source refresh, local images, proposed AC/conflicts, delivery evidence and tracker sync; PRDs, stories, AC/UAT, traceability, requirement consistency and fixed-format task breakdown with sizing and assignees. Writes Product, ticket and project artifacts; no app code. Standalone lightweight TASKID notes belong to Documentation. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetch, Write
 ---
 
@@ -10,7 +10,6 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 
 # Product Track
-
 
 ## Shared Protocols
 
@@ -41,16 +40,26 @@ two documentation layers in the semantic owner repository:
 
 ## When to Use
 
-Use this skill in four modes.
+Use this skill in the following modes; tracked intake/delivery adds the modes below.
 
 | Mode | Trigger | Output |
 |---|---|---|
+| Intake / Refresh | a tracked implementation starts, resumes or its source changes | immutable sanitized ticket snapshot, local assets, rewrite, proposed AC/conflicts and delta |
+| Delivery | ticket verification and evidence are ready | bound evidence bundle, scoped tracker update plan and verified readback receipt |
 | Seed | after spec approval, or user asks for product/PO doc | PRD + user stories + acceptance criteria + UAT checklist + ledger |
 | Update | after plan approval or implementation changes | product docs plus implementation/test mapping updated |
 | Audit | before done/commit/PR, or user asks if scope is complete | gap report across requirement, implementation, tests |
 | Task-breakdown | user asks to break PRDs or stories into tasks, create tickets for assignees, or review sprint stories for a role | role tasks in the fixed format, `.sdcorejs/projects/<slug>/tasks/<scope>.md`, optional approved tracker writes, run report |
 
-If the request is only app code generation, do not replace the app executor. Run this skill alongside it for traceability. TASKID requirement records stay with `sdcorejs-documentation`.
+If the request is only app code generation, do not replace the app executor. Run this skill alongside it for traceability. Standalone lightweight TASKID records stay with `sdcorejs-documentation`; tracked intake and source snapshots belong here. A documentation view links to them without becoming another editable requirement authority.
+
+## Ticket intake, refresh and delivery
+
+Load `../../_refs/product/ticket-intake.md` and `../../_refs/shared/governed-delivery.md`.
+Product owns immutable snapshots, reviewed local assets, proposed AC/conflicts,
+source deltas and evidence-linked sync. Spec owns accepted behavior. Use the
+helpers and canonical validation map; enforce current revision, scoped tracker
+write authority, idempotency and readback. Report local and remote outcomes separately.
 
 ## Task-breakdown mode
 
@@ -429,26 +438,8 @@ Status vocabulary:
 
 ## Report Format
 
-When auditing, report briefly:
-
-```markdown
-Product traceability - <feature>
-
-| AC | Requirement | Implementation | Test | Status |
-|---|---|---|---|---|
-| AC-001 | agreed | done | done | done |
-| AC-002 | agreed | partial | missing | blocker |
-
-Verdict: done | partial | blocked
-Ledger: `.sdcorejs/docs/product/<file>.md`
-Product docs: `.sdcorejs/product/prds/<file>.md`, `.sdcorejs/product/user-stories/<file>.md`, `.sdcorejs/product/acceptance-criteria/<file>.md`
-Legacy compatibility reads: `<legacy path | none>`
-
-Next actions:
-- <only real gaps>
-```
-
-Every generated report and final response displays canonical paths.
+Load `../../_refs/product/traceability-report.md` for the concise AC/implementation/test
+report. Display canonical paths and only real gaps.
 
 ## Rules
 

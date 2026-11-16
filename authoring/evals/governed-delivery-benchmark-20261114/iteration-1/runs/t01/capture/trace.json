@@ -1,0 +1,504 @@
+{
+  "task": "Initialize durable Order Desk engineering blueprint",
+  "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+  "pack_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+  "capture_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture",
+  "scope": {
+    "allowed_writes": [
+      "target/AGENTS.md",
+      "target/.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md",
+      "capture/**"
+    ],
+    "application_code_changed": false,
+    "tests_changed": false,
+    "dependencies_changed": false,
+    "package_installs": false,
+    "outbound_network_used": false,
+    "external_services_used": false,
+    "subagents_used": false,
+    "local_http": "Only the existing test suite server on 127.0.0.1 with an ephemeral port; closed by test teardown."
+  },
+  "authorization": {
+    "source": "User task in prompt.txt",
+    "actor": "user",
+    "allowed": "Write project guidance/blueprint and link from AGENTS.md while preserving manual policy; verify available commands.",
+    "document_review_performed_by_user": false,
+    "tenant_model_selected": false,
+    "tenant_model_approved": false
+  },
+  "dispatch": {
+    "selection_basis": "name/description frontmatter, then selected skill bodies",
+    "skills_frontmatter_loaded": [
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/documentation.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/parallel-dispatch.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/repair-loop.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/subagent-driven-development.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/using-skills.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/01-brainstorming.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/02-spec.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/03-plan.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/04-execute-plan.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/sdlc/architecture.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/cleanup.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/debug.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/explore.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/git.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/review.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/ship.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/simplify.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/angular/sdcorejs-angular.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/content/sdcorejs-content.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/design/sdcorejs-design.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/nestjs/sdcorejs-nestjs.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/product/sdcorejs-product.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/test/sdcorejs-test.md"
+    ],
+    "skills_selected": [
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/explore.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/documentation.md"
+    ],
+    "actions": [
+      "sdcorejs-explore: targeted read-only documentation fact harvest",
+      "sdcorejs-documentation: write-technical-doc"
+    ],
+    "classification": {
+      "tracks": [
+        "documentation",
+        "node"
+      ],
+      "stack_profiles": [
+        "node-general",
+        "node-esm"
+      ],
+      "repository_role": "standalone",
+      "repository_id": "github.com/benchmark-sdcorejs/order-desk",
+      "source_revision": "91f78ce774bd079c2489ccc714064b0422b3de8f"
+    },
+    "bootstrap_disposition": "No existing convention policy; controlled automatic bootstrap remains disabled. The user-authorized one-time plain AGENTS documentation link was appended without replacing human text or creating a managed block, standing sync authority, or convention registry."
+  },
+  "pack_entrypoints_loaded": [
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/AGENTS.md"
+  ],
+  "references_loaded": [
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/runtime-protocols.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/tasklist.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/session-authority.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/communication-economy.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/explore-convention-actions.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap-template.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/convention-context.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/testing-philosophy.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/module-e2e-contract.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-technical-doc.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.md",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap.mjs",
+    "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/intent.mjs"
+  ],
+  "target_evidence_loaded": [
+    "AGENTS.md",
+    "README.md",
+    "package.json",
+    "src/order.mjs",
+    "src/server.mjs",
+    "test/unit.test.mjs",
+    "test/integration.test.mjs",
+    "test/e2e.test.mjs"
+  ],
+  "discovery_and_read_commands": [
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/prompt.txt",
+      "exit_code": 0,
+      "observed_result": "Read the bounded offline task and allowed paths."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/AGENTS.md",
+      "exit_code": 0,
+      "observed_result": "Read pack workflow and dispatch rules."
+    },
+    {
+      "command": "rg --files -g '!node_modules' -g '!package-lock.json' -g '!pnpm-lock.yaml' -g '!yarn.lock' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "observed_result": "Listed only allowed pack and target paths; display was truncated; no sibling or rubric content was read."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nroot=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills')\nfor p in sorted(root.rglob('*.md')):\n    t=p.read_text()\n    if t.startswith('---\\n'):\n        print(str(p)+'\\n---'+t.split('---',2)[1]+'---\\n')\nPY",
+      "exit_code": 0,
+      "observed_result": "Displayed frontmatter of all 25 public skills; selected Explore then Documentation."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/runtime-protocols.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/tasklist.md /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target/AGENTS.md",
+      "exit_code": 0,
+      "observed_result": "Read context, runtime, progress and effective target instruction policy."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/explore.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/session-authority.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap.md",
+      "exit_code": 0,
+      "observed_result": "Read Explore ownership, session authority and controlled automatic instruction projection; repeated last two refs after display truncation."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/communication-economy.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md",
+      "exit_code": 0,
+      "observed_result": "Read output and artifact lifecycle contracts."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/session-authority.md",
+      "exit_code": 0,
+      "observed_result": "Recovered full authority and bootstrap text from previous combined truncated display."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nroot=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target')\nfor p in sorted(root.rglob('*')):\n    if p.is_file() and '.git' not in p.parts:\n        print('FILE '+str(p.relative_to(root)))\n        print(p.read_text())\nPY",
+      "exit_code": 0,
+      "invocations": 2,
+      "observed_result": "Read eight small target files; repeated once because combined display was truncated. No inputs or nested instructions existed."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/explore-convention-actions.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap-template.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/convention-context.md",
+      "exit_code": 0,
+      "observed_result": "Read convention sync and bootstrap constraints; did not activate or write a convention registry."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+      "exit_code": 0,
+      "observed_result": "Loaded registry and runtime policy; combined display was truncated. Registry establishes documentation/node tracks, node-general/node-esm profiles and standalone role."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/documentation.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/testing-philosophy.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/module-e2e-contract.md",
+      "exit_code": 0,
+      "observed_result": "Read Documentation plus behavior-driven testing and module E2E applicability guidance. Documentation body replayed from tool memory after display truncation."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-technical-doc.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.md",
+      "exit_code": 0,
+      "observed_result": "Read technical documentation destination and layout contracts."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap.mjs",
+      "exit_code": 0,
+      "observed_result": "Inspected fixed managed-block projection and ownership requirements; did not invoke it or assert a cooperative writer contract."
+    },
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/intent.mjs",
+      "exit_code": 0,
+      "observed_result": "Read direct documentation intent resolver; later executed it locally."
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-01.log",
+      "stdout": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-02.log",
+      "stdout": "91f78ce774bd079c2489ccc714064b0422b3de8f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-03.log",
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--",
+        "AGENTS.md"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-04.log",
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--",
+        "AGENTS.md"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-05.log",
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--get",
+        "remote.origin.url"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-06.log",
+      "stdout": "https://github.com/benchmark-sdcorejs/order-desk.git\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-07.log",
+      "stdout": "v24.22.1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "npm",
+        "--version"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "preflight-08.log",
+      "stdout": "11.9.0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 1,
+      "output": "unit.log",
+      "stdout": "",
+      "stderr": "Exit prior to config file resolving\ncause\ndouble-loading config \"/dev/null\" as \"global\", previously loaded as \"user\"\n"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:integration"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 1,
+      "output": "integration.log",
+      "stdout": "",
+      "stderr": "Exit prior to config file resolving\ncause\ndouble-loading config \"/dev/null\" as \"global\", previously loaded as \"user\"\n"
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 1,
+      "output": "e2e.log",
+      "stdout": "",
+      "stderr": "Exit prior to config file resolving\ncause\ndouble-loading config \"/dev/null\" as \"global\", previously loaded as \"user\"\n"
+    },
+    {
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "unit-retry.log",
+      "stdout": "\n> test\n> node --test test/unit.test.mjs\n\n✔ valid quantity (1.913744ms)\n✔ rejects zero (0.698438ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 252.805878\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:integration"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "integration-retry.log",
+      "stdout": "\n> test:integration\n> node --test test/integration.test.mjs\n\n✔ operator can cancel draft (1.926919ms)\n✔ submitted order is locked (0.281868ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 153.421786\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "e2e-retry.log",
+      "stdout": "\n> test:e2e\n> node --test test/e2e.test.mjs\n\n✔ POST orders over actual HTTP (87.805427ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 458.048738\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/verify_doc_intent.mjs"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "doc-intent.log",
+      "stdout": "{\"mode\":\"write-technical-doc\",\"writes\":true,\"ticket_id\":null}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/capture/verify_blueprint.py"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "blueprint-verification.log",
+      "stdout": "{\n  \"result\": \"passed\",\n  \"changed_paths\": [\n    \".sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md\",\n    \"AGENTS.md\"\n  ],\n  \"manual_policy_preserved\": true,\n  \"baseline_source_tests_and_manifest_unchanged\": true,\n  \"local_links_validated\": 10,\n  \"utf8_and_whitespace\": \"passed\",\n  \"sha256\": {\n    \".sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md\": \"5f1d4dc9f4784da1b3e33b079d69925632fc8b598d0ef54d40ff9b95acbd2253\",\n    \"AGENTS.md\": \"58be40fd90123f3ca962af20f1181706bfa95a6709ae2fb1940744820ad1b6d6\"\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "diff-check.log",
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--untracked-files=all"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "final-status.log",
+      "stdout": " M AGENTS.md\n?? .sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--",
+        "AGENTS.md"
+      ],
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target",
+      "exit_code": 0,
+      "output": "agents-diff.log",
+      "stdout": "diff --git a/AGENTS.md b/AGENTS.md\nindex 040cef0..27d14b7 100644\n--- a/AGENTS.md\n+++ b/AGENTS.md\n@@ -1,3 +1,5 @@\n # Order Desk\n \n Manual policy: preserve operator terminology and never log customer secrets.\n+\n+Engineering guidance: read the [Order Desk engineering blueprint](.sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md) before engineering changes. It distinguishes established policy, observed implementation, recommendations, and unresolved decisions; recording a decision does not approve it.\n",
+      "stderr": ""
+    }
+  ],
+  "verification_environment": {
+    "node": "v24.22.1",
+    "npm": "11.9.0",
+    "npm_config": "Explicit separate empty user/global config files inside capture; update notifier, audit, and fund disabled; cache inside capture.",
+    "initial_failure": "All three first test invocations exited 1 before executing tests because both npm configuration paths were /dev/null. Npm rejects loading the same file as global and user config. Retried with distinct empty files; all suites passed. Both initial and retry output retained."
+  },
+  "artifacts_changed": [
+    {
+      "path": "AGENTS.md",
+      "operation": "modified",
+      "sha256": "58be40fd90123f3ca962af20f1181706bfa95a6709ae2fb1940744820ad1b6d6",
+      "scope": "explicitly authorized project guidance/blueprint and AGENTS link"
+    },
+    {
+      "path": ".sdcorejs/documentation/technical-docs/engineering-blueprint/engineering-blueprint.md",
+      "operation": "created",
+      "sha256": "5f1d4dc9f4784da1b3e33b079d69925632fc8b598d0ef54d40ff9b95acbd2253",
+      "scope": "explicitly authorized project guidance/blueprint and AGENTS link"
+    }
+  ],
+  "capture_artifacts": [
+    "AGENTS.before.md",
+    "agents-diff.log",
+    "baseline-files.json",
+    "before-manifest.json",
+    "blueprint-verification.log",
+    "command-records.json",
+    "diff-check.log",
+    "doc-intent.log",
+    "e2e-retry.log",
+    "e2e.log",
+    "final-status.log",
+    "integration-retry.log",
+    "integration.log",
+    "npm-global.config",
+    "npm-user.config",
+    "preflight-01.log",
+    "preflight-02.log",
+    "preflight-03.log",
+    "preflight-04.log",
+    "preflight-05.log",
+    "preflight-06.log",
+    "preflight-07.log",
+    "preflight-08.log",
+    "response.md",
+    "unit-retry.log",
+    "unit.log",
+    "verify_blueprint.py",
+    "verify_doc_intent.mjs",
+    "write_trace.py"
+  ],
+  "verification_summary": {
+    "unit": {
+      "passed": 2,
+      "failed": 0
+    },
+    "integration_script": {
+      "passed": 2,
+      "failed": 0,
+      "limitation": "Pure canCancel tests, not service-boundary integration evidence."
+    },
+    "e2e": {
+      "passed": 1,
+      "failed": 0,
+      "scope": "Real HTTP success path only."
+    },
+    "git_diff_check": "passed",
+    "links": "10 local links validated",
+    "manual_policy": "Original AGENTS bytes preserved as exact prefix",
+    "protected_files": "All original non-AGENTS files retain baseline SHA-256",
+    "documentation_checks": "UTF-8, no replacement/NUL characters, trailing whitespace, final newline, required metadata and exact changed-file allowlist passed"
+  },
+  "limitations": [
+    "No tenant authorization model selected, approved, implemented, or tested; D-TENANT-001 remains open.",
+    "Current integration script contains domain-level tests only.",
+    "E2E success path only; negative HTTP scenarios are documented as uncovered, not passed.",
+    "No build, lint, format, typecheck, coverage target, browser UI suite, or deployment check is configured.",
+    "No source or tests changed to close existing coverage or API-hardening gaps because the user limited writes to documentation/guidance.",
+    "No managed convention registry or automatic instruction projection enabled; observed patterns remain labeled observations.",
+    "No Git commit, staging, push, external publication, dependency installation, or maintainer authoring tool used."
+  ],
+  "final_response": "response.md"
+}

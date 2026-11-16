@@ -1,0 +1,4 @@
+$ git rev-parse --show-toplevel
+/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t01/target
+
+exit_code=0

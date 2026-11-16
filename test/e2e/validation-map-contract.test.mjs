@@ -5,6 +5,7 @@ import test from 'node:test';
 
 import { buildPortableHandoff } from '../../_refs/harness/communication-economy.mjs';
 import { approveDecisionCoverage } from '../../_refs/shared/decision-coverage.mjs';
+import { createApprovedArtifact } from '../../_refs/shared/approved-artifact.mjs';
 
 import {
   VALIDATION_AUTOMATION,
@@ -266,6 +267,45 @@ test('validation map accepts canonical rows and the smallest proving layer', () 
     validationRow({ cwd: '.' }),
   ], { decision_coverage: decisionCoverage() });
   assert.equal(workspaceRoot.valid, true, workspaceRoot.blocker_messages.join('\n'));
+});
+
+test('validation authority accepts recorded session delegation without inventing document approval', () => {
+  const coverage = decisionCoverage();
+  const delegatedMetadata = {
+    ...coverage.approved_artifact.metadata,
+    approval_source: 'delegated-session-scope',
+    approved_by: null,
+    instruction_reference: 'Fixture user instruction: implement and verify the scoped authorization plan.',
+    document_review_performed: false,
+  };
+  coverage.approved_artifact = createApprovedArtifact({
+    metadata: delegatedMetadata, body: coverage.approved_artifact.body,
+  });
+  const result = validateValidationMap([validationRow()], { decision_coverage: coverage });
+  assert.equal(result.valid, true, result.blocker_messages.join('\n'));
+  assert.equal(result.approval_ready, true);
+  assert.equal(coverage.approved_artifact.metadata.approved_by, null);
+  assert.equal(coverage.approved_artifact.metadata.document_review_performed, false);
+
+  for (const override of [
+    { instruction_reference: undefined }, { instruction_reference: ' ' },
+    { document_review_performed: undefined }, { document_review_performed: true },
+    { approved_by: 'invented-reviewer' }, { approval_source: 'assumed-delegation' },
+  ]) {
+    const invalid = structuredClone(coverage);
+    invalid.approved_artifact = createApprovedArtifact({
+      metadata: { ...delegatedMetadata, ...override }, body: coverage.approved_artifact.body,
+    });
+    const rejected = validateValidationMap([validationRow()], { decision_coverage: invalid });
+    assert.ok(codes(rejected).includes('DECISION_COVERAGE_APPROVAL_INVALID'), JSON.stringify(override));
+  }
+  const tampered = structuredClone(coverage);
+  tampered.approved_artifact.metadata.instruction_reference = 'Replaced instruction without resealing.';
+  assert.ok(codes(validateValidationMap([validationRow()], { decision_coverage: tampered })).includes('DECISION_COVERAGE_APPROVAL_INVALID'));
+  const changedBoundary = structuredClone(coverage);
+  changedBoundary.records.find(({ id }) => id === 'D-001').validation_boundary.kind = 'none';
+  const changedRow = validationRow({ boundary: { kind: 'none', approval_ref: 'D-001', source_refs: ['R-001', 'AC-001', 'INV-001'] }, authorization_boundary: false });
+  assert.ok(codes(validateValidationMap([changedRow], { decision_coverage: changedBoundary })).includes('DECISION_COVERAGE_APPROVAL_INVALID'));
 });
 
 test('authorization rows require server or API denial evidence', () => {

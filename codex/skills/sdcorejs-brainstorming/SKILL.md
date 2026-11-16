@@ -37,6 +37,20 @@ improvements. Do not infer a full design-system task from a small UI question.
 Q&A and bounded explicit fixes retain their existing lightweight routing.
 Backend-only questions do not load UI/UX references.
 
+## Initialization and external tickets
+
+For new-project setup or baseline changes, load
+`../_refs/shared/project-blueprint.md` and discover the applicable engineering
+areas, existing conventions, proposed decisions and verification commands.
+Keep this phase read-only; pass the concrete blueprint decisions to Spec,
+Architecture and Plan for the scoped owning writer.
+
+For a tracked implementation, load `../_refs/shared/governed-delivery.md` and route
+source capture/refresh to Product under the existing implementation authority.
+Consume the snapshot rewrite, local source images, gaps and proposed AC in the
+requirement discussion. Unapproved proposals and source conflicts remain visible;
+they never silently become accepted behavior.
+
 ## Process
 
 ### 0. Detect execution context
@@ -209,6 +223,14 @@ When in explore mode:
 Do not continue to blocker confirmation until the direction is selected or the user explicitly says "you decide".
 
 ## Optional Visual Companion
+
+At approach comparison, recognize concrete choices even without a tool name:
+list versus drawer, drawer versus split, grouped form versus justified steps,
+or website compositions. Once requested or accepted, load
+`../_refs/design/visual-library/README.md`, select viable task-based patterns and
+build HTML from the user's brief. Fixed spacing, settled layouts and declined
+visual threads need no new comparison. One requested layout gets one preview;
+business blockers still come before option selection.
 
 Before presenting or settling an open decision, apply
 `../_refs/sdlc/visual-offer-policy.md`. Assess actual alternatives and visual

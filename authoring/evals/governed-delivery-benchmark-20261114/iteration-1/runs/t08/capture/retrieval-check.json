@@ -1,0 +1,65 @@
+{
+  "phase": "retrieval-and-freshness-demonstration",
+  "request": "normalizeCategory category normalization null undefined trim lowercase",
+  "selected_by_explore": [
+    ".sdcorejs/memories/node/normalization-category-null-input.md"
+  ],
+  "relationship_query_selected": [
+    ".sdcorejs/memories/node/normalization-category-null-input.md"
+  ],
+  "selected_after_evidence_gate": [
+    ".sdcorejs/memories/node/normalization-category-null-input.md"
+  ],
+  "current_fingerprints": {
+    "src/category.mjs": "4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5",
+    "test/category.test.mjs": "40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537",
+    "inputs/fix.diff": "6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9",
+    "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2"
+  },
+  "freshness": {
+    "status": "current-at-capture",
+    "advisory_only": true,
+    "current_verification_requires_rerun": true,
+    "mismatches": []
+  },
+  "proof_output_fingerprint_verified": "sha256:9959cba1e459d1f9ab6c549e7e8d6b6e39b95e3c2069514b93e55042c0ab9f7f",
+  "stale_source_control": {
+    "simulated": true,
+    "origin": "Pre-fix source bytes from actual inputs/fix.diff; candidate metadata changed in memory only",
+    "selected_after_gate": [],
+    "status": "stale",
+    "advisory_only": true,
+    "current_verification_requires_rerun": true,
+    "mismatches": [
+      {
+        "path": "src/category.mjs",
+        "expected": "sha256:f56e9a35d8c6f4d505cfaf6523d995076cd9e21c7fa5d1b2fcd4c2f35af8e102",
+        "observed": "sha256:4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5"
+      }
+    ]
+  },
+  "stale_proof_control": {
+    "simulated": true,
+    "origin": "Synthetic changed regression file fingerprint in memory only",
+    "selected_after_gate": [],
+    "status": "stale",
+    "advisory_only": true,
+    "current_verification_requires_rerun": true,
+    "mismatches": [
+      {
+        "path": "test/category.test.mjs",
+        "expected": "sha256:a4e2678eb2ddeb9b4d0836e4de15c4d3f3e8a4485642f6984cb78982318108b8",
+        "observed": "sha256:40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537"
+      }
+    ]
+  },
+  "unrelated_task_selected": [],
+  "empty_scope_selected": [],
+  "old_memory": {
+    "path": ".sdcorejs/memories/workflow/old-payment-advice.md",
+    "result": "excluded: unrelated filename; no relationship metadata; body not consumed as advice",
+    "unchanged_sha256": "ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58",
+    "promoted": false
+  },
+  "limitation": "Explore performs advisory relationship/scope retrieval, not freshness enforcement. The explicit fingerprint gate shown here supplements retrieval; future passing claims require rerunning the regression command."
+}

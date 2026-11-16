@@ -1,0 +1,43 @@
+{
+  "ready": true,
+  "skills": [
+    {
+      "name": "skill-installer",
+      "status": "present",
+      "path": "/home/agent/.codex/skills/skill-installer/SKILL.md",
+      "install": "Install skills/.system/skill-installer from https://github.com/openai/skills with the official installer."
+    },
+    {
+      "name": "skill-creator",
+      "status": "present",
+      "path": "/home/agent/.codex/skills/skill-creator/SKILL.md",
+      "install": "Use skill-installer for openai/skills: skills/.system/skill-creator."
+    },
+    {
+      "name": "writing-skills",
+      "status": "present",
+      "path": "/home/agent/.codex/plugins/cache/superpowers-dev/superpowers/7.0.2/skills/writing-skills/SKILL.md",
+      "install": "Install Superpowers from https://github.com/obra/superpowers using its current host installation instructions."
+    },
+    {
+      "name": "test-driven-development",
+      "status": "present",
+      "path": "/home/agent/.codex/plugins/cache/superpowers-dev/superpowers/7.0.2/skills/test-driven-development/SKILL.md",
+      "install": "Install Superpowers from https://github.com/obra/superpowers using its current host installation instructions."
+    },
+    {
+      "name": "skillevaluator",
+      "status": "present",
+      "path": "/home/agent/.codex/skills/skillevaluator/SKILL.md",
+      "install": "Use skill-installer for NVIDIA/SkillEvaluator: skills/skillevaluator; install its base CLI with uv tool install skillevaluator."
+    }
+  ],
+  "missing": [],
+  "invalid": [],
+  "cli": {
+    "status": "present",
+    "version": "skillevaluator, version 0.9.0"
+  },
+  "scope": "authoring-repository-only",
+  "runtime_requirement": "An independent fresh-context read-only auditor must be available at the audit gate."
+}

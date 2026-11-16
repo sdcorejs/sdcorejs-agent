@@ -1,0 +1,121 @@
+[
+  {
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+    "env_overrides": {
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "started_at": "2026-11-14T09:16:53.252648+00:00",
+    "finished_at": "2026-11-14T09:16:53.257067+00:00",
+    "exit": 0,
+    "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/01-head.stdout.txt",
+    "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/01-head.stderr.txt",
+    "stdout_sha256": "ba97490277e3765f5ded033e374344b61f884d5db6ee163845c3a8456d15af3e",
+    "observed_stdout": "e5d7a58c8ea634dfb05768b676b72e17706154a2\n",
+    "observed_stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+    "env_overrides": {
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "started_at": "2026-11-14T09:16:53.257244+00:00",
+    "finished_at": "2026-11-14T09:16:53.263151+00:00",
+    "exit": 0,
+    "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/02-status.stdout.txt",
+    "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/02-status.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "observed_stdout": "",
+    "observed_stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--no-ext-diff",
+      "--no-textconv",
+      "--name-only"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+    "env_overrides": {
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "started_at": "2026-11-14T09:16:53.263191+00:00",
+    "finished_at": "2026-11-14T09:16:53.266278+00:00",
+    "exit": 0,
+    "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/03-worktree-diff.stdout.txt",
+    "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/03-worktree-diff.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "observed_stdout": "",
+    "observed_stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--no-ext-diff",
+      "--no-textconv",
+      "--name-only"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+    "env_overrides": {
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "started_at": "2026-11-14T09:16:53.266312+00:00",
+    "finished_at": "2026-11-14T09:16:53.270946+00:00",
+    "exit": 0,
+    "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/04-index-diff.stdout.txt",
+    "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/04-index-diff.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "observed_stdout": "",
+    "observed_stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+    "env_overrides": {
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "started_at": "2026-11-14T09:16:53.271073+00:00",
+    "finished_at": "2026-11-14T09:16:53.274995+00:00",
+    "exit": 0,
+    "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/05-diff-check.stdout.txt",
+    "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/05-diff-check.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "observed_stdout": "",
+    "observed_stderr": ""
+  },
+  {
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+    "env_overrides": {
+      "GIT_OPTIONAL_LOCKS": "0"
+    },
+    "started_at": "2026-11-14T09:16:53.275027+00:00",
+    "finished_at": "2026-11-14T09:16:53.283885+00:00",
+    "exit": 0,
+    "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/06-node-version.stdout.txt",
+    "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/06-node-version.stderr.txt",
+    "stdout_sha256": "249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81",
+    "observed_stdout": "v24.22.1\n",
+    "observed_stderr": ""
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "command": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+    "started_at": "2026-11-14T09:13:20.127094+00:00",
+    "finished_at": "2026-11-14T09:13:20.134817+00:00",
+    "exit_code": 0,
+    "output_path": "node-version.txt",
+    "output_sha256": "249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81"
+  },
+  {
+    "command": [
+      "node",
+      "--test",
+      "test/category.test.mjs"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+    "started_at": "2026-11-14T09:13:20.135073+00:00",
+    "finished_at": "2026-11-14T09:13:20.392056+00:00",
+    "exit_code": 0,
+    "output_path": "category-regression.txt",
+    "output_sha256": "9959cba1e459d1f9ab6c549e7e8d6b6e39b95e3c2069514b93e55042c0ab9f7f"
+  }
+]

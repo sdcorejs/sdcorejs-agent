@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "web-service",
+  "name": "Service landing",
+  "surfaces": [
+    "public-website",
+    "landing-page",
+    "mobile-web"
+  ],
+  "jobs": [
+    "promote-service"
+  ],
+  "data_shapes": [
+    "content"
+  ],
+  "applicability": "Explain a service, process and next step.",
+  "avoid_when": "Do not invent appointments, reviews or service guarantees.",
+  "variants": [
+    {
+      "id": "overview",
+      "layout": "service"
+    },
+    {
+      "id": "process-led",
+      "layout": "service"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "uipro-landing",
+    "uipro-styles"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Inspect exact installed component exports and pattern source before implementation."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original HTML composition derived from the cited source structure; domain fixtures are illustrative, not requirements.",
+  "source_locators": [
+    {
+      "source_ref": "uipro-landing",
+      "key": "Pattern ID",
+      "values": [
+        "hero-features-cta",
+        "minimal-single-column"
+      ]
+    },
+    {
+      "source_ref": "uipro-styles",
+      "key": "Style ID",
+      "values": [
+        "minimalism-and-swiss-style"
+      ]
+    }
+  ]
+}

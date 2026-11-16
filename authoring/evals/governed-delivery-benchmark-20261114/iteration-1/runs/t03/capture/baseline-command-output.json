@@ -1,0 +1,60 @@
+[
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout": "293818d59757bbc60db87119b026d49b41fa8d77\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target",
+      "status",
+      "--short"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target",
+      "diff",
+      "--name-status"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-C",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t03/target",
+      "diff",
+      "--cached",
+      "--name-status"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "exit_code": 0,
+    "stdout": "v24.22.1\n",
+    "stderr": ""
+  }
+]

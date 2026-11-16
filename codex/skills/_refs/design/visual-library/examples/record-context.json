@@ -1,0 +1,27 @@
+{
+  "id": "record-context",
+  "question": "Where should record details open?",
+  "patterns": [
+    {
+      "pattern_id": "op-detail",
+      "variant": "overview",
+      "label": "Full detail",
+      "summary": "A dedicated page gives the record the full canvas.",
+      "best_when": "Deep inspection with related information",
+      "tradeoff": "Leaving the list interrupts browsing"
+    },
+    {
+      "pattern_id": "op-drawer",
+      "variant": "compact",
+      "label": "Contextual drawer",
+      "summary": "A panel overlays the current list.",
+      "best_when": "Short inspections while retaining list position",
+      "tradeoff": "The panel covers part of the list"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the business requirements before offering.",
+  "criteria": [
+    "Keep useful context close",
+    "Give complex records enough room"
+  ]
+}

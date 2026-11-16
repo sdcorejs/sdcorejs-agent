@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { createVisualSelection } from '../design/visual-library/selection.mjs';
 import {
   CANONICAL_DESIGN_HANDOFF_PREFIX,
   CANONICAL_DESIGN_PNG_EXPORT_PREFIX,
@@ -432,6 +433,19 @@ export function validateDesignHandoff(
 ) {
   const handoff = structuredClone(input ?? {});
   const errors = [];
+  if (handoff.visual_selection !== undefined) {
+    try {
+      const evidence = handoff.visual_selection;
+      if (!evidence || Object.keys(evidence).some(key => !['screen', 'response', 'result'].includes(key))) throw new Error('Invalid selection evidence');
+      const expected = createVisualSelection({ screen: evidence.screen, response: evidence.response });
+      if (stableJson(expected) !== stableJson(evidence.result)) throw new Error('Selection result differs from the current screen');
+      if (expected.options.length !== 1 || handoff.editable_source?.status !== 'available' || handoff.editable_source?.format !== 'html' || handoff.editable_source?.artifact_hash !== `sha256:v1:${expected.options[0].editable_preview_sha256}`) {
+        errors.push({ code: 'VISUAL_SELECTION_SOURCE_MISMATCH', reason: 'The final handoff must identify the exact single selected editable HTML artifact.' });
+      }
+    } catch (error) {
+      errors.push({ code: 'INVALID_VISUAL_SELECTION', reason: error.message });
+    }
+  }
   validateMetadata(handoff.metadata, errors);
   validateEditableSource(handoff.editable_source, errors);
   validateVisuals(handoff, errors);

@@ -1,0 +1,86 @@
+{
+  "result": "PASSED",
+  "future_change_ref": "future-category-normalization-change",
+  "project_context": {
+    "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target",
+    "target_root_kind": "target-project",
+    "request_scope": "Future category normalization task in src/category.mjs",
+    "tracks": [
+      "node"
+    ],
+    "stack_profiles": [
+      "node-general"
+    ],
+    "summary": {
+      "status": "missing",
+      "schema": "missing",
+      "path": "none",
+      "usable_sections": [],
+      "invalidated_sections": []
+    },
+    "related_artifacts": {
+      "specs": [],
+      "plans": [],
+      "docs": [],
+      "handoffs": [],
+      "tasks": [],
+      "memories": [
+        ".sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json"
+      ],
+      "blueprints": [],
+      "tickets": []
+    },
+    "memory_policy": {
+      "authority": "advisory",
+      "current_source_precedence": true
+    },
+    "conventions": {
+      "policy_status": "missing",
+      "policy_path": "none",
+      "loaded_paths": [],
+      "accepted_rule_ids": [],
+      "observed_rule_ids": [],
+      "conflicted_rule_ids": [],
+      "deprecated_rule_ids": [],
+      "stale_rule_ids": [],
+      "invalid_paths": [],
+      "unresolved_owner_repositories": []
+    },
+    "code_context": {
+      "strategy": "targeted-read",
+      "scope": "Future category normalization task in src/category.mjs",
+      "entrypoints": [
+        "src/category.mjs"
+      ],
+      "evidence_paths": [
+        "src/category.mjs"
+      ],
+      "unresolved_relationships": []
+    },
+    "current_evidence": {
+      "files": [
+        "src/category.mjs"
+      ],
+      "diffs": [
+        ".sdcorejs/docs/",
+        ".sdcorejs/memories/node/"
+      ],
+      "commands": [
+        "git status --short"
+      ]
+    },
+    "writes_allowed": false,
+    "local_runtime_writes_allowed_after_consent": false,
+    "redaction_applied": true,
+    "legacy_notice": "none"
+  },
+  "selection": {
+    "selected": [
+      "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da"
+    ],
+    "excluded": [],
+    "advisory_only": true,
+    "current_source_precedence": true
+  },
+  "lesson_unchanged": true
+}

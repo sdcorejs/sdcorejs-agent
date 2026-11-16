@@ -1,0 +1,557 @@
+{
+  "schema_version": 1,
+  "scope": "Authorized review repairs and merge preparation; not npm publication or version 1.0.0 certification",
+  "base_revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "reviewed_source_manifest_sha256": "3b84b8d80fd4ce469ad3cb7e4de7b2583751f5396d3db7736a4393dfba89ac54",
+  "repair_sources": [
+    {
+      "path": ".claude/_refs/shared/artifact-lifecycle.md",
+      "sha256": "cc71c40c011ea46361d22252de0012097a98427ad75e34b980d5200927c23de5"
+    },
+    {
+      "path": ".claude/_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "11bb03e82c4bdbdd3c23e01a83ea324226dcf8e8cce9d59ef1b5de8c41007d3e"
+    },
+    {
+      "path": ".claude/_refs/shared/decision-coverage.md",
+      "sha256": "4f2b56dd8bfac5b746ddc204328517b200dbef87778c7eb042ef4a8fbcf44ef1"
+    },
+    {
+      "path": ".claude/_refs/shared/decision-coverage.mjs",
+      "sha256": "2ffc13803254104883665ca0f82ab1e7aecedf7cdd13afc7dfd1c8111c13680a"
+    },
+    {
+      "path": ".claude/_refs/shared/explore-context.md",
+      "sha256": "71f71c1eb632c343f4917be654ab9866763766d6b4ef294d9c3a8f2451fecf4b"
+    },
+    {
+      "path": ".claude/_refs/shared/project-context.md",
+      "sha256": "5fcb947959ac69459821fcfc096b92fff78a0ce978d89b3dc3f2a0d707e5382f"
+    },
+    {
+      "path": ".claude/_refs/shared/project-context.mjs",
+      "sha256": "725fd6aef1fb5f7bbb74a8ada37dc3bd823ef67e8ac934613ed5d2c4fe763d9b"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "fe61949e8975ad943807ea798766d40fea9706be087cbf323c01e5f76e95a437"
+    },
+    {
+      "path": ".github/workflows/deploy-site.yml",
+      "sha256": "a2568f50c3a59668209f5688af86be02685b1b4a719e001a6fef7caf4c52f2fd"
+    },
+    {
+      "path": ".sdcorejs/summary.md",
+      "sha256": "fcf51906d3ac2877b69856047130c4c01cec15bd9a299664caefb336fc2c4ce9"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "2f9c250ed0af3572c29a9af2ffbface2e6339608a0cdf6cc477acb61db5fa377"
+    },
+    {
+      "path": "README.md",
+      "sha256": "c864cf144fbcd3798f8f6d2709074c1893cbb95098199dc9228604beb623dcae"
+    },
+    {
+      "path": "VALIDATION.md",
+      "sha256": "88018f4e4d1bc0185fb85a717c35d663a68563db3bc87aa18f71484a02289dec"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.md",
+      "sha256": "cc71c40c011ea46361d22252de0012097a98427ad75e34b980d5200927c23de5"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "11bb03e82c4bdbdd3c23e01a83ea324226dcf8e8cce9d59ef1b5de8c41007d3e"
+    },
+    {
+      "path": "_refs/shared/decision-coverage.md",
+      "sha256": "4f2b56dd8bfac5b746ddc204328517b200dbef87778c7eb042ef4a8fbcf44ef1"
+    },
+    {
+      "path": "_refs/shared/decision-coverage.mjs",
+      "sha256": "2ffc13803254104883665ca0f82ab1e7aecedf7cdd13afc7dfd1c8111c13680a"
+    },
+    {
+      "path": "_refs/shared/explore-context.md",
+      "sha256": "71f71c1eb632c343f4917be654ab9866763766d6b4ef294d9c3a8f2451fecf4b"
+    },
+    {
+      "path": "_refs/shared/project-context.md",
+      "sha256": "5fcb947959ac69459821fcfc096b92fff78a0ce978d89b3dc3f2a0d707e5382f"
+    },
+    {
+      "path": "_refs/shared/project-context.mjs",
+      "sha256": "725fd6aef1fb5f7bbb74a8ada37dc3bd823ef67e8ac934613ed5d2c4fe763d9b"
+    },
+    {
+      "path": "codex/skills/_refs/shared/artifact-lifecycle.md",
+      "sha256": "cc71c40c011ea46361d22252de0012097a98427ad75e34b980d5200927c23de5"
+    },
+    {
+      "path": "codex/skills/_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "11bb03e82c4bdbdd3c23e01a83ea324226dcf8e8cce9d59ef1b5de8c41007d3e"
+    },
+    {
+      "path": "codex/skills/_refs/shared/decision-coverage.md",
+      "sha256": "4f2b56dd8bfac5b746ddc204328517b200dbef87778c7eb042ef4a8fbcf44ef1"
+    },
+    {
+      "path": "codex/skills/_refs/shared/decision-coverage.mjs",
+      "sha256": "2ffc13803254104883665ca0f82ab1e7aecedf7cdd13afc7dfd1c8111c13680a"
+    },
+    {
+      "path": "codex/skills/_refs/shared/explore-context.md",
+      "sha256": "71f71c1eb632c343f4917be654ab9866763766d6b4ef294d9c3a8f2451fecf4b"
+    },
+    {
+      "path": "codex/skills/_refs/shared/project-context.md",
+      "sha256": "5fcb947959ac69459821fcfc096b92fff78a0ce978d89b3dc3f2a0d707e5382f"
+    },
+    {
+      "path": "codex/skills/_refs/shared/project-context.mjs",
+      "sha256": "725fd6aef1fb5f7bbb74a8ada37dc3bd823ef67e8ac934613ed5d2c4fe763d9b"
+    },
+    {
+      "path": "docs/ADOPTION.md",
+      "sha256": "19270cecb88f6f40e749514deae2d0dab7f48c138e6d0e5f14629d9257c58acb"
+    },
+    {
+      "path": "docs/RELEASE_PROCESS.md",
+      "sha256": "cc330ec5d42ae5a1c3f0878c97b1e8ca304a0fa5a723843d1a62dd8209e0bc5a"
+    },
+    {
+      "path": "plugin/_refs/shared/artifact-lifecycle.md",
+      "sha256": "cc71c40c011ea46361d22252de0012097a98427ad75e34b980d5200927c23de5"
+    },
+    {
+      "path": "plugin/_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "11bb03e82c4bdbdd3c23e01a83ea324226dcf8e8cce9d59ef1b5de8c41007d3e"
+    },
+    {
+      "path": "plugin/_refs/shared/decision-coverage.md",
+      "sha256": "4f2b56dd8bfac5b746ddc204328517b200dbef87778c7eb042ef4a8fbcf44ef1"
+    },
+    {
+      "path": "plugin/_refs/shared/decision-coverage.mjs",
+      "sha256": "2ffc13803254104883665ca0f82ab1e7aecedf7cdd13afc7dfd1c8111c13680a"
+    },
+    {
+      "path": "plugin/_refs/shared/explore-context.md",
+      "sha256": "71f71c1eb632c343f4917be654ab9866763766d6b4ef294d9c3a8f2451fecf4b"
+    },
+    {
+      "path": "plugin/_refs/shared/project-context.md",
+      "sha256": "5fcb947959ac69459821fcfc096b92fff78a0ce978d89b3dc3f2a0d707e5382f"
+    },
+    {
+      "path": "plugin/_refs/shared/project-context.mjs",
+      "sha256": "725fd6aef1fb5f7bbb74a8ada37dc3bd823ef67e8ac934613ed5d2c4fe763d9b"
+    },
+    {
+      "path": "site/README.md",
+      "sha256": "93f53174fec3cd0e759219b7a660a8efe83ad56ebf86f832ed82b7a41f56326a"
+    },
+    {
+      "path": "site/package-lock.json",
+      "sha256": "3a1a912b152d819d70afe37015214a5754a8500253d4631cb362ca4cf7a330d3"
+    },
+    {
+      "path": "site/package.json",
+      "sha256": "fdd5d67c2c87d2fb1532871d58da3bc218c306e3cdc5ff5508ed3e7cd1c5f56f"
+    },
+    {
+      "path": "site/src/content/docs/quickstart.md",
+      "sha256": "afb6903381534bd5ec0c5be4ad454b10938d610dd52c5cb3f9e33b1646920ac2"
+    },
+    {
+      "path": "site/src/content/en/docs/quickstart.md",
+      "sha256": "b411132797ba863f5c5396e7253b1c5202d1aed1a0bba8edb09ea7b15a34d5d6"
+    },
+    {
+      "path": "test/e2e/documentation-layout-contract.test.mjs",
+      "sha256": "cfb41d5b02c92a859415ad5f0dd606cfba7ae956e372c4c82131080f81cb0f5e"
+    },
+    {
+      "path": "test/e2e/existing-project-onboarding.test.mjs",
+      "sha256": "845e3fc9658e53d65b59a954032ae218453ad7532e3fe60091d635a1d9f9f38e"
+    },
+    {
+      "path": "test/e2e/governed-delivery-integration.test.mjs",
+      "sha256": "d9e9bb2d1c22b59179ee8be520fefe302f7ff76e5d0a70326f1c5365971b879a"
+    },
+    {
+      "path": "test/e2e/toolchain-compatibility.test.mjs",
+      "sha256": "d1287327b8c0ac5a3f92e8bf74b968d41f71a15f31a255ef27c121d2e9579eba"
+    },
+    {
+      "path": "test/e2e/validation-map-contract.test.mjs",
+      "sha256": "4b8b1cd99267724697fe98e7317c832e995be4b1c72f77b92d9a8a443b034e44"
+    }
+  ],
+  "independent_review": {
+    "runtime": "No remaining actionable finding after three repair passes; 66 independent focused tests and four negative-control probes pass.",
+    "distribution": "No remaining actionable finding; 48 focused tests pass. Exact site Node pin execution awaits CI."
+  },
+  "commands": [
+    {
+      "id": "repository-final",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/content-skill.test.mjs",
+        "test/e2e/audit-contract-regression.test.mjs",
+        "test/e2e/audit-template-producers.test.mjs",
+        "test/e2e/audit-workflow-behavior.test.mjs",
+        "test/e2e/ai-agent-identity-contract.test.mjs",
+        "test/e2e/ai-agent-track-contract.test.mjs",
+        "test/e2e/angular-production-contract.test.mjs",
+        "test/e2e/architecture-contract.test.mjs",
+        "test/e2e/artifact-path-convention.test.mjs",
+        "test/e2e/cli-adapters.test.mjs",
+        "test/e2e/communication-economy.test.mjs",
+        "test/e2e/convergence-contract.test.mjs",
+        "test/e2e/convention-artifact-lifecycle.test.mjs",
+        "test/e2e/convention-contract.test.mjs",
+        "test/e2e/convention-review.test.mjs",
+        "test/e2e/debug-contract.test.mjs",
+        "test/e2e/decision-coverage-contract.test.mjs",
+        "test/e2e/design-handoff-contract.test.mjs",
+        "test/e2e/design-visual-library.test.mjs",
+        "test/e2e/documentation-layout-contract.test.mjs",
+        "test/e2e/entrypoint-smoke.test.mjs",
+        "test/e2e/explore-topology.test.mjs",
+        "test/e2e/git-closure-contract.test.mjs",
+        "test/e2e/golden-target-app.test.mjs",
+        "test/e2e/harness-behavioral-sentinel.test.mjs",
+        "test/e2e/module-e2e-contract.test.mjs",
+        "test/e2e/nextjs-production-contract.test.mjs",
+        "test/e2e/npm-publication-contract.test.mjs",
+        "test/e2e/parallel-dispatch-protocol.test.mjs",
+        "test/e2e/parallel-opportunity.test.mjs",
+        "test/e2e/product-ledger-contract.test.mjs",
+        "test/e2e/product-task-breakdown-contract.test.mjs",
+        "test/e2e/product-task-breakdown-cli.test.mjs",
+        "test/e2e/product-task-breakdown-flow-contract.test.mjs",
+        "test/e2e/production-readiness-contract.test.mjs",
+        "test/e2e/mirror-refs-resolution.test.mjs",
+        "test/e2e/project-context-artifact-lifecycle.test.mjs",
+        "test/e2e/repair-contract.test.mjs",
+        "test/e2e/review-contract.test.mjs",
+        "test/e2e/ship-readiness-contract.test.mjs",
+        "test/e2e/simplify-protected-contract.test.mjs",
+        "test/e2e/simplify-skill-contract.test.mjs",
+        "test/e2e/skill-authoring-contract.test.mjs",
+        "test/e2e/skill-pack-runner.test.mjs",
+        "test/e2e/static-visual-composer.test.mjs",
+        "test/e2e/test-track-contract.test.mjs",
+        "test/e2e/toolchain-compatibility.test.mjs",
+        "test/e2e/validation-map-contract.test.mjs",
+        "test/e2e/visual-companion-runtime.test.mjs",
+        "test/e2e/uiux-knowledge.test.mjs",
+        "test/e2e/uiux-review-regression.test.mjs",
+        "test/e2e/uiux-skill-creator-regression.test.mjs",
+        "authoring/evals/uiux/evidence.test.mjs",
+        "test/e2e/visual-offer-policy.test.mjs",
+        "test/e2e/visual-offer-behavior.test.mjs",
+        "test/e2e/review-behavior-fixtures.test.mjs",
+        "test/e2e/review-risk-contract.test.mjs",
+        "test/e2e/review-test-adequacy.test.mjs",
+        "test/e2e/review-agent-evaluation.test.mjs",
+        "test/e2e/project-bootstrap-contract.test.mjs",
+        "test/e2e/project-bootstrap-filesystem.test.mjs",
+        "test/e2e/static-analysis-compatibility-contract.test.mjs",
+        "test/e2e/authoring-prerequisites.test.mjs",
+        "test/e2e/blueprint-learning-contract.test.mjs",
+        "test/e2e/documentation-profile.test.mjs",
+        "test/e2e/ticket-intake-contract.test.mjs",
+        "test/e2e/governed-delivery-integration.test.mjs",
+        "test/e2e/existing-project-onboarding.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:46:52.220067+00:00",
+      "finished_at_utc": "2026-11-16T04:47:20.865953+00:00",
+      "exit_code": 0,
+      "log_sha256": "5ba8bd8c3760504039d5823795c79477bc07207e8f11c43359dd96c3a26173da"
+    },
+    {
+      "id": "closure-pass3-green",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/governed-delivery-integration.test.mjs",
+        "test/e2e/project-context-artifact-lifecycle.test.mjs",
+        "test/e2e/git-closure-contract.test.mjs",
+        "test/e2e/artifact-path-convention.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:45:39.856681+00:00",
+      "finished_at_utc": "2026-11-16T04:45:42.540166+00:00",
+      "exit_code": 0,
+      "log_sha256": "c61c99d4299760ce2ab9d33dc6d39b007e98c77c2a6bf689c33339cc3f0291dd"
+    },
+    {
+      "id": "delegation-green",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/validation-map-contract.test.mjs",
+        "test/e2e/decision-coverage-contract.test.mjs",
+        "test/e2e/convergence-contract.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:28:17.874752+00:00",
+      "finished_at_utc": "2026-11-16T04:28:18.432745+00:00",
+      "exit_code": 0,
+      "log_sha256": "1335ce44859fb93710b8c586c2a1cac2fd3968d3edacb19a76cbe239bb7e51a4"
+    },
+    {
+      "id": "site-toolchain-green-final",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/toolchain-compatibility.test.mjs",
+        "test/e2e/documentation-layout-contract.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:41:37.488354+00:00",
+      "finished_at_utc": "2026-11-16T04:41:37.812412+00:00",
+      "exit_code": 0,
+      "log_sha256": "244147398539cdf4569cf41c76ead884d333f6fe8d7553a3634f2eddbcead52b"
+    },
+    {
+      "id": "angular-golden",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:angular:golden"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:09.553168+00:00",
+      "finished_at_utc": "2026-11-16T04:44:36.580006+00:00",
+      "exit_code": 0,
+      "log_sha256": "8cb7d479bd7782c263da662b2eafafc31dc7e9b232da44b602d702f83b498043"
+    },
+    {
+      "id": "nestjs-matrix",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:nestjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:09.683442+00:00",
+      "finished_at_utc": "2026-11-16T04:43:13.455339+00:00",
+      "exit_code": 0,
+      "log_sha256": "157474354bd48f0846ed0b7e44147864a5bef7df56fcb298e93b635a88b3b760"
+    },
+    {
+      "id": "nestjs-golden",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:nestjs:golden"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:09.523566+00:00",
+      "finished_at_utc": "2026-11-16T04:44:40.738872+00:00",
+      "exit_code": 0,
+      "log_sha256": "906ed59c86fd64373f2047739417ab227b0aa8c2e86ea7e07e1eede5a6f944bc"
+    },
+    {
+      "id": "nextjs-golden",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:nextjs:golden"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:09.585073+00:00",
+      "finished_at_utc": "2026-11-16T04:45:23.482262+00:00",
+      "exit_code": 0,
+      "log_sha256": "6be4ce8a11eeb09d4c4bc1b8d028edc598f58ff657af33bce931d58a7a206998"
+    },
+    {
+      "id": "nestjs-containers",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:nestjs:containers"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:46:10.092691+00:00",
+      "finished_at_utc": "2026-11-16T04:47:08.867030+00:00",
+      "exit_code": 0,
+      "log_sha256": "57cf6e518fc45287ae1a652d5704e21ba586c4ec330ff846b878806433d04a5e"
+    },
+    {
+      "id": "browser-final",
+      "argv": [
+        "env",
+        "SDCOREJS_PLAYWRIGHT_MODULE=/opt/codex/cua_node/lib/node_modules/playwright/index.mjs",
+        "SDCOREJS_CHROMIUM_PATH=/usr/bin/chromium",
+        "npm",
+        "run",
+        "test:e2e:design-browser",
+        "--",
+        "/workspace/work/sdcorejs-merge-fixes-20261116-wn6vqe72/browser"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:22.458342+00:00",
+      "finished_at_utc": "2026-11-16T04:44:04.153501+00:00",
+      "exit_code": 0,
+      "log_sha256": "f09aef73516a9276244530d29fd72c0f67066049e044dc7ed4a0772a59047469"
+    },
+    {
+      "id": "site-build-final",
+      "argv": [
+        "npm",
+        "--prefix",
+        "site",
+        "run",
+        "build"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:09.764406+00:00",
+      "finished_at_utc": "2026-11-16T04:43:18.479477+00:00",
+      "exit_code": 0,
+      "log_sha256": "376738f2e4ffc16b411defa9f18fc6df6b9c87df2e7251d12d276fd42c0fa0a5"
+    },
+    {
+      "id": "site-links-final",
+      "argv": [
+        "npm",
+        "--prefix",
+        "site",
+        "run",
+        "check:links"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:44:03.479022+00:00",
+      "finished_at_utc": "2026-11-16T04:44:04.893821+00:00",
+      "exit_code": 0,
+      "log_sha256": "363f9f579f91d5d4c37dd117eea3a8bddad7596f1a924a000222711c2b07b386"
+    },
+    {
+      "id": "site-audit-green",
+      "argv": [
+        "npm",
+        "--prefix",
+        "site",
+        "audit",
+        "--omit=dev",
+        "--json"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:26:45.678935+00:00",
+      "finished_at_utc": "2026-11-16T04:26:46.382489+00:00",
+      "exit_code": 0,
+      "log_sha256": "c97042a3553feed4fd12f438bde7fc5d5ff1e236aab18f63928323f961446753"
+    },
+    {
+      "id": "root-audit",
+      "argv": [
+        "npm",
+        "audit",
+        "--omit=dev"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:22.483009+00:00",
+      "finished_at_utc": "2026-11-16T04:43:24.009940+00:00",
+      "exit_code": 0,
+      "log_sha256": "6d8c5c8f3d7684adb070417bd608d01ae90aa3dc26a65af03ffda4955f38d9a3"
+    },
+    {
+      "id": "communication-green",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:communication-economy"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:46:08.512156+00:00",
+      "finished_at_utc": "2026-11-16T04:46:11.472230+00:00",
+      "exit_code": 0,
+      "log_sha256": "bc82ddd116ba3892faddd03f4d80e2abbbccd3b58ee2e0bcb54dbc6d2df95a51"
+    },
+    {
+      "id": "mirrors-check",
+      "argv": [
+        "npm",
+        "run",
+        "check:skills"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:22.522981+00:00",
+      "finished_at_utc": "2026-11-16T04:43:31.217537+00:00",
+      "exit_code": 0,
+      "log_sha256": "b9b8a89457d5633010831c4f44b407758c0c8f9f2eb264941c19aa5ef44a4a09"
+    },
+    {
+      "id": "text-hygiene",
+      "argv": [
+        "npm",
+        "run",
+        "check:text-hygiene"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:43:22.558300+00:00",
+      "finished_at_utc": "2026-11-16T04:43:27.488065+00:00",
+      "exit_code": 0,
+      "log_sha256": "acee8ef6af0bd0e56c6ac3879a0fb15ae358c4e08a448897e82748b4ebca0d2d"
+    },
+    {
+      "id": "local-npm-test-after-metrics",
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-16T04:44:43.305386+00:00",
+      "finished_at_utc": "2026-11-16T04:45:14.984421+00:00",
+      "exit_code": 1,
+      "log_sha256": "f2a33feaf4cb7c012c418ffcd48e62496da2f610e755657ce77e765c565ce302"
+    }
+  ],
+  "local_evidence": [
+    {
+      "path": "review-runtime/pass3/review.md",
+      "sha256": "abcf0ec4746e48fc8b3f018f9d654119934e3d06491b440569f1fae1a8422e1d"
+    },
+    {
+      "path": "review-runtime/pass3/receipt.json",
+      "sha256": "821acefe81d0cb79f1b1a9f46d79489496763c7c692afabbb3bb1688656e2cf4"
+    },
+    {
+      "path": "review-distribution/pass2/REVIEW.md",
+      "sha256": "3839a0efc535ea872f6ae144cdac655b123fac1060e8cecd97d2e91c1f71e1de"
+    },
+    {
+      "path": "secret-scan-triage.json",
+      "sha256": "3db99570854bc17cf5933e0f7ae7b24a1577dbbdf7d73ba2652e2d1d17f65f55"
+    },
+    {
+      "path": "browser/receipt.json",
+      "sha256": "a1cd6b8f7cf6f1eda868b4ffeb2734f885ad77f6221e885e7296ff6702645b83"
+    },
+    {
+      "path": "dialogue-explicit/user-response.md",
+      "sha256": "50098ff411b77374ae98990f49b0b1e0a12bb3e5ac172989352bfe8a11d25623"
+    },
+    {
+      "path": "dialogue-explicit/verification.json",
+      "sha256": "e6f31be20ce923e33fba4c68eeb82d0dba09be2a91812b5bd3633d566cba3d0c"
+    },
+    {
+      "path": "dialogue-implicit/response.md",
+      "sha256": "7a4bfe65ffa08bd1af8db70e6081891abab024ad64300e430e185111b42b2dac"
+    },
+    {
+      "path": "dialogue-bounded/response.md",
+      "sha256": "40ac90ae014d47e36e9496ff8d0872a1d709290b4855bc4e629b033ed63628ff"
+    }
+  ],
+  "ci_status": "PENDING exact candidate CI; native cleanup is not a local pass",
+  "publication_status": "NOT RUN / deferred to new branch",
+  "model_evidence": "Historical 80 executions include only 79 complete common grading records and stale input bindings. No model/security certification inferred. No evaluation provider calls made for these repairs; review-agent billing is not reported."
+}

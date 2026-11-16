@@ -1,0 +1,4 @@
+$ node --version
+v24.22.1
+
+exit_code=0

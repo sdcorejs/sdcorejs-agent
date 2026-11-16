@@ -1,0 +1,7 @@
+{"value":0,"expected":"accept per snapshot rev-2","actual":"rejected","error":"quantity must be 1..100"}
+{"value":1,"expected":"accept per snapshot rev-2","actual":"accepted","result":1}
+{"value":2,"expected":"accept per snapshot rev-2","actual":"accepted","result":2}
+{"value":100,"expected":"accept per snapshot rev-2","actual":"accepted","result":100}
+{"value":101,"expected":"accept per snapshot rev-2","actual":"rejected","error":"quantity must be 1..100"}
+{"value":200,"expected":"accept per snapshot rev-2","actual":"rejected","error":"quantity must be 1..100"}
+{"comparison":"snapshot description, not approved AC","rejected_expected_valid_values":3,"evidence_class":"UNIT","api_execution":false}

@@ -1,0 +1,16 @@
+{
+  "result": "PASSED",
+  "discovered_memories": [
+    ".sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json"
+  ],
+  "selection": {
+    "selected": [
+      "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da"
+    ],
+    "excluded": [],
+    "advisory_only": true,
+    "current_source_precedence": true
+  },
+  "summary_status": "missing",
+  "writes_allowed": false
+}

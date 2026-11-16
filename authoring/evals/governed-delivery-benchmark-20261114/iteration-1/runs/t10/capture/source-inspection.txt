@@ -1,0 +1,16 @@
+{
+  "source": "inputs/ticket-v1.json",
+  "source_sha256": "6db00615e6cd10518e985f23d2d6fe59e0b1e7bcb78f1bdf741aebd3b2fc5922",
+  "json_parse": "valid",
+  "ticket_id": "42",
+  "revision": "rev-1",
+  "acceptance_criteria_count": 1,
+  "source_criterion_ids": [
+    "source-ac-1"
+  ],
+  "comments_count": 0,
+  "attachment_metadata_count": 1,
+  "attachment_bytes_read": false,
+  "application_tests": "NOT RUN - explicitly prohibited",
+  "network_or_tracker_operations": "NOT RUN"
+}

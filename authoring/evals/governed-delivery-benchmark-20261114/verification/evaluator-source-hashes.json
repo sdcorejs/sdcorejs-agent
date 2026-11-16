@@ -1,0 +1,1162 @@
+{
+  "matches": true,
+  "count": 289,
+  "files": {
+    "__init__.py": {
+      "checkout": "f9520448f15631942c27ac0dd16f19b1bce12874f2832b11269e5afe75c4c111",
+      "installed": "f9520448f15631942c27ac0dd16f19b1bce12874f2832b11269e5afe75c4c111"
+    },
+    "_ci_onboarding_all_tiers.py": {
+      "checkout": "90987217f1364648918d37b59280f4285a976f3971d0433feef2a466d93313f1",
+      "installed": "90987217f1364648918d37b59280f4285a976f3971d0433feef2a466d93313f1"
+    },
+    "_ci_onboarding_git.py": {
+      "checkout": "410f80c96143953c5a002bfc94f75f2548410169f95754bad2b08947c78cf246",
+      "installed": "410f80c96143953c5a002bfc94f75f2548410169f95754bad2b08947c78cf246"
+    },
+    "_ci_onboarding_pages.py": {
+      "checkout": "516cb057760bf5a55b5cb845147efa762afb4f2877d9107266c2cd66dea94805",
+      "installed": "516cb057760bf5a55b5cb845147efa762afb4f2877d9107266c2cd66dea94805"
+    },
+    "_ci_onboarding_workflows.py": {
+      "checkout": "ba5fbff99c963815626f221175ed6718b492f5e6036a574cfb9c788b4094bfd2",
+      "installed": "ba5fbff99c963815626f221175ed6718b492f5e6036a574cfb9c788b4094bfd2"
+    },
+    "ci_onboarding.py": {
+      "checkout": "20e88b46426310a47aab67052a76524e645e30c716d85d4f64fbbd7cd755a030",
+      "installed": "20e88b46426310a47aab67052a76524e645e30c716d85d4f64fbbd7cd755a030"
+    },
+    "cli.py": {
+      "checkout": "30235cf3ddf13e8301b0312538ee50ca73759910dfa4a94cff21e1667a470c17",
+      "installed": "30235cf3ddf13e8301b0312538ee50ca73759910dfa4a94cff21e1667a470c17"
+    },
+    "cli_core.py": {
+      "checkout": "063a2996a4ca827146872d3d440821e62e818bd2619174b8683c3cc569c8e4b2",
+      "installed": "063a2996a4ca827146872d3d440821e62e818bd2619174b8683c3cc569c8e4b2"
+    },
+    "cli_help.py": {
+      "checkout": "57d4ee68522674c58f96123e11c1be58cdd96c30eb7a748da8f1e45baf0284b3",
+      "installed": "57d4ee68522674c58f96123e11c1be58cdd96c30eb7a748da8f1e45baf0284b3"
+    },
+    "config/__init__.py": {
+      "checkout": "02f625a403bab634a81326496bc8372f982c759b2ccdd1e529a4e86d7ae07cd0",
+      "installed": "02f625a403bab634a81326496bc8372f982c759b2ccdd1e529a4e86d7ae07cd0"
+    },
+    "constants.py": {
+      "checkout": "069412ea1d882502f9a327d7798afcd145c190cfe35b44555d3a3be0282878df",
+      "installed": "069412ea1d882502f9a327d7798afcd145c190cfe35b44555d3a3be0282878df"
+    },
+    "deduplication/__init__.py": {
+      "checkout": "337f3e818b74c71a52268cb4c47f6b8b8499912a46f851fcdd1367c1bbb9f04e",
+      "installed": "337f3e818b74c71a52268cb4c47f6b8b8499912a46f851fcdd1367c1bbb9f04e"
+    },
+    "deduplication/intra_skill/__init__.py": {
+      "checkout": "25e761d3ee4de1d4baea40fddbcd03e1abaa81ea1d928cbf350468dde2ed29e3",
+      "installed": "25e761d3ee4de1d4baea40fddbcd03e1abaa81ea1d928cbf350468dde2ed29e3"
+    },
+    "deduplication/intra_skill/intra_skill_validator.py": {
+      "checkout": "d3354a8936c02b90a9b34114160f864908f3c7c8d44c3f1a2320b71602fd7244",
+      "installed": "d3354a8936c02b90a9b34114160f864908f3c7c8d44c3f1a2320b71602fd7244"
+    },
+    "deduplication/intra_skill/llm_analyzer.py": {
+      "checkout": "ff16750b50a3b75079c4b99e6d9c836710de7a3e7ab94d56452bc6ffb3f62629",
+      "installed": "ff16750b50a3b75079c4b99e6d9c836710de7a3e7ab94d56452bc6ffb3f62629"
+    },
+    "deduplication/intra_skill/semantic_clustering.py": {
+      "checkout": "d3fe740b0e859e13cdda4bbce763f38d123573279a50445721cbcbb79765af89",
+      "installed": "d3fe740b0e859e13cdda4bbce763f38d123573279a50445721cbcbb79765af89"
+    },
+    "deduplication/plugin/__init__.py": {
+      "checkout": "631a9398ae387311020d90bfa94316a6e466210d9b468a683d1806a76aaa7ab6",
+      "installed": "631a9398ae387311020d90bfa94316a6e466210d9b468a683d1806a76aaa7ab6"
+    },
+    "deduplication/plugin/catalog.py": {
+      "checkout": "971d617c586a5d8bdebb92ebdde826dcf5b8ea2b6e3a621b3662db075c40c371",
+      "installed": "971d617c586a5d8bdebb92ebdde826dcf5b8ea2b6e3a621b3662db075c40c371"
+    },
+    "deduplication/plugin/catalog_checks.py": {
+      "checkout": "26dbb79fa8e5ba2a9acc81cbc2e3bf8c2c4969aa3c3ad0f52c237290757362f6",
+      "installed": "26dbb79fa8e5ba2a9acc81cbc2e3bf8c2c4969aa3c3ad0f52c237290757362f6"
+    },
+    "deduplication/plugin/commands.py": {
+      "checkout": "1f350c19bd6c460e88e30ede06284b4bb2b1b6e76b53d4c22ff07603a1e80a8b",
+      "installed": "1f350c19bd6c460e88e30ede06284b4bb2b1b6e76b53d4c22ff07603a1e80a8b"
+    },
+    "deduplication/plugin/intra_plugin_validator.py": {
+      "checkout": "158b5abf6e1724835dbe7ab8ddfa9d6ba7d4ac12d046e76e3bfa1dce7e3b42cc",
+      "installed": "158b5abf6e1724835dbe7ab8ddfa9d6ba7d4ac12d046e76e3bfa1dce7e3b42cc"
+    },
+    "deduplication/plugin/llm_analyzer.py": {
+      "checkout": "fea2a172a3c130094f866ec3f83cd71d0a7bf7935f916699a30b0d54ad4102bc",
+      "installed": "fea2a172a3c130094f866ec3f83cd71d0a7bf7935f916699a30b0d54ad4102bc"
+    },
+    "deduplication/plugin/profile.py": {
+      "checkout": "195ab2c7606d6d62cfb61204505501cb49d493b2dd091ef01d0eff9b00dbdb57",
+      "installed": "195ab2c7606d6d62cfb61204505501cb49d493b2dd091ef01d0eff9b00dbdb57"
+    },
+    "deduplication/utils/__init__.py": {
+      "checkout": "4b318409dc324c09cb2763b289c06aee47477741562808e44d2218598ab5d24f",
+      "installed": "4b318409dc324c09cb2763b289c06aee47477741562808e44d2218598ab5d24f"
+    },
+    "deduplication/utils/chunker.py": {
+      "checkout": "fc30d0f51533d7e8cee6c21b6dbe44968bee5553c6129414cec0bb72afcf1ba4",
+      "installed": "fc30d0f51533d7e8cee6c21b6dbe44968bee5553c6129414cec0bb72afcf1ba4"
+    },
+    "deduplication/utils/skill_collector.py": {
+      "checkout": "59e5c9da092d7688b3f75fedbc8d3659d6f380cf6a8b4f6e3e15be513b982748",
+      "installed": "59e5c9da092d7688b3f75fedbc8d3659d6f380cf6a8b4f6e3e15be513b982748"
+    },
+    "doctor.py": {
+      "checkout": "211630eb9f9be61918fdbc96b22576f765d4ebe2f29611f74cea5904068b1bae",
+      "installed": "211630eb9f9be61918fdbc96b22576f765d4ebe2f29611f74cea5904068b1bae"
+    },
+    "embedding/__init__.py": {
+      "checkout": "867a93fb5bb5912de3df068d3dc68d61621d078411203b784cf975af6072713b",
+      "installed": "867a93fb5bb5912de3df068d3dc68d61621d078411203b784cf975af6072713b"
+    },
+    "embedding/client.py": {
+      "checkout": "bd90d000de858d4982e7bb2f5f1be31e020a4f0a14caf17126adf6ef7156d07b",
+      "installed": "bd90d000de858d4982e7bb2f5f1be31e020a4f0a14caf17126adf6ef7156d07b"
+    },
+    "embedding/extractor.py": {
+      "checkout": "16f4a0646e2042d560a1b97ed6cdb75060ca78800739ab553468835267123596",
+      "installed": "16f4a0646e2042d560a1b97ed6cdb75060ca78800739ab553468835267123596"
+    },
+    "embedding/limits.py": {
+      "checkout": "1d0fe74eb5a48f626214f280de2e2aad4beefc3fb8d713476065991bb3b2748a",
+      "installed": "1d0fe74eb5a48f626214f280de2e2aad4beefc3fb8d713476065991bb3b2748a"
+    },
+    "embedding/registry.py": {
+      "checkout": "e60af4918b3175b27eb19407b814d0ce85e822dd034c0a79478dd669ce2c6683",
+      "installed": "e60af4918b3175b27eb19407b814d0ce85e822dd034c0a79478dd669ce2c6683"
+    },
+    "evaluation/__init__.py": {
+      "checkout": "d090c274df4e9f3fcf31f90b4ee734a9b2f0e6dc2e7086453914a269b57d344c",
+      "installed": "d090c274df4e9f3fcf31f90b4ee734a9b2f0e6dc2e7086453914a269b57d344c"
+    },
+    "evaluation/dimension_judge.py": {
+      "checkout": "ead497cff3e49c922eae39d45eaf621a8f24f04b3f72567a6efb656935d1f407",
+      "installed": "ead497cff3e49c922eae39d45eaf621a8f24f04b3f72567a6efb656935d1f407"
+    },
+    "evaluation/insights_judge.py": {
+      "checkout": "579594e43fc0c85fbe8e12c14c03dd3d0964d6ad1a38253ad168e53e85aaac74",
+      "installed": "579594e43fc0c85fbe8e12c14c03dd3d0964d6ad1a38253ad168e53e85aaac74"
+    },
+    "evaluation/options.py": {
+      "checkout": "90d4021c0642846948d326bdf66bf7e6432ab30ab8789978ed62c17256f5d8eb",
+      "installed": "90d4021c0642846948d326bdf66bf7e6432ab30ab8789978ed62c17256f5d8eb"
+    },
+    "evaluation/results.py": {
+      "checkout": "bda90ece28befe8e853c12cbc6afdcf00914d02bbd567d24a1d51d9004639c78",
+      "installed": "bda90ece28befe8e853c12cbc6afdcf00914d02bbd567d24a1d51d9004639c78"
+    },
+    "evaluation/service.py": {
+      "checkout": "873c229828286162181fde66a3503301f5d9c875984592afa23e153eda290e28",
+      "installed": "873c229828286162181fde66a3503301f5d9c875984592afa23e153eda290e28"
+    },
+    "evaluation/tier3_expectations.py": {
+      "checkout": "84209f2be823aa0cc859dec1c6b6d119c2178cf5a3bc9c7f1177d0b048f42652",
+      "installed": "84209f2be823aa0cc859dec1c6b6d119c2178cf5a3bc9c7f1177d0b048f42652"
+    },
+    "evaluation/tier3_feedback_chat.py": {
+      "checkout": "7d4eb194e0cdec84358799e7444d6d552916b30c139acf64f4b29ad5945477a7",
+      "installed": "7d4eb194e0cdec84358799e7444d6d552916b30c139acf64f4b29ad5945477a7"
+    },
+    "evaluation/tier3_findings.py": {
+      "checkout": "86b12fca245848d91949455a4b7310b2b552bf6ad62bbd59c82a4dde34ab3a60",
+      "installed": "86b12fca245848d91949455a4b7310b2b552bf6ad62bbd59c82a4dde34ab3a60"
+    },
+    "evaluation/tier3_report.py": {
+      "checkout": "476b289dba3682da6bde10a68d5e000a7945cb4820440756489b558aaf2f25eb",
+      "installed": "476b289dba3682da6bde10a68d5e000a7945cb4820440756489b558aaf2f25eb"
+    },
+    "evidence.py": {
+      "checkout": "378cd063debbfefdd82d877d1fa2204a3fd948acc960c07f3d51c996488ad360",
+      "installed": "378cd063debbfefdd82d877d1fa2204a3fd948acc960c07f3d51c996488ad360"
+    },
+    "finding_verification_policy.py": {
+      "checkout": "b2fa0fb23234ad5d2ac01d644c20310b56e66b2648346615f57977974e7f5863",
+      "installed": "b2fa0fb23234ad5d2ac01d644c20310b56e66b2648346615f57977974e7f5863"
+    },
+    "harness/__init__.py": {
+      "checkout": "2553583410a2346a1716961313a1b15169413cbb3ffe5614d54accd7875910a4",
+      "installed": "2553583410a2346a1716961313a1b15169413cbb3ffe5614d54accd7875910a4"
+    },
+    "harness/overlay.py": {
+      "checkout": "5f23d6bb8d0d6cdad4062d6503493b7fffaf4aa7b754a363072103e67a8f39cb",
+      "installed": "5f23d6bb8d0d6cdad4062d6503493b7fffaf4aa7b754a363072103e67a8f39cb"
+    },
+    "harness/plugin.py": {
+      "checkout": "9e9e2b0fbf9a89165e38b21217d5a12313fbb15e78c836adaeb6b8d56c2923ca",
+      "installed": "9e9e2b0fbf9a89165e38b21217d5a12313fbb15e78c836adaeb6b8d56c2923ca"
+    },
+    "harness/report.py": {
+      "checkout": "e4a24288151fa0433d86620abd27ecd726080001f72701f99647546453d19ead",
+      "installed": "e4a24288151fa0433d86620abd27ecd726080001f72701f99647546453d19ead"
+    },
+    "inference/__init__.py": {
+      "checkout": "02cac41883740b664095c843016679ac072c8e21ac400086da7659014bd9b75c",
+      "installed": "02cac41883740b664095c843016679ac072c8e21ac400086da7659014bd9b75c"
+    },
+    "inference/client.py": {
+      "checkout": "a893f7dcd8b49ce7fc10727d152ab89338eb98dbeb6e4d0d19d783a5fc970f20",
+      "installed": "a893f7dcd8b49ce7fc10727d152ab89338eb98dbeb6e4d0d19d783a5fc970f20"
+    },
+    "inference/diagnostics.py": {
+      "checkout": "73f0216ae501ac9ef9ce31304da902f25385e02ed2e95acc126c763b4fdf6972",
+      "installed": "73f0216ae501ac9ef9ce31304da902f25385e02ed2e95acc126c763b4fdf6972"
+    },
+    "inference/finding_verifier.py": {
+      "checkout": "507c9af9e343265e5be4a3ed3cb3e94f19053d5df891f672364ea8d187944748",
+      "installed": "507c9af9e343265e5be4a3ed3cb3e94f19053d5df891f672364ea8d187944748"
+    },
+    "inference/json_span.py": {
+      "checkout": "88375810d8377ce49ad0642adc7e2386c563260e7cbe62291105b0eff1209258",
+      "installed": "88375810d8377ce49ad0642adc7e2386c563260e7cbe62291105b0eff1209258"
+    },
+    "inference/retry.py": {
+      "checkout": "9e28a06286fdc7d584953ee51331ec3f52020c9d14eadda35e66bc2f8c50ac05",
+      "installed": "9e28a06286fdc7d584953ee51331ec3f52020c9d14eadda35e66bc2f8c50ac05"
+    },
+    "inference/types.py": {
+      "checkout": "4455d96aa0808cad9894011947b0ec62f264ff2747f36807cf305486ce2c839d",
+      "installed": "4455d96aa0808cad9894011947b0ec62f264ff2747f36807cf305486ce2c839d"
+    },
+    "logging_config.py": {
+      "checkout": "47078c4c0353d4511ae7b7db75fd425149afcf2d54821699e5ce40039fec2030",
+      "installed": "47078c4c0353d4511ae7b7db75fd425149afcf2d54821699e5ce40039fec2030"
+    },
+    "model_catalog.py": {
+      "checkout": "3b47e4b38c6b17c1bd2855a0cd9e0edcb047ce4f6ee8e74a8b24ddbbd9185565",
+      "installed": "3b47e4b38c6b17c1bd2855a0cd9e0edcb047ce4f6ee8e74a8b24ddbbd9185565"
+    },
+    "model_commands.py": {
+      "checkout": "48f47debde0c1e9ff21c13189c73363d544c98c68edb13a5a864ca0a656296d7",
+      "installed": "48f47debde0c1e9ff21c13189c73363d544c98c68edb13a5a864ca0a656296d7"
+    },
+    "models/__init__.py": {
+      "checkout": "8ad297fc24778f69f072410050f16161d4d7197aa12773677aff57d8f3fbf096",
+      "installed": "8ad297fc24778f69f072410050f16161d4d7197aa12773677aff57d8f3fbf096"
+    },
+    "models/field_validators.py": {
+      "checkout": "6a914a0a55550c36300332dde5b43cba7feaeb8876758cc484b5c5e45b6c9cf3",
+      "installed": "6a914a0a55550c36300332dde5b43cba7feaeb8876758cc484b5c5e45b6c9cf3"
+    },
+    "models/plugin.py": {
+      "checkout": "4058ef4c8de94ab2f85c38ad8076243fc2d2e6eb0bbe345e55afbbc7922e1db3",
+      "installed": "4058ef4c8de94ab2f85c38ad8076243fc2d2e6eb0bbe345e55afbbc7922e1db3"
+    },
+    "models/quality.py": {
+      "checkout": "521061b96b05bb8104a7930643f17b9f56ae1aadf41823d2b4175fbcf608d639",
+      "installed": "521061b96b05bb8104a7930643f17b9f56ae1aadf41823d2b4175fbcf608d639"
+    },
+    "models/result.py": {
+      "checkout": "7280e1bbbd6b76efd4260935a5620241e00d0a0533f08290aba0835a2047a338",
+      "installed": "7280e1bbbd6b76efd4260935a5620241e00d0a0533f08290aba0835a2047a338"
+    },
+    "models/rules.py": {
+      "checkout": "11e851007c934cd937ead1debe01cd51b118292ba9289b7fda50d3119df1b68c",
+      "installed": "11e851007c934cd937ead1debe01cd51b118292ba9289b7fda50d3119df1b68c"
+    },
+    "models/skill.py": {
+      "checkout": "b6d09bd8b05ac8142985d7ffe3abc68044d5524901d136e33e39f5658b7b0171",
+      "installed": "b6d09bd8b05ac8142985d7ffe3abc68044d5524901d136e33e39f5658b7b0171"
+    },
+    "models/workflows.py": {
+      "checkout": "f8cd5c06f034ec04c689732cc90069eef7cad4756e35cacda72d2efc7cf87d26",
+      "installed": "f8cd5c06f034ec04c689732cc90069eef7cad4756e35cacda72d2efc7cf87d26"
+    },
+    "plugin_component_risk.py": {
+      "checkout": "ebb1eb129c339a275726d5385ddf4cc705ceda8cb0fa2df7c5c5bfe4c9886b11",
+      "installed": "ebb1eb129c339a275726d5385ddf4cc705ceda8cb0fa2df7c5c5bfe4c9886b11"
+    },
+    "plugin_config_risk.py": {
+      "checkout": "2ace9e33c3bf8e668ebf4bb141ccb49252b21c384b55dc133105256f9133717c",
+      "installed": "2ace9e33c3bf8e668ebf4bb141ccb49252b21c384b55dc133105256f9133717c"
+    },
+    "plugin_context_cost.py": {
+      "checkout": "81aee8812431dddf1abd71045618845db8d0d5971c78eb4dd1bd2aedad48fcb1",
+      "installed": "81aee8812431dddf1abd71045618845db8d0d5971c78eb4dd1bd2aedad48fcb1"
+    },
+    "plugin_dependencies.py": {
+      "checkout": "bd16f726d536212f8d293693961577c0ecc4baf25751d2475207897e65ba53cb",
+      "installed": "bd16f726d536212f8d293693961577c0ecc4baf25751d2475207897e65ba53cb"
+    },
+    "plugin_dependency_audit.py": {
+      "checkout": "d63d89e627bcb74ff4ec6efce936f9f704e2aaa6c707bf629409613b4aba378b",
+      "installed": "d63d89e627bcb74ff4ec6efce936f9f704e2aaa6c707bf629409613b4aba378b"
+    },
+    "plugin_dependency_records.py": {
+      "checkout": "ef23b4891056d668dc36a50c492d14aba4d4f3556a6c15134f16dc8ce1fb6c53",
+      "installed": "ef23b4891056d668dc36a50c492d14aba4d4f3556a6c15134f16dc8ce1fb6c53"
+    },
+    "plugin_discovery.py": {
+      "checkout": "f3a102715ac06fdc1b53ac0e3678e97834babe3de95adce5669911da29b43b69",
+      "installed": "f3a102715ac06fdc1b53ac0e3678e97834babe3de95adce5669911da29b43b69"
+    },
+    "plugin_format_schema.py": {
+      "checkout": "12b954e34aa5fac5d48d9f85af9b5f947f9cb74a44dd213880c1d37648bdf8d5",
+      "installed": "12b954e34aa5fac5d48d9f85af9b5f947f9cb74a44dd213880c1d37648bdf8d5"
+    },
+    "plugin_formats.py": {
+      "checkout": "296d2f4db9a11cc4b8226d301a3d2bea526cd38803866ae43907b847a541cecf",
+      "installed": "296d2f4db9a11cc4b8226d301a3d2bea526cd38803866ae43907b847a541cecf"
+    },
+    "plugin_inventory.py": {
+      "checkout": "778624ee4145db583dc9946d5750c1dfd9cbeaeb3995388e6892a0cb904dcdf1",
+      "installed": "778624ee4145db583dc9946d5750c1dfd9cbeaeb3995388e6892a0cb904dcdf1"
+    },
+    "plugin_manifest.py": {
+      "checkout": "6c82af95beac6cdd49b4b559407ce57f26ff16f91da103244c81a76dfa0d150e",
+      "installed": "6c82af95beac6cdd49b4b559407ce57f26ff16f91da103244c81a76dfa0d150e"
+    },
+    "plugin_markdown.py": {
+      "checkout": "7292d558f8c2faec614d4a25e8fc68d019fff03e2545396b0f2fab5150581a2b",
+      "installed": "7292d558f8c2faec614d4a25e8fc68d019fff03e2545396b0f2fab5150581a2b"
+    },
+    "plugin_mcp.py": {
+      "checkout": "03c37708028e3d2a9ac34291ecfbb427b7a774ce6110dfd9e3f3d50085b6e8c8",
+      "installed": "03c37708028e3d2a9ac34291ecfbb427b7a774ce6110dfd9e3f3d50085b6e8c8"
+    },
+    "plugin_member_paths.py": {
+      "checkout": "e653c7c28f297febbaebc5191d7b20723a5920d6ca9124cadbca9fdcdabe7005",
+      "installed": "e653c7c28f297febbaebc5191d7b20723a5920d6ca9124cadbca9fdcdabe7005"
+    },
+    "plugin_paths.py": {
+      "checkout": "33a96459f5b1d4905a34e9a25ea764c863950320447e77903b56fee7ee682235",
+      "installed": "33a96459f5b1d4905a34e9a25ea764c863950320447e77903b56fee7ee682235"
+    },
+    "plugin_permissions.py": {
+      "checkout": "aa26e5b982ade56f29ee85d032830966d31672b3a3b1010b592e33331c979587",
+      "installed": "aa26e5b982ade56f29ee85d032830966d31672b3a3b1010b592e33331c979587"
+    },
+    "plugin_refs.py": {
+      "checkout": "ae62b6fd226ec4c276a4eacb29adf9efbdf1089ab7c175aed51b4046172f9853",
+      "installed": "ae62b6fd226ec4c276a4eacb29adf9efbdf1089ab7c175aed51b4046172f9853"
+    },
+    "plugin_skills.py": {
+      "checkout": "196d5da2ca9deef52b632e6545fee23df09a70c6e936cab429006e84a71195db",
+      "installed": "196d5da2ca9deef52b632e6545fee23df09a70c6e936cab429006e84a71195db"
+    },
+    "plugin_states.py": {
+      "checkout": "c7f11e0cd06930429cd88d30327b917ce434e3400c50cbb1ba644238a09483e6",
+      "installed": "c7f11e0cd06930429cd88d30327b917ce434e3400c50cbb1ba644238a09483e6"
+    },
+    "provider_config.py": {
+      "checkout": "af9951413b375a339107edf9b9b6d3f0c2adb00fd5a91089929274b4354e6b63",
+      "installed": "af9951413b375a339107edf9b9b6d3f0c2adb00fd5a91089929274b4354e6b63"
+    },
+    "publication_evidence.py": {
+      "checkout": "e54430c4c7134de5f7c1aa62978828f2fb3aa0999ffc4eb8e4648a460e3e2a27",
+      "installed": "e54430c4c7134de5f7c1aa62978828f2fb3aa0999ffc4eb8e4648a460e3e2a27"
+    },
+    "publication_identity.py": {
+      "checkout": "f133224e0e139c5b7cc1d9ed0dae57cf09b4beb713cf792ebde9edc50d566c38",
+      "installed": "f133224e0e139c5b7cc1d9ed0dae57cf09b4beb713cf792ebde9edc50d566c38"
+    },
+    "publication_text.py": {
+      "checkout": "0f73c3ce168190105cbd332cf60310476167c26f930845e7b1c80ac012568cc1",
+      "installed": "0f73c3ce168190105cbd332cf60310476167c26f930845e7b1c80ac012568cc1"
+    },
+    "quality_config.py": {
+      "checkout": "463780027250d6bee18fa5da0a141c7ca96b0581fd6830250698fb6193bf8d3b",
+      "installed": "463780027250d6bee18fa5da0a141c7ca96b0581fd6830250698fb6193bf8d3b"
+    },
+    "reporting/__init__.py": {
+      "checkout": "c3b1e8d6e8ac2eef9e7ba1063638741a7775e28f6c54746d1b73fe63a7f52e93",
+      "installed": "c3b1e8d6e8ac2eef9e7ba1063638741a7775e28f6c54746d1b73fe63a7f52e93"
+    },
+    "reporting/base.py": {
+      "checkout": "f2a2641416360d187c97b2789dd93e530ddfc6c45dcfebb78701ec25223e3afa",
+      "installed": "f2a2641416360d187c97b2789dd93e530ddfc6c45dcfebb78701ec25223e3afa"
+    },
+    "reporting/benchmark.py": {
+      "checkout": "cbd12934b6de4f3ef8efc40a8c8fc9b40da8aa083ac40428b189c25c269e7b43",
+      "installed": "cbd12934b6de4f3ef8efc40a8c8fc9b40da8aa083ac40428b189c25c269e7b43"
+    },
+    "reporting/cli.py": {
+      "checkout": "c519793c585e9fa520f914fd91d82d268654ed3cceccef410f4ea48deb172ae0",
+      "installed": "c519793c585e9fa520f914fd91d82d268654ed3cceccef410f4ea48deb172ae0"
+    },
+    "reporting/console_ui.py": {
+      "checkout": "1cbebacb7be0921d860018010db22bd4114851a1fde1831988f7d107488fcb33",
+      "installed": "1cbebacb7be0921d860018010db22bd4114851a1fde1831988f7d107488fcb33"
+    },
+    "reporting/dashboard.py": {
+      "checkout": "1808fd7e9eebd3137bc1860fb8ae33515514ea533eb1eff6bd47595d56f913cd",
+      "installed": "1808fd7e9eebd3137bc1860fb8ae33515514ea533eb1eff6bd47595d56f913cd"
+    },
+    "reporting/dashboard_app.py": {
+      "checkout": "a4213294e41d7100941111d2faa5f91f3d3f2f1c00a5913133466170192c1a30",
+      "installed": "a4213294e41d7100941111d2faa5f91f3d3f2f1c00a5913133466170192c1a30"
+    },
+    "reporting/dashboard_data.py": {
+      "checkout": "31bb42338c939f37669a558533ba693f33cf9044b441d50dbfbb7db3e48bf1b8",
+      "installed": "31bb42338c939f37669a558533ba693f33cf9044b441d50dbfbb7db3e48bf1b8"
+    },
+    "reporting/dashboard_ui/__init__.py": {
+      "checkout": "39b67a3543de12fbe919327958818a53222b223688ef8ece33a12bc1e46d1f14",
+      "installed": "39b67a3543de12fbe919327958818a53222b223688ef8ece33a12bc1e46d1f14"
+    },
+    "reporting/dashboard_ui/skillevaluator_dashboard.py": {
+      "checkout": "e064a45c336e16011d2a1f1e83ed9f7ba036888e1440e29d5c176769f53a4b7f",
+      "installed": "e064a45c336e16011d2a1f1e83ed9f7ba036888e1440e29d5c176769f53a4b7f"
+    },
+    "reporting/external_metrics.py": {
+      "checkout": "54dada59727af9d88a3dfe9b595e7213ae3084a2e9e8f53c86e4049a36bbe41e",
+      "installed": "54dada59727af9d88a3dfe9b595e7213ae3084a2e9e8f53c86e4049a36bbe41e"
+    },
+    "reporting/finding_summary.py": {
+      "checkout": "816e66a7ce0c88e33b153906de681258eed3b1e1b40d7c6bd4e7bede699530e2",
+      "installed": "816e66a7ce0c88e33b153906de681258eed3b1e1b40d7c6bd4e7bede699530e2"
+    },
+    "reporting/finding_verification.py": {
+      "checkout": "bac330d1042285c2e0e9b08be006e4ea66d2daa1ad8d0c2d1fec550ea1d44cc1",
+      "installed": "bac330d1042285c2e0e9b08be006e4ea66d2daa1ad8d0c2d1fec550ea1d44cc1"
+    },
+    "reporting/harbor_viewer.py": {
+      "checkout": "5e5a61186e5f64795b7bdae51047b762cb89e35dc9f5e718dfd324127e3bd56d",
+      "installed": "5e5a61186e5f64795b7bdae51047b762cb89e35dc9f5e718dfd324127e3bd56d"
+    },
+    "reporting/html.py": {
+      "checkout": "d8164dced64caa2a7aec4a9465a9e342a227e9eac8124f22d3f1b368c23677fb",
+      "installed": "d8164dced64caa2a7aec4a9465a9e342a227e9eac8124f22d3f1b368c23677fb"
+    },
+    "reporting/json_reporter.py": {
+      "checkout": "18b3f7c91886946bce3a646b32e9639c5a3277562b89892c8482592e8bad0a17",
+      "installed": "18b3f7c91886946bce3a646b32e9639c5a3277562b89892c8482592e8bad0a17"
+    },
+    "reporting/markdown.py": {
+      "checkout": "2ab46fad3597242b84f8f6d56067b059891fe8c6f74d2a030b54944c4193ebac",
+      "installed": "2ab46fad3597242b84f8f6d56067b059891fe8c6f74d2a030b54944c4193ebac"
+    },
+    "reporting/naming.py": {
+      "checkout": "4d75f02c2bf0aa398ce3849e954277303e1a3e38c2989825a1c9262c127051fa",
+      "installed": "4d75f02c2bf0aa398ce3849e954277303e1a3e38c2989825a1c9262c127051fa"
+    },
+    "reporting/plugin_runtime.py": {
+      "checkout": "1985b45a5e890129187bd885424c5fda6e94998ad03bf7e118be8d243029cdbc",
+      "installed": "1985b45a5e890129187bd885424c5fda6e94998ad03bf7e118be8d243029cdbc"
+    },
+    "reporting/plugin_runtime_io.py": {
+      "checkout": "78f54f32d9b44c6b59bd83e87a2237d0a0aae7fce86fa04aa6c7974466c93fda",
+      "installed": "78f54f32d9b44c6b59bd83e87a2237d0a0aae7fce86fa04aa6c7974466c93fda"
+    },
+    "reporting/plugin_runtime_render.py": {
+      "checkout": "6c6c39b7c67d0897ce7f59d4c05798bee4f2519686de06f30c86abcfd0580fa1",
+      "installed": "6c6c39b7c67d0897ce7f59d4c05798bee4f2519686de06f30c86abcfd0580fa1"
+    },
+    "reporting/plugin_static.py": {
+      "checkout": "798b1fe0d0266e985b003878b81a23e66f84cd7503f7529924beb5d9f9458820",
+      "installed": "798b1fe0d0266e985b003878b81a23e66f84cd7503f7529924beb5d9f9458820"
+    },
+    "reporting/plugin_static_render.py": {
+      "checkout": "ad67dd2eace18928816a9a57dd943e0a88a7a8ef1a507934e9588054a56acb26",
+      "installed": "ad67dd2eace18928816a9a57dd943e0a88a7a8ef1a507934e9588054a56acb26"
+    },
+    "reporting/presentation.py": {
+      "checkout": "a82776ec7d792e0ac8a1368f107ad32620774b527a20962686ad510af4bfb1e7",
+      "installed": "a82776ec7d792e0ac8a1368f107ad32620774b527a20962686ad510af4bfb1e7"
+    },
+    "reporting/retained.py": {
+      "checkout": "34c50d95b3ad049868f8ed1e0214e254588ef5c8c4cc5d3640a835fb883667c3",
+      "installed": "34c50d95b3ad049868f8ed1e0214e254588ef5c8c4cc5d3640a835fb883667c3"
+    },
+    "reporting/run_status.py": {
+      "checkout": "96dcf3270d1837e215929af26fd31de2ae2353b487f4ede5b5d70692c2b15fb2",
+      "installed": "96dcf3270d1837e215929af26fd31de2ae2353b487f4ede5b5d70692c2b15fb2"
+    },
+    "reporting/sarif_reporter.py": {
+      "checkout": "b0753af2b157f16601b6d31283f7c3ecd671e8be6be395d297fa10d1247268f0",
+      "installed": "b0753af2b157f16601b6d31283f7c3ecd671e8be6be395d297fa10d1247268f0"
+    },
+    "reporting/summary_copy.py": {
+      "checkout": "e4f8f7c2a6ffd1fca3bbcfc9a4185e7c2485465bded909e183891d9cdbfd83a3",
+      "installed": "e4f8f7c2a6ffd1fca3bbcfc9a4185e7c2485465bded909e183891d9cdbfd83a3"
+    },
+    "reporting/terminal_styles.py": {
+      "checkout": "801609ce5f923c638f7b1b53ecb7e07d6a3623a46fa8a9e68588b1f1611745dd",
+      "installed": "801609ce5f923c638f7b1b53ecb7e07d6a3623a46fa8a9e68588b1f1611745dd"
+    },
+    "reporting/tier2_views.py": {
+      "checkout": "9897e69ea90dc9e0d5cce2e4dcfc02757e3e624649a266deaceb93c5448a3be1",
+      "installed": "9897e69ea90dc9e0d5cce2e4dcfc02757e3e624649a266deaceb93c5448a3be1"
+    },
+    "reporting/tier3_coverage.py": {
+      "checkout": "026b3d206429e4bf22c9b045015884a58c47c5e8d08b822e6a80b43a7573bb8f",
+      "installed": "026b3d206429e4bf22c9b045015884a58c47c5e8d08b822e6a80b43a7573bb8f"
+    },
+    "reporting/tier3_scope.py": {
+      "checkout": "68f609f3a21faa4a7ee4f7be919aa10cf5e515084557cc91a1bb9038ff595e7b",
+      "installed": "68f609f3a21faa4a7ee4f7be919aa10cf5e515084557cc91a1bb9038ff595e7b"
+    },
+    "reporting/tier3_token_usage.py": {
+      "checkout": "3bde701d46748fbf909e83f1cb8e6ab0eebc0f8d8aa3017c384b7e7affa9ad4c",
+      "installed": "3bde701d46748fbf909e83f1cb8e6ab0eebc0f8d8aa3017c384b7e7affa9ad4c"
+    },
+    "reporting/trial_charts.py": {
+      "checkout": "7c218ea6bacd58dbacfe5a20770f6d84dd2817b6c1ab969b3dbec94fc46aefee",
+      "installed": "7c218ea6bacd58dbacfe5a20770f6d84dd2817b6c1ab969b3dbec94fc46aefee"
+    },
+    "skillspector_diagnostics.py": {
+      "checkout": "07162ffe5e9d6e51378f9115a11745c609734b6da817a8c21e7b412b53c96856",
+      "installed": "07162ffe5e9d6e51378f9115a11745c609734b6da817a8c21e7b412b53c96856"
+    },
+    "skillspector_provenance.py": {
+      "checkout": "7b7a84f9ff4e8d73ee3a036214746e94cdb645b8441d8641d322d6ec39f1ec9c",
+      "installed": "7b7a84f9ff4e8d73ee3a036214746e94cdb645b8441d8641d322d6ec39f1ec9c"
+    },
+    "skillspector_reference_caveats.py": {
+      "checkout": "86ac96fd7369357fc54832e5db0b40258b148115d88fdaa6cdf3c0bdb35d03d6",
+      "installed": "86ac96fd7369357fc54832e5db0b40258b148115d88fdaa6cdf3c0bdb35d03d6"
+    },
+    "skillspector_references.py": {
+      "checkout": "ad9913c1aa34c88edfaecd7e62b0edd78c035e7c7a4c882b897c7fbc28880424",
+      "installed": "ad9913c1aa34c88edfaecd7e62b0edd78c035e7c7a4c882b897c7fbc28880424"
+    },
+    "source_identity.py": {
+      "checkout": "a6b16c13094aaeef23a051031514f6f6cba56610e96cc21ae583af6ab1b67245",
+      "installed": "a6b16c13094aaeef23a051031514f6f6cba56610e96cc21ae583af6ab1b67245"
+    },
+    "spdx.py": {
+      "checkout": "eb60572d611211f3444cef8adae6a505166c09f3a1ec33d0e41f40fe70bd7690",
+      "installed": "eb60572d611211f3444cef8adae6a505166c09f3a1ec33d0e41f40fe70bd7690"
+    },
+    "tier1/__init__.py": {
+      "checkout": "34e3d4f87971df7944cfc38dd98ccdfab95e2617713347f0aa2f5b64a924454c",
+      "installed": "34e3d4f87971df7944cfc38dd98ccdfab95e2617713347f0aa2f5b64a924454c"
+    },
+    "tier1/commands.py": {
+      "checkout": "d95568739b9f887896af2d6170f7420cba04f33ce35da677b79124eebc99d686",
+      "installed": "d95568739b9f887896af2d6170f7420cba04f33ce35da677b79124eebc99d686"
+    },
+    "tier1/plugin_checks.py": {
+      "checkout": "57b7f87b89c8f35258ec5b92eee540ecbd4647716686ea053c07e44dcec21f0d",
+      "installed": "57b7f87b89c8f35258ec5b92eee540ecbd4647716686ea053c07e44dcec21f0d"
+    },
+    "tier2/__init__.py": {
+      "checkout": "9e03c0bfaf5861f9c4167e6bd28c80a0fd8e04f3b64f27aefeae95b8bad31fdc",
+      "installed": "9e03c0bfaf5861f9c4167e6bd28c80a0fd8e04f3b64f27aefeae95b8bad31fdc"
+    },
+    "tier2/commands.py": {
+      "checkout": "527bdce296931fff5075815300e6ad9c95415ed54a79fc98c2b3f61f59afb170",
+      "installed": "527bdce296931fff5075815300e6ad9c95415ed54a79fc98c2b3f61f59afb170"
+    },
+    "tier3/__init__.py": {
+      "checkout": "23d8c2231f6b9f3b7b02a92522cbd7907e5d1cda3744de0029fe42ad5de2a37e",
+      "installed": "23d8c2231f6b9f3b7b02a92522cbd7907e5d1cda3744de0029fe42ad5de2a37e"
+    },
+    "tier3/attempt_verdict.py": {
+      "checkout": "3fd5b9c2fa6c384c0d19207ef633676208465ce19f8747ea8c32a1631a8fcf9e",
+      "installed": "3fd5b9c2fa6c384c0d19207ef633676208465ce19f8747ea8c32a1631a8fcf9e"
+    },
+    "tier3/baseline_store.py": {
+      "checkout": "8a27367501bdb9dfc7bb174b6d506558ca220f90e4e12be4279371f89e3d612f",
+      "installed": "8a27367501bdb9dfc7bb174b6d506558ca220f90e4e12be4279371f89e3d612f"
+    },
+    "tier3/case_ids.py": {
+      "checkout": "673fcae68c5e46c165f77c000f5abb9c1a2b5d52f80bc280bcad7d00be9412e8",
+      "installed": "673fcae68c5e46c165f77c000f5abb9c1a2b5d52f80bc280bcad7d00be9412e8"
+    },
+    "tier3/case_summary.py": {
+      "checkout": "3f7e5aeca5ea64a2c44eb0c6119f465bd00044643956385a1be4b478772f4735",
+      "installed": "3f7e5aeca5ea64a2c44eb0c6119f465bd00044643956385a1be4b478772f4735"
+    },
+    "tier3/commands.py": {
+      "checkout": "05a40d296f927e9ad57d2cc0927797cac22b16c004f95ab7a5bcc99d1e484558",
+      "installed": "05a40d296f927e9ad57d2cc0927797cac22b16c004f95ab7a5bcc99d1e484558"
+    },
+    "tier3/dataset_coverage.py": {
+      "checkout": "eb21eb7dbb70e896210130b99fd63b7007cf1f670594a7a8db93e560372cc29a",
+      "installed": "eb21eb7dbb70e896210130b99fd63b7007cf1f670594a7a8db93e560372cc29a"
+    },
+    "tier3/dataset_migration.py": {
+      "checkout": "23d3a6d14902c3963a27aebd967e44059f813f83d975204793473c5cf5ec807e",
+      "installed": "23d3a6d14902c3963a27aebd967e44059f813f83d975204793473c5cf5ec807e"
+    },
+    "tier3/dataset_progress.py": {
+      "checkout": "7d3396a88897dab311a29f08b7e7607e32cd6e9f444c721ea981ee4569f3bc26",
+      "installed": "7d3396a88897dab311a29f08b7e7607e32cd6e9f444c721ea981ee4569f3bc26"
+    },
+    "tier3/dataset_provenance.py": {
+      "checkout": "18c81f8cedfcd733999de07a520811215d10ec517f34d31c1b68440cf22e6989",
+      "installed": "18c81f8cedfcd733999de07a520811215d10ec517f34d31c1b68440cf22e6989"
+    },
+    "tier3/dataset_sufficiency.py": {
+      "checkout": "1c3b1e21d88b6cb8b7abebf463f2be0185682c90a0bd5d7cd3ddb2130b6dc1e1",
+      "installed": "1c3b1e21d88b6cb8b7abebf463f2be0185682c90a0bd5d7cd3ddb2130b6dc1e1"
+    },
+    "tier3/dataset_utils.py": {
+      "checkout": "95e47f6dec0e82775725a94719563f861b736181a21892abecb416c62ed54a32",
+      "installed": "95e47f6dec0e82775725a94719563f861b736181a21892abecb416c62ed54a32"
+    },
+    "tier3/decoy_commands.py": {
+      "checkout": "d0948d60cb8f3ebf984e1cfb0789a223afdf6fbf753c67c415d8863ab0167490",
+      "installed": "d0948d60cb8f3ebf984e1cfb0789a223afdf6fbf753c67c415d8863ab0167490"
+    },
+    "tier3/decoy_identity.py": {
+      "checkout": "3f3f7ccb68bc6c260e57c5c9b8de67b6f821ea36cbc4a8a2c8417affa1c2bac6",
+      "installed": "3f3f7ccb68bc6c260e57c5c9b8de67b6f821ea36cbc4a8a2c8417affa1c2bac6"
+    },
+    "tier3/decoys.py": {
+      "checkout": "5e7919d17f2edea9492c5c67e4f1ace8a41e4dde056668ccf28be1af8e40a0e6",
+      "installed": "5e7919d17f2edea9492c5c67e4f1ace8a41e4dde056668ccf28be1af8e40a0e6"
+    },
+    "tier3/eval_core/__init__.py": {
+      "checkout": "5af7201f0a2e74f2a090f2bf5a8658969820b035952f9679c67e8e5bc3c22990",
+      "installed": "5af7201f0a2e74f2a090f2bf5a8658969820b035952f9679c67e8e5bc3c22990"
+    },
+    "tier3/eval_core/atif_helpers.py": {
+      "checkout": "bc7734cf3ba5a6c68216b0644fd0f11564a63a76b504e881d8012b9d972a85c6",
+      "installed": "bc7734cf3ba5a6c68216b0644fd0f11564a63a76b504e881d8012b9d972a85c6"
+    },
+    "tier3/eval_core/character_facts.py": {
+      "checkout": "c5ebbbe9b10b3b5340713a8d02b569cae75ff01e8db0b553529075d67172865b",
+      "installed": "c5ebbbe9b10b3b5340713a8d02b569cae75ff01e8db0b553529075d67172865b"
+    },
+    "tier3/eval_core/checks.py": {
+      "checkout": "9860ac3bfc41f52b897f6e0f7ec2d0c742b8174241eeae6681a849f32d8ab7e1",
+      "installed": "9860ac3bfc41f52b897f6e0f7ec2d0c742b8174241eeae6681a849f32d8ab7e1"
+    },
+    "tier3/eval_core/codex_tool_call_normalizer.py": {
+      "checkout": "b9d0fa6a4663faf189db617f686509163b5a0b5e62bcd6dd6396b49a09db584c",
+      "installed": "b9d0fa6a4663faf189db617f686509163b5a0b5e62bcd6dd6396b49a09db584c"
+    },
+    "tier3/eval_core/declarative_checks.py": {
+      "checkout": "96f3f60db30d3489e06ad8786f1d771fa94b33558b4c85d0c5b742b4d988ed92",
+      "installed": "96f3f60db30d3489e06ad8786f1d771fa94b33558b4c85d0c5b742b4d988ed92"
+    },
+    "tier3/eval_core/llm_judge.py": {
+      "checkout": "5c4f4b9243f3f85616ecd7ed60e912ab252f785e46aa9af59b7492e093911e2a",
+      "installed": "5c4f4b9243f3f85616ecd7ed60e912ab252f785e46aa9af59b7492e093911e2a"
+    },
+    "tier3/eval_core/log_converters.py": {
+      "checkout": "77a7ecbf4d81dd38fb5f1fbb969700f77fed921755e6f07838e98e2ba9d78e41",
+      "installed": "77a7ecbf4d81dd38fb5f1fbb969700f77fed921755e6f07838e98e2ba9d78e41"
+    },
+    "tier3/eval_core/optional_reference.py": {
+      "checkout": "922cc1dfcfcd53b92f65837ec1257abe03e08c27f632000d23ee5532112d0f09",
+      "installed": "922cc1dfcfcd53b92f65837ec1257abe03e08c27f632000d23ee5532112d0f09"
+    },
+    "tier3/eval_core/plugin_security.py": {
+      "checkout": "0b58ac66a5bd7c272425e11ee50950f5e97039771db6b85a80f4c2b160bba4d3",
+      "installed": "0b58ac66a5bd7c272425e11ee50950f5e97039771db6b85a80f4c2b160bba4d3"
+    },
+    "tier3/eval_core/plugin_signals.py": {
+      "checkout": "48e471210891476d6f0740b2abefbca28171ced41e1bb7ffae3151d03e8b6ddd",
+      "installed": "48e471210891476d6f0740b2abefbca28171ced41e1bb7ffae3151d03e8b6ddd"
+    },
+    "tier3/eval_core/runtime_evidence.py": {
+      "checkout": "a76b24ee84eff06213190f8b8e1de1b20f0eb756e48b992c7df8fb359d7057f6",
+      "installed": "a76b24ee84eff06213190f8b8e1de1b20f0eb756e48b992c7df8fb359d7057f6"
+    },
+    "tier3/eval_core/script_invocation.py": {
+      "checkout": "3a0e0692ff91a1f13bcff15bdde68264a1963c84fa189786425a4fc93b267910",
+      "installed": "3a0e0692ff91a1f13bcff15bdde68264a1963c84fa189786425a4fc93b267910"
+    },
+    "tier3/eval_core/secret_redaction.py": {
+      "checkout": "218f07a94dcbe10eab1527f03f407ce8b64d3728de35425e41bccb0210cf8e65",
+      "installed": "218f07a94dcbe10eab1527f03f407ce8b64d3728de35425e41bccb0210cf8e65"
+    },
+    "tier3/eval_core/shell_lexing.py": {
+      "checkout": "5b4efc7bb45f03eb17306294fb227c8dedeb47f8faaf93698f03b5dc395b42f5",
+      "installed": "5b4efc7bb45f03eb17306294fb227c8dedeb47f8faaf93698f03b5dc395b42f5"
+    },
+    "tier3/evals_config.py": {
+      "checkout": "1d470b94a2e23b6b021ff86d03e63e7d28913e06b105ccace63f740f300694d3",
+      "installed": "1d470b94a2e23b6b021ff86d03e63e7d28913e06b105ccace63f740f300694d3"
+    },
+    "tier3/evals_spec.py": {
+      "checkout": "1c0479b385e78d616d1d1321fd5032df24f7ec8166a25f2a230b82d907a29b1e",
+      "installed": "1c0479b385e78d616d1d1321fd5032df24f7ec8166a25f2a230b82d907a29b1e"
+    },
+    "tier3/evidence_volume.py": {
+      "checkout": "0e94e7abde319d81b93ea56b406988bb527277490e30e574e5f1467efa82143f",
+      "installed": "0e94e7abde319d81b93ea56b406988bb527277490e30e574e5f1467efa82143f"
+    },
+    "tier3/external_metrics.py": {
+      "checkout": "a51d0f4888f338ea3184db21740905a6b81605a290aea6e29cc5255ca28c5f98",
+      "installed": "a51d0f4888f338ea3184db21740905a6b81605a290aea6e29cc5255ca28c5f98"
+    },
+    "tier3/generate_dataset.py": {
+      "checkout": "92dc48b98c0ae87256e45583e5969c6280e69b7fea33131a3363db723720b84a",
+      "installed": "92dc48b98c0ae87256e45583e5969c6280e69b7fea33131a3363db723720b84a"
+    },
+    "tier3/grader_policy.py": {
+      "checkout": "215159a39f26dba1706b334767934ed85f9a79d1d028f9beb21921a607db5dc1",
+      "installed": "215159a39f26dba1706b334767934ed85f9a79d1d028f9beb21921a607db5dc1"
+    },
+    "tier3/grader_validation.py": {
+      "checkout": "63ab5b416d0ed98307b5bab4d52ba6880185a502ba77f15cc618d2929307db79",
+      "installed": "63ab5b416d0ed98307b5bab4d52ba6880185a502ba77f15cc618d2929307db79"
+    },
+    "tier3/harbor/__init__.py": {
+      "checkout": "10e7743b05496033272138922e97fb926c0a5360611cafa67427e50c1a750f3d",
+      "installed": "10e7743b05496033272138922e97fb926c0a5360611cafa67427e50c1a750f3d"
+    },
+    "tier3/harbor/activation.py": {
+      "checkout": "b283f629d35e9b9396a3542cf89f8cab524d31278fff9a1916333236063c923a",
+      "installed": "b283f629d35e9b9396a3542cf89f8cab524d31278fff9a1916333236063c923a"
+    },
+    "tier3/harbor/adapter.py": {
+      "checkout": "c423c4a5bf99fafb5601f39ecf0aa69178b55195ccf026ba26d86d18d81c0d7a",
+      "installed": "c423c4a5bf99fafb5601f39ecf0aa69178b55195ccf026ba26d86d18d81c0d7a"
+    },
+    "tier3/harbor/artifact_retention.py": {
+      "checkout": "7e57863476c40f0f505fc70cae99e3ba3ed7dd71a2980f114fa04e9ca9942666",
+      "installed": "7e57863476c40f0f505fc70cae99e3ba3ed7dd71a2980f114fa04e9ca9942666"
+    },
+    "tier3/harbor/baseline_timeouts.py": {
+      "checkout": "2f92f0279730e313c733de59367b5595097074718520a13e11b3f6934aaf3670",
+      "installed": "2f92f0279730e313c733de59367b5595097074718520a13e11b3f6934aaf3670"
+    },
+    "tier3/harbor/collector.py": {
+      "checkout": "daa2b7193819da93e04cb2eac7496bc56dcb5721a7d0c3803f19ff881108659b",
+      "installed": "daa2b7193819da93e04cb2eac7496bc56dcb5721a7d0c3803f19ff881108659b"
+    },
+    "tier3/harbor/gke_environment.py": {
+      "checkout": "996bac83d1d38da513c34ee15ed9c7f018fb2eedb5ec404a36969b55bb548c20",
+      "installed": "996bac83d1d38da513c34ee15ed9c7f018fb2eedb5ec404a36969b55bb548c20"
+    },
+    "tier3/harbor/hermes_agent.py": {
+      "checkout": "56c60fe4b4a76281988eac32a822a609aad888aa727e4ba635c5b0adef6d1a3b",
+      "installed": "56c60fe4b4a76281988eac32a822a609aad888aa727e4ba635c5b0adef6d1a3b"
+    },
+    "tier3/harbor/installed_agents.py": {
+      "checkout": "8660fb24e7f307edeafb21342a5eaf49bea83c9dc3ca2b6c6b74671f5790864c",
+      "installed": "8660fb24e7f307edeafb21342a5eaf49bea83c9dc3ca2b6c6b74671f5790864c"
+    },
+    "tier3/harbor/kubeconfig.py": {
+      "checkout": "3b2e5d17cf284304c5d8b1dc5f56478d1e6a5d2bb9a59b9f9ae948465c45cdb7",
+      "installed": "3b2e5d17cf284304c5d8b1dc5f56478d1e6a5d2bb9a59b9f9ae948465c45cdb7"
+    },
+    "tier3/harbor/lift_basis.py": {
+      "checkout": "0e6bfe1adf6639eeebb4485efe33806f4058e9b2165dab03801854d480ee2141",
+      "installed": "0e6bfe1adf6639eeebb4485efe33806f4058e9b2165dab03801854d480ee2141"
+    },
+    "tier3/harbor/local_agents.py": {
+      "checkout": "77299c8de92778ac3c21d35f07828ec5c7a192c0b646ba8eb469e5435bf72644",
+      "installed": "77299c8de92778ac3c21d35f07828ec5c7a192c0b646ba8eb469e5435bf72644"
+    },
+    "tier3/harbor/local_environment.py": {
+      "checkout": "36a7f937f987ce247b26ecf11d23eac355de760f5495dbfcb636c1913e72c5c4",
+      "installed": "36a7f937f987ce247b26ecf11d23eac355de760f5495dbfcb636c1913e72c5c4"
+    },
+    "tier3/harbor/local_runtime.py": {
+      "checkout": "1226472b620ae583b5f2e25dea11e9a525309e5d3e1171d23131db543d0299b0",
+      "installed": "1226472b620ae583b5f2e25dea11e9a525309e5d3e1171d23131db543d0299b0"
+    },
+    "tier3/harbor/local_sandbox.py": {
+      "checkout": "5367abc21a93b560bca203333362198ed3fba86400382abbe37f28627385d18b",
+      "installed": "5367abc21a93b560bca203333362198ed3fba86400382abbe37f28627385d18b"
+    },
+    "tier3/harbor/loose_agents.py": {
+      "checkout": "4b66bb7298e07486639189edeade9c7d068fc09fbff7b70afaf2383fc754fcb9",
+      "installed": "4b66bb7298e07486639189edeade9c7d068fc09fbff7b70afaf2383fc754fcb9"
+    },
+    "tier3/harbor/loose_parts_arm.py": {
+      "checkout": "a1ffb919d73cafe3c1a1b3f9f494cecb734ebda5d9ea1f230112a18b5d5aa38c",
+      "installed": "a1ffb919d73cafe3c1a1b3f9f494cecb734ebda5d9ea1f230112a18b5d5aa38c"
+    },
+    "tier3/harbor/metrics.py": {
+      "checkout": "365e106004e34b95a45ea0d93ce93a6a2e62ecb86600dcbe715e9b52324167b2",
+      "installed": "365e106004e34b95a45ea0d93ce93a6a2e62ecb86600dcbe715e9b52324167b2"
+    },
+    "tier3/harbor/native_agents.py": {
+      "checkout": "7f0d898f9affd85de670cc5d4e8611aa5c17bc71d9e7038cdcd4bd6efe6b2ce8",
+      "installed": "7f0d898f9affd85de670cc5d4e8611aa5c17bc71d9e7038cdcd4bd6efe6b2ce8"
+    },
+    "tier3/harbor/native_staging.py": {
+      "checkout": "e2635165c8edcdd98bbd1de4ad4c046e1afb12d305a1bd557fe44c672a633190",
+      "installed": "e2635165c8edcdd98bbd1de4ad4c046e1afb12d305a1bd557fe44c672a633190"
+    },
+    "tier3/harbor/nvidia_build_bridge.py": {
+      "checkout": "bddb777e27e461d623e05a4f27f7d002ad015201a78f44723e724818e39cd6a1",
+      "installed": "bddb777e27e461d623e05a4f27f7d002ad015201a78f44723e724818e39cd6a1"
+    },
+    "tier3/harbor/progress.py": {
+      "checkout": "9b05dd43d0b6b10b7a73fbcdca207f29c5ab64d851f57fdd50a223ab54e247e9",
+      "installed": "9b05dd43d0b6b10b7a73fbcdca207f29c5ab64d851f57fdd50a223ab54e247e9"
+    },
+    "tier3/harbor/report.py": {
+      "checkout": "f00d0a522a1283759a8bf4ead9b9dc909973e892da9df438806a5070e6564c58",
+      "installed": "f00d0a522a1283759a8bf4ead9b9dc909973e892da9df438806a5070e6564c58"
+    },
+    "tier3/harbor/report_data.py": {
+      "checkout": "a54c74ca97003a9e5ee920c76e97d47538a16fb6d7f0df96bda71e6827e91dec",
+      "installed": "a54c74ca97003a9e5ee920c76e97d47538a16fb6d7f0df96bda71e6827e91dec"
+    },
+    "tier3/harbor/resource_usage.py": {
+      "checkout": "4c4a5747147b969046df53cf3df4f79bcce52b18cbe2cdbed179e74189ebe8a0",
+      "installed": "4c4a5747147b969046df53cf3df4f79bcce52b18cbe2cdbed179e74189ebe8a0"
+    },
+    "tier3/harbor/run_budget.py": {
+      "checkout": "4b4271bedd52d6a5ccb10aeefa20004db1c025344a2b970c3eaa8fa1846e4cc4",
+      "installed": "4b4271bedd52d6a5ccb10aeefa20004db1c025344a2b970c3eaa8fa1846e4cc4"
+    },
+    "tier3/harbor/runner.py": {
+      "checkout": "8a394fc64726d7efebdb74f36d6fccda3c3cdb8d3526b979224dffc725f5552c",
+      "installed": "8a394fc64726d7efebdb74f36d6fccda3c3cdb8d3526b979224dffc725f5552c"
+    },
+    "tier3/harbor/runtime_preflight.py": {
+      "checkout": "4ee498033103db9cf8fd1ce760dfdd54553b48adad8bb4ed89aa780e3396fe3f",
+      "installed": "4ee498033103db9cf8fd1ce760dfdd54553b48adad8bb4ed89aa780e3396fe3f"
+    },
+    "tier3/harbor/secret_redaction.py": {
+      "checkout": "3a7d428245786991089f05e0c9a1af073f2ce4ce6f61bf66225805e22078db6a",
+      "installed": "3a7d428245786991089f05e0c9a1af073f2ce4ce6f61bf66225805e22078db6a"
+    },
+    "tier3/harbor/secure_copy.py": {
+      "checkout": "07ad45fb841b98ed380d2b26fc722240d32ec8bd020b65434981c606dfd6fef9",
+      "installed": "07ad45fb841b98ed380d2b26fc722240d32ec8bd020b65434981c606dfd6fef9"
+    },
+    "tier3/harbor/secure_docker_environment.py": {
+      "checkout": "fd5ac97179d5b345c4c52b0ea9d2cfaf3fef8ce87333e0c3449d8fbda8298bd4",
+      "installed": "fd5ac97179d5b345c4c52b0ea9d2cfaf3fef8ce87333e0c3449d8fbda8298bd4"
+    },
+    "tier3/harbor/sensitive_stdin.py": {
+      "checkout": "95817be3a3c20221d17f41b62dae796d798cc24f316606e0d630868a70138555",
+      "installed": "95817be3a3c20221d17f41b62dae796d798cc24f316606e0d630868a70138555"
+    },
+    "tier3/harbor/stats.py": {
+      "checkout": "dd718123edf390f6e44529641e6ebd6f82b7b636196aaf2b0cc228940da9ed8d",
+      "installed": "dd718123edf390f6e44529641e6ebd6f82b7b636196aaf2b0cc228940da9ed8d"
+    },
+    "tier3/harbor/stream_redaction.py": {
+      "checkout": "ddff0438cebd229087860812d525527c68daf140379435a4f72c977bb63e2b79",
+      "installed": "ddff0438cebd229087860812d525527c68daf140379435a4f72c977bb63e2b79"
+    },
+    "tier3/harbor/templates/custom_grader_runner.py": {
+      "checkout": "ae6ba988aa5a282f8d63a1cd86e4132d86a74e880ccb6aa8839df1274585250e",
+      "installed": "ae6ba988aa5a282f8d63a1cd86e4132d86a74e880ccb6aa8839df1274585250e"
+    },
+    "tier3/harbor/templates/eval.py": {
+      "checkout": "25f70a8247f23dc9469dfee22e441ba5e483f870e7054a9c6658f38a21f933d7",
+      "installed": "25f70a8247f23dc9469dfee22e441ba5e483f870e7054a9c6658f38a21f933d7"
+    },
+    "tier3/harbor/templates/metric.py": {
+      "checkout": "31514a8049783dcf2bff39c55a3490e91bed87affce9955882a551eba02ef5bc",
+      "installed": "31514a8049783dcf2bff39c55a3490e91bed87affce9955882a551eba02ef5bc"
+    },
+    "tier3/harbor/trajectory_timing.py": {
+      "checkout": "104f1c86802fdc683c958a2ad714f4b6281c84084905967f773baaaa7eae9609",
+      "installed": "104f1c86802fdc683c958a2ad714f4b6281c84084905967f773baaaa7eae9609"
+    },
+    "tier3/history.py": {
+      "checkout": "07fe8ad691b77b2ec8f2f4b99e6119cdf1ef9ea8582f53f44b9da3ca51ec8033",
+      "installed": "07fe8ad691b77b2ec8f2f4b99e6119cdf1ef9ea8582f53f44b9da3ca51ec8033"
+    },
+    "tier3/interaction_commands.py": {
+      "checkout": "4fde9deb7eb118ca43370aad1801a4f4f67c1772668df141917cdb47452e4347",
+      "installed": "4fde9deb7eb118ca43370aad1801a4f4f67c1772668df141917cdb47452e4347"
+    },
+    "tier3/interactions.py": {
+      "checkout": "d11ba07047859426e817581da5ac4c6bd5bc521ae52effc1529243cce8a7f876",
+      "installed": "d11ba07047859426e817581da5ac4c6bd5bc521ae52effc1529243cce8a7f876"
+    },
+    "tier3/loose_parts.py": {
+      "checkout": "81d8fad07a4c165319a7e28d6788ad8c47c38a7cc5c42b44db89977d46f5381f",
+      "installed": "81d8fad07a4c165319a7e28d6788ad8c47c38a7cc5c42b44db89977d46f5381f"
+    },
+    "tier3/mcp_proof.py": {
+      "checkout": "a8e3e7d8779355ecc14c640aef5c5f1d2d962749a79e6832696b0c32293a493b",
+      "installed": "a8e3e7d8779355ecc14c640aef5c5f1d2d962749a79e6832696b0c32293a493b"
+    },
+    "tier3/nemo_gym/__init__.py": {
+      "checkout": "b957d406a5d305b6f51ca49ace447f44ebfddefc7280345af26b354c1a48b081",
+      "installed": "b957d406a5d305b6f51ca49ace447f44ebfddefc7280345af26b354c1a48b081"
+    },
+    "tier3/nemo_gym/backend.py": {
+      "checkout": "2254bff85bef0c5fbddf51ce1b84d5de4d49e9b9ba85c83d9c9dd51350016b09",
+      "installed": "2254bff85bef0c5fbddf51ce1b84d5de4d49e9b9ba85c83d9c9dd51350016b09"
+    },
+    "tier3/nemo_gym/results.py": {
+      "checkout": "97c52941fd6a0fbe1b4e19ee09855aa8e1e21446dabd7f5cf58e2ecdaaebd954",
+      "installed": "97c52941fd6a0fbe1b4e19ee09855aa8e1e21446dabd7f5cf58e2ecdaaebd954"
+    },
+    "tier3/nemo_gym/runner.py": {
+      "checkout": "5f997896eefb3c98dc2f3413fe499a8de006c7e65d28864d5f1c120713cfbdd2",
+      "installed": "5f997896eefb3c98dc2f3413fe499a8de006c7e65d28864d5f1c120713cfbdd2"
+    },
+    "tier3/next_steps.py": {
+      "checkout": "3e987178e21d3cdb131d7ed61289a9d9a78511d7959b19961270bf149122f8f0",
+      "installed": "3e987178e21d3cdb131d7ed61289a9d9a78511d7959b19961270bf149122f8f0"
+    },
+    "tier3/output_provenance.py": {
+      "checkout": "33c2c6848b7d2c85aa5215bf9e3d4385514a344e8ed35c928db64fb8ff436aad",
+      "installed": "33c2c6848b7d2c85aa5215bf9e3d4385514a344e8ed35c928db64fb8ff436aad"
+    },
+    "tier3/plugin_canary.py": {
+      "checkout": "5849fe9cd2ad708692f6bdf6d5ce34491484f9d76420a9f78abc3a0b946146a8",
+      "installed": "5849fe9cd2ad708692f6bdf6d5ce34491484f9d76420a9f78abc3a0b946146a8"
+    },
+    "tier3/plugin_comparisons.py": {
+      "checkout": "9ae2cf1dccdd3c3cad881026eed95d9e8a5b188fd5b170cf74f96942ba7d9461",
+      "installed": "9ae2cf1dccdd3c3cad881026eed95d9e8a5b188fd5b170cf74f96942ba7d9461"
+    },
+    "tier3/plugin_evidence.py": {
+      "checkout": "f56c2b117981ea0edb55f5e39dfd8aa075414eb93b5f40cb8315f78aaade92ec",
+      "installed": "f56c2b117981ea0edb55f5e39dfd8aa075414eb93b5f40cb8315f78aaade92ec"
+    },
+    "tier3/plugin_execution.py": {
+      "checkout": "7fab44d7264ba79267a19043a506e93947e3735757d6467c54827354f18084db",
+      "installed": "7fab44d7264ba79267a19043a506e93947e3735757d6467c54827354f18084db"
+    },
+    "tier3/plugin_native.py": {
+      "checkout": "b5ab749675dee8146f6eb0f9e74e3e0cd183521652e63cd6e0da402045a2a99c",
+      "installed": "b5ab749675dee8146f6eb0f9e74e3e0cd183521652e63cd6e0da402045a2a99c"
+    },
+    "tier3/plugin_prepare.py": {
+      "checkout": "e31f71e29f64b85129a44667b9b7cd34167f3d67ffd82a1c6e2468d1aa813eff",
+      "installed": "e31f71e29f64b85129a44667b9b7cd34167f3d67ffd82a1c6e2468d1aa813eff"
+    },
+    "tier3/plugin_trace_artifacts.py": {
+      "checkout": "2338eaf39f600238ffbb69ff762e467b96fe55fab0eb5681ed86c5af889ad453",
+      "installed": "2338eaf39f600238ffbb69ff762e467b96fe55fab0eb5681ed86c5af889ad453"
+    },
+    "tier3/reference_skills/__init__.py": {
+      "checkout": "94ffc1a83d324a4d1ca7ced81610f9f30562a3652209812358188a4c0566a713",
+      "installed": "94ffc1a83d324a4d1ca7ced81610f9f30562a3652209812358188a4c0566a713"
+    },
+    "tier3/reference_skills/api-caller/scripts/call_api.py": {
+      "checkout": "e79ba458b89e7e8704463d32c6cc5e8241957b44879b8ddc394fb50d23c3db0e",
+      "installed": "e79ba458b89e7e8704463d32c6cc5e8241957b44879b8ddc394fb50d23c3db0e"
+    },
+    "tier3/reference_skills/api-caller/scripts/parse_openapi.py": {
+      "checkout": "1f3ae49991de8d13dbb762764693ec07b1d42f37cc7ba3ba9eec872714b16cd2",
+      "installed": "1f3ae49991de8d13dbb762764693ec07b1d42f37cc7ba3ba9eec872714b16cd2"
+    },
+    "tier3/reference_skills/calculator/scripts/calc.py": {
+      "checkout": "5416b074fe7023411e4b875d806e6fa6593efe441616617129e8c9e4629a1092",
+      "installed": "5416b074fe7023411e4b875d806e6fa6593efe441616617129e8c9e4629a1092"
+    },
+    "tier3/reference_skills/task-list/scripts/tasks.py": {
+      "checkout": "b6ee64c630e276423d7f9dc730d5067759db3d96f012654c9d80f64cd0700968",
+      "installed": "b6ee64c630e276423d7f9dc730d5067759db3d96f012654c9d80f64cd0700968"
+    },
+    "tier3/reference_skills/text-analyzer/scripts/analyze_text.py": {
+      "checkout": "a20d4d2df766fe5d643b6b4b7a1b8abf25618c4a3c49dbdd49ad10ffcef62af5",
+      "installed": "a20d4d2df766fe5d643b6b4b7a1b8abf25618c4a3c49dbdd49ad10ffcef62af5"
+    },
+    "tier3/result_display.py": {
+      "checkout": "d8799d6f20d1bb7a73c3589d0eef349258220adc52b987fab482ff133d0dd4c6",
+      "installed": "d8799d6f20d1bb7a73c3589d0eef349258220adc52b987fab482ff133d0dd4c6"
+    },
+    "tier3/results_location.py": {
+      "checkout": "3b9580574e30b58725a3efa86831e4c3f1e72f8e6b182eba69857d74cb94b96b",
+      "installed": "3b9580574e30b58725a3efa86831e4c3f1e72f8e6b182eba69857d74cb94b96b"
+    },
+    "tier3/runtime_arms.py": {
+      "checkout": "323e4d89a7708686f15da1e6a9ae63b39587aca9cbde4a99d20710a362f81833",
+      "installed": "323e4d89a7708686f15da1e6a9ae63b39587aca9cbde4a99d20710a362f81833"
+    },
+    "tier3/token_usage.py": {
+      "checkout": "8645bd478834a689aa4836db02ae48e2674033799b82185cb5a3672ac69d7c6e",
+      "installed": "8645bd478834a689aa4836db02ae48e2674033799b82185cb5a3672ac69d7c6e"
+    },
+    "tier3/toml_utils.py": {
+      "checkout": "d0699ef0598cca8f5142f1fdab77a176c5555a90af66ab23c6dabe86d1194956",
+      "installed": "d0699ef0598cca8f5142f1fdab77a176c5555a90af66ab23c6dabe86d1194956"
+    },
+    "tier3/trace_import.py": {
+      "checkout": "1149d92fb4befef72be140cd370067eb4062586971590ce59c0df74f6ccc8fc1",
+      "installed": "1149d92fb4befef72be140cd370067eb4062586971590ce59c0df74f6ccc8fc1"
+    },
+    "tier3/version_comparison.py": {
+      "checkout": "35ebdc77508063a6a7f0097fa1f2f20ed26fbb4932be588c9d224c3ffe3b136f",
+      "installed": "35ebdc77508063a6a7f0097fa1f2f20ed26fbb4932be588c9d224c3ffe3b136f"
+    },
+    "tier3/workflow.py": {
+      "checkout": "601a5505e65867ad37a764178a3701c9f8deba714c8026276be160583b118868",
+      "installed": "601a5505e65867ad37a764178a3701c9f8deba714c8026276be160583b118868"
+    },
+    "tier3_environments.py": {
+      "checkout": "2f4a61e34258640342e6acbb987757e21443f0a750c09653bd6cc0da38652dfa",
+      "installed": "2f4a61e34258640342e6acbb987757e21443f0a750c09653bd6cc0da38652dfa"
+    },
+    "tier_group.py": {
+      "checkout": "0d590f466d8d7123c8422e19bc962d6be43116c4db174fb092ac02e3559c3d46",
+      "installed": "0d590f466d8d7123c8422e19bc962d6be43116c4db174fb092ac02e3559c3d46"
+    },
+    "tier_workflows.py": {
+      "checkout": "46679c3aa86e7f5d1743b117bf0387851a61b0ec67d973415f884302a3f019d2",
+      "installed": "46679c3aa86e7f5d1743b117bf0387851a61b0ec67d973415f884302a3f019d2"
+    },
+    "utils/__init__.py": {
+      "checkout": "18fa11b4385b96fb914ad24d349b52d15eca1667ccef100f26a0b0f0a4c94813",
+      "installed": "18fa11b4385b96fb914ad24d349b52d15eca1667ccef100f26a0b0f0a4c94813"
+    },
+    "utils/helpers.py": {
+      "checkout": "49805680366c75ca7f613815ed48b790b824500b78654b75438773ffa2f34647",
+      "installed": "49805680366c75ca7f613815ed48b790b824500b78654b75438773ffa2f34647"
+    },
+    "utils/json_output.py": {
+      "checkout": "5e6416bdd4cd5d970da54d8a63bbcf26afaf3b3a5f4f68b90b961dd8a913e177",
+      "installed": "5e6416bdd4cd5d970da54d8a63bbcf26afaf3b3a5f4f68b90b961dd8a913e177"
+    },
+    "utils/path_security.py": {
+      "checkout": "096af42720f6d37bf323a56e5e4b043f531b7d0ba800b9a59eb899a524cec4b2",
+      "installed": "096af42720f6d37bf323a56e5e4b043f531b7d0ba800b9a59eb899a524cec4b2"
+    },
+    "utils/process_environment.py": {
+      "checkout": "56cff9697773dccd5018e1072bf2c5be7a5584581ca2f156e271fa1cbbb5c8d4",
+      "installed": "56cff9697773dccd5018e1072bf2c5be7a5584581ca2f156e271fa1cbbb5c8d4"
+    },
+    "utils/redaction.py": {
+      "checkout": "8bac9684c262fe90aa961772873e785cd2432e331c922b91b6cc11c064736c34",
+      "installed": "8bac9684c262fe90aa961772873e785cd2432e331c922b91b6cc11c064736c34"
+    },
+    "utils/rich_markup.py": {
+      "checkout": "56819a6945ea904ad6e84b28f6d06c2dba9d5842eab9d8cb549015973fa8492e",
+      "installed": "56819a6945ea904ad6e84b28f6d06c2dba9d5842eab9d8cb549015973fa8492e"
+    },
+    "utils/scanner_install.py": {
+      "checkout": "5d9daacc0dff48867843ffbaff9e1548d96a5849b1d505f2df133b9d5d5db82a",
+      "installed": "5d9daacc0dff48867843ffbaff9e1548d96a5849b1d505f2df133b9d5d5db82a"
+    },
+    "utils/secret_redaction.py": {
+      "checkout": "f5fc7954741b5e916f4884c9a68ea0a44ef1ee7da5149a3cb19cb60eaec6e4e1",
+      "installed": "f5fc7954741b5e916f4884c9a68ea0a44ef1ee7da5149a3cb19cb60eaec6e4e1"
+    },
+    "utils/secure_fs.py": {
+      "checkout": "c9b5ef763e55fbd75662b99b71c04fa0c6e65f286400c224ff6eb1467a93b4c4",
+      "installed": "c9b5ef763e55fbd75662b99b71c04fa0c6e65f286400c224ff6eb1467a93b4c4"
+    },
+    "utils/structured_data.py": {
+      "checkout": "d0fefd64fc6372dd3a3e730b0083a9363014c8e5245e30f86187e9b85219d766",
+      "installed": "d0fefd64fc6372dd3a3e730b0083a9363014c8e5245e30f86187e9b85219d766"
+    },
+    "utils/tier2_paths.py": {
+      "checkout": "0e70ac7c7b01b941e6e02d3d1c82b2912b40ca8fa3246f2d2b558e6c7c6a1a01",
+      "installed": "0e70ac7c7b01b941e6e02d3d1c82b2912b40ca8fa3246f2d2b558e6c7c6a1a01"
+    },
+    "utils/tool_runner.py": {
+      "checkout": "bdd31068cde29796d6a4a65260461ae13eadbd52e379ce856d42a8c3655de19d",
+      "installed": "bdd31068cde29796d6a4a65260461ae13eadbd52e379ce856d42a8c3655de19d"
+    },
+    "validators/__init__.py": {
+      "checkout": "56ba015a7d9ef71ceee75c71b035f80c7ce07802cbeaf19c38abc8b6f7f3ea11",
+      "installed": "56ba015a7d9ef71ceee75c71b035f80c7ce07802cbeaf19c38abc8b6f7f3ea11"
+    },
+    "validators/base.py": {
+      "checkout": "a771c53c320a754e14ab79b40616c1b8309dd46076ac075e89192ce3a399b618",
+      "installed": "a771c53c320a754e14ab79b40616c1b8309dd46076ac075e89192ce3a399b618"
+    },
+    "validators/claude_plugin_validate.py": {
+      "checkout": "a0657a11efbdb470bdf12f9e3aaab353fd71ae37bdfa261ecf5b92d7ce7d39d0",
+      "installed": "a0657a11efbdb470bdf12f9e3aaab353fd71ae37bdfa261ecf5b92d7ce7d39d0"
+    },
+    "validators/code_risk.py": {
+      "checkout": "50ff8ac69b59f4d245eff3647b9c7f945d872f356216a66510514fe99c95ea1c",
+      "installed": "50ff8ac69b59f4d245eff3647b9c7f945d872f356216a66510514fe99c95ea1c"
+    },
+    "validators/dependencies.py": {
+      "checkout": "31521af32f1eeae5308d126e2ea4dbcc99e1a7faeb3da960cecdf3fcd1313b87",
+      "installed": "31521af32f1eeae5308d126e2ea4dbcc99e1a7faeb3da960cecdf3fcd1313b87"
+    },
+    "validators/endpoint_resolution.py": {
+      "checkout": "8f95a737f460e8be73056895949c985eb67f40ceb2aef23984d78a8cbfd9e642",
+      "installed": "8f95a737f460e8be73056895949c985eb67f40ceb2aef23984d78a8cbfd9e642"
+    },
+    "validators/frontmatter_parser.py": {
+      "checkout": "564c3716ef19b225b0d84992ab68e467ba5f6cdb3fe815e90a02f4733ebb0f9f",
+      "installed": "564c3716ef19b225b0d84992ab68e467ba5f6cdb3fe815e90a02f4733ebb0f9f"
+    },
+    "validators/harness.py": {
+      "checkout": "6a3680d9c31539740496fc1cf39a8b66992a8bab5a4c91db856f38d37aea44a0",
+      "installed": "6a3680d9c31539740496fc1cf39a8b66992a8bab5a4c91db856f38d37aea44a0"
+    },
+    "validators/hygiene.py": {
+      "checkout": "ee175b3b4d45b5815a0b57a87348c923408a1fe079205a4f44897d8bffd80674",
+      "installed": "ee175b3b4d45b5815a0b57a87348c923408a1fe079205a4f44897d8bffd80674"
+    },
+    "validators/license.py": {
+      "checkout": "85230d5bfaa67dc2a6dfa67df287cedea35f5259d16fb118edcad19cd9203c73",
+      "installed": "85230d5bfaa67dc2a6dfa67df287cedea35f5259d16fb118edcad19cd9203c73"
+    },
+    "validators/markdown.py": {
+      "checkout": "9e01ab5e559230c9a3fa9021fff26c56ebdd131a2ea1765c14d257f261f722fb",
+      "installed": "9e01ab5e559230c9a3fa9021fff26c56ebdd131a2ea1765c14d257f261f722fb"
+    },
+    "validators/mcp_static.py": {
+      "checkout": "5d9f316253c2c533981a4966f0da4e247b4ad9ed07cdee96d58a2fef98b4ce75",
+      "installed": "5d9f316253c2c533981a4966f0da4e247b4ad9ed07cdee96d58a2fef98b4ce75"
+    },
+    "validators/naming_utils.py": {
+      "checkout": "3e828db66712ea573c02d75f1b3b0f33a3b59649c3467effe7ef9683217be9e8",
+      "installed": "3e828db66712ea573c02d75f1b3b0f33a3b59649c3467effe7ef9683217be9e8"
+    },
+    "validators/pii_ownership.py": {
+      "checkout": "1da05089c5db0579ea91d32bb3e66d9394d6e781bdee1a291ecd59c3009d9ad6",
+      "installed": "1da05089c5db0579ea91d32bb3e66d9394d6e781bdee1a291ecd59c3009d9ad6"
+    },
+    "validators/pii_waivers.py": {
+      "checkout": "d3292e0bd89134521dc0c2c44d7166f7f91731f0fb8fa6c411aeb027aa4d2c9a",
+      "installed": "d3292e0bd89134521dc0c2c44d7166f7f91731f0fb8fa6c411aeb027aa4d2c9a"
+    },
+    "validators/plugin_schema.py": {
+      "checkout": "fe36ae2fd73fec817e43f7ae074ba43886ef1802507f41621f0910e854bb5198",
+      "installed": "fe36ae2fd73fec817e43f7ae074ba43886ef1802507f41621f0910e854bb5198"
+    },
+    "validators/policy.py": {
+      "checkout": "792f7557038d6be63718059842b3afdb2a39986c5a8d77e191815a1ac4aff856",
+      "installed": "792f7557038d6be63718059842b3afdb2a39986c5a8d77e191815a1ac4aff856"
+    },
+    "validators/private_plugin_schema.py": {
+      "checkout": "a976b1ad9c3b52038d250a0f991e5761c155eea3a8e8dadc1e3de5a2dbe0e571",
+      "installed": "a976b1ad9c3b52038d250a0f991e5761c155eea3a8e8dadc1e3de5a2dbe0e571"
+    },
+    "validators/quality_score.py": {
+      "checkout": "7d446b1055100a402cbee00a43ef572789171e4fe6f013b9f66337f58fa683e2",
+      "installed": "7d446b1055100a402cbee00a43ef572789171e4fe6f013b9f66337f58fa683e2"
+    },
+    "validators/rubric_eval.py": {
+      "checkout": "f9ca197c874b1acace02a089a05ced57a1b2f4c7148d85289d5f3ffb8b929c4c",
+      "installed": "f9ca197c874b1acace02a089a05ced57a1b2f4c7148d85289d5f3ffb8b929c4c"
+    },
+    "validators/rules_schema.py": {
+      "checkout": "8774a14633b31f2a1110eb1826001bc6f08371cc69ace2c0b4d1a50f0b4c169a",
+      "installed": "8774a14633b31f2a1110eb1826001bc6f08371cc69ace2c0b4d1a50f0b4c169a"
+    },
+    "validators/schema.py": {
+      "checkout": "a2117c02359b007b7c517df0be63f7d6b6cce3c48e969f6584a69bd64b7914d5",
+      "installed": "a2117c02359b007b7c517df0be63f7d6b6cce3c48e969f6584a69bd64b7914d5"
+    },
+    "validators/script_lint.py": {
+      "checkout": "6fb9288973dfe239b11fbff4a0631aab22637b52e0a49c63ecf18398081cf7eb",
+      "installed": "6fb9288973dfe239b11fbff4a0631aab22637b52e0a49c63ecf18398081cf7eb"
+    },
+    "validators/secrets.py": {
+      "checkout": "b0747b45dca76d0fae67b4686dd1ca07d2f059e1474b8b367b17723e9fe9440c",
+      "installed": "b0747b45dca76d0fae67b4686dd1ca07d2f059e1474b8b367b17723e9fe9440c"
+    },
+    "validators/security.py": {
+      "checkout": "83c0acd3c11e77e7da682e178dd7db699c80f965b232caeaebaf37d6a6a07514",
+      "installed": "83c0acd3c11e77e7da682e178dd7db699c80f965b232caeaebaf37d6a6a07514"
+    },
+    "validators/similarity.py": {
+      "checkout": "5b1cad79f603e8068fd4a0589e01d4af6db92a20a675c6267a76d75f89b7de0e",
+      "installed": "5b1cad79f603e8068fd4a0589e01d4af6db92a20a675c6267a76d75f89b7de0e"
+    },
+    "validators/skillspector_scope.py": {
+      "checkout": "7a0fc51c78826a9a8e6a225dffc3e535f8da19922a75b831816d1ae02f04c45f",
+      "installed": "7a0fc51c78826a9a8e6a225dffc3e535f8da19922a75b831816d1ae02f04c45f"
+    },
+    "validators/unicode_smuggle.py": {
+      "checkout": "756be4676890c7886d9f326b6402866d1665572f2db7502e9f588631762330d9",
+      "installed": "756be4676890c7886d9f326b6402866d1665572f2db7502e9f588631762330d9"
+    },
+    "validators/url_policy.py": {
+      "checkout": "2b950526a3bbfd5bb38746c9bff19e628c017ba263c3bd9f4897c7de742beb0b",
+      "installed": "2b950526a3bbfd5bb38746c9bff19e628c017ba263c3bd9f4897c7de742beb0b"
+    },
+    "validators/version.py": {
+      "checkout": "63bad22bf94ab8f1e02d91f27fe78251006ba1c6221e6f30ada05405ee1d2732",
+      "installed": "63bad22bf94ab8f1e02d91f27fe78251006ba1c6221e6f30ada05405ee1d2732"
+    },
+    "validators/workflows_schema.py": {
+      "checkout": "f85329c46c8a86d5820ce982d1e3941d1d372caea7039a129ee2ca61b5a0f6ea",
+      "installed": "f85329c46c8a86d5820ce982d1e3941d1d372caea7039a129ee2ca61b5a0f6ea"
+    }
+  }
+}

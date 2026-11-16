@@ -208,6 +208,11 @@ repair_source:
 
 Do not patch source directly inside `verify-before-done`.
 
+For tracked delivery, apply `_refs/shared/governed-delivery.md`: require current
+source, resolved conflicts and canonical AC evidence; preserve MANUAL/deferred
+outcomes and behavioral E2E exception reasons. Product verifies authorized tracker
+sync/readback separately. Re-run branch-ready after any subsequent artifact write.
+
 ## Mode: branch-ready
 
 Read `_refs/orchestration/tail/branch-ready.md` completely, then run its read-only hygiene checks.
@@ -447,9 +452,7 @@ Rules:
 
 ## ship_context Output
 
-Read `_refs/orchestration/tail/ship-context.md` completely before emitting the
-redacted output. Every mode returns the full contract from that reference; this
-compact projection highlights the delivery-critical fields:
+Read `_refs/orchestration/tail/ship-context.md` for the full redacted output contract.
 
 ```yaml
 ship_context:
@@ -477,9 +480,8 @@ ship_context:
   git_handoff_reason:
 ```
 
-Never include secrets, skipped commands as passes, stale diff evidence, or a
-true `git_handoff_allowed` when writes followed branch-ready or artifact closure
-is not complete.
+Never expose secrets or claim skipped/stale checks passed. Block Git handoff
+after post-gate writes or incomplete artifact closure.
 
 ## Cross-References
 

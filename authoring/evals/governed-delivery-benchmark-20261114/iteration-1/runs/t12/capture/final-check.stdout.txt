@@ -1,0 +1,15 @@
+{
+  "all_target_files_unchanged": true,
+  "target_changed_paths": [],
+  "git_status_command": [
+    "git",
+    "status",
+    "--porcelain=v1",
+    "--untracked-files=all"
+  ],
+  "git_status_cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target",
+  "git_status_exit": 0,
+  "git_status_stdout": "",
+  "git_status_stderr": "",
+  "response_exists": true
+}

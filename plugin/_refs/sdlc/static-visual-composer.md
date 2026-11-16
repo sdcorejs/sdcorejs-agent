@@ -25,6 +25,14 @@ English remains the deterministic default when no locale is supplied.
 
 ## Shared screen model
 
+Schema v2 adds `pattern` previews from `_refs/design/visual-library/README.md`.
+Schema v1 keeps its original kinds. Pattern controls sit outside choice buttons;
+typing inside a preview cannot trigger choice-number shortcuts. The fixed script
+includes local pattern interactions. Copied v2 responses include `screen_digest`;
+supply it to `formatCopiedResponse`. Missing/stale digests fail closed.
+`createVisualSelection` binds feedback to the current screen/library without
+granting approval. One fixed layout uses `renderPatternDocument`.
+
 The screen schema, the safe-content rules, the option markup, and the localized
 message bundle are owned by the Visual Companion modules under
 `_refs/sdlc/visual-companion/`. This composer delegates to them and adds only

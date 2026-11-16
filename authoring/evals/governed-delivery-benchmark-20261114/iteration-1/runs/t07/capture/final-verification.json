@@ -1,0 +1,45 @@
+{
+  "result": "PASSED",
+  "checks": [
+    {
+      "command": "git diff --exit-code",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "git diff --cached --exit-code",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "git ls-files --others --exclude-standard",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target",
+      "exit_code": 0,
+      "stdout": ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md\n.sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json\n",
+      "stderr": ""
+    },
+    {
+      "command": "Compare original file SHA-256 values and fixed diff line against current source",
+      "exit_code": 0,
+      "result": "All original files preserved; current category source matches fixed line."
+    }
+  ],
+  "changed_artifacts": [
+    {
+      "path": ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md",
+      "sha256": "24ec1361b6672ebbf1adb4b02d4c7eb625f86f96faa8f2345c19a4d7de6580a7"
+    },
+    {
+      "path": ".sdcorejs/memories/node/lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da.json",
+      "sha256": "9860fdab54a459efe6f899169b79f738ff801252d9f0665b26df38caf8282129"
+    }
+  ],
+  "application_edits": false,
+  "agents_edits": false,
+  "legacy_memory_edits": false,
+  "convention_files_created": false
+}

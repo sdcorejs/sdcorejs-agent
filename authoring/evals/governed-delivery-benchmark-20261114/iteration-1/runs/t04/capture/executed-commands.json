@@ -1,0 +1,105 @@
+[
+  {
+    "argv": [
+      "python3",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py",
+      "1"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 1,
+    "started_at": "2026-11-14T09:10:23.624215+00:00",
+    "finished_at": "2026-11-14T09:10:23.699116+00:00",
+    "output": "ingest-rev1.log",
+    "output_sha256": "sha256:aded7099fb5b18e6546200c6b9f12093a4ef3c71afacf14bee8fe5b0e46e0934"
+  },
+  {
+    "argv": [
+      "python3",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py",
+      "1"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:10:58.657132+00:00",
+    "finished_at": "2026-11-14T09:10:58.694783+00:00",
+    "output": "ingest-rev1-retry.log",
+    "output_sha256": "sha256:6815d03b22ed82b4878f4d229fe78965a5a40bc31150905727f1e4d95f39524b"
+  },
+  {
+    "argv": [
+      "python3",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py",
+      "2"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:11:03.903006+00:00",
+    "finished_at": "2026-11-14T09:11:03.948018+00:00",
+    "output": "refresh-rev2.log",
+    "output_sha256": "sha256:0d9e6f902a726a793f841d1f9350a7d838e136c7b2841deebf11cfeabcc0c744"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:12:17.314816+00:00",
+    "finished_at": "2026-11-14T09:12:17.318243+00:00",
+    "output": "git-diff-check.log",
+    "output_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "git",
+      "status",
+      "--short",
+      "--untracked-files=all"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:12:17.829212+00:00",
+    "finished_at": "2026-11-14T09:12:17.833085+00:00",
+    "output": "final-status.log",
+    "output_sha256": "sha256:2160b54b641b37938af2023a350beccc37e004b9a4a121381686d0841fb1df88"
+  },
+  {
+    "argv": [
+      "python3",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/verify.py"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:12:24.345481+00:00",
+    "finished_at": "2026-11-14T09:12:24.396776+00:00",
+    "output": "document-integrity.log",
+    "output_sha256": "sha256:7aeee54c94da8ecf5a9aa082cedbe38bf4f3ac1e10242f0bac4380f61915d7c1"
+  },
+  {
+    "argv": [
+      "python3",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/verify.py"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:13:53.797923+00:00",
+    "finished_at": "2026-11-14T09:13:53.986765+00:00",
+    "output": "final-capture-integrity.log",
+    "output_sha256": "sha256:1321e86235b7d945a09f8ce7f1eb961e5c2c09b8cb137ca663e5cb02a2cc7b27"
+  },
+  {
+    "argv": [
+      "python3",
+      "-c",
+      "import json; from pathlib import Path; p=Path(\"/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture\"); d=json.loads((p/\"trace.json\").read_text()); assert d[\"final_capture_verification\"][\"exit_code\"] == 0; assert (p/\"response.md\").stat().st_size > 0; print(\"PASS: trace.json parses, final verification is recorded, response.md exists and is nonempty.\")"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "exit_code": 0,
+    "started_at": "2026-11-14T09:14:27.059539+00:00",
+    "finished_at": "2026-11-14T09:14:27.139726+00:00",
+    "output": "capture-format.log",
+    "output_sha256": "sha256:9ebc300eec96af681e8cc90b5b5fe0bf3dce6a81ad6dbe2c3f0f1717c3ee1ec6"
+  }
+]

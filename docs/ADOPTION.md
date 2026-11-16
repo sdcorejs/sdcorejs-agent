@@ -99,7 +99,7 @@ the approved `execution_policy` and observed capabilities leave a real choice.
 
 ## Governed Contract Layers
 
-The public pack contains 23 skills. `sdcorejs-architecture` is conditional:
+The public pack contains 25 skills. `sdcorejs-architecture` is conditional:
 use it for cross-repository ownership, public-contract, security/data-boundary,
 or similarly architecture-significant scope. A simple cohesive change bypasses
 the gate only with a concrete not-applicable reason.
@@ -125,7 +125,7 @@ evidence-backed pushback instead of an edit.
 
 `authoring/skills/sdcorejs-skill-authoring` is an internal authoring-repository
 capability and must not be copied into an adopter's skill installation. The
-public ceiling remains 23. Its inventory/routing evidence is repository-derived,
+public ceiling remains 25. Its inventory/routing evidence is repository-derived,
 and linked RED/GREEN/REFACTOR records preserve behavior-contract hashes.
 Repository deterministic tests, prepared Full E2E,
 and separately authorized live-agent sessions are distinct evidence layers;
@@ -253,9 +253,9 @@ This exception does not extend the supported root toolchain.
 ## Adoption Checklist
 
 - Use Node.js `^22.22.3 || ^24.15.0 || >=26.0.0` for root repository tooling
-  and Node.js `>=22.12.0` for the Astro showcase under `site/`.
+  and Node.js `>=22.23.4` for the Astro showcase under `site/`.
 - Choose install mode: plugin, direct repo, submodule, or copied native skills.
-- Confirm the installed public inventory has 23 skills and excludes the
+- Confirm the installed public inventory has 25 skills and excludes the
   internal authoring capability.
 - Run `npm ci`, `npm run check:text-hygiene`, `npm run check:skills`, and
   `npm run test:e2e` at the source commit.

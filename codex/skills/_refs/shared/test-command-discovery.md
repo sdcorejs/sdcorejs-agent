@@ -47,10 +47,18 @@ Record uncertainty as a blocker. A generic plan may use
 
 ## Installation guard
 
-Do not run dependency-changing or browser-installing commands without explicit
-approval for the exact command and reason. This includes install/add commands,
-browser binary installers, downloading exec/dlx probes, config bootstrap, and
-`npx --yes`. Missing tooling is a blocker, not permission to install.
+Do not run dependency-changing or browser-installing commands outside scoped
+authority covering their actual effects.
+
+Use `session-authority.md` and `explore-env-setup-actions.md` to resolve necessary
+local preparation under existing scoped implementation/test authority. A
+lockfile-preserving dependency install may proceed when the task needs it, the
+manager/version and hooks are inspected, and its effects stay within that scope.
+Record the exact command and reason; do not re-ask for an already granted action.
+Read-only work never installs tooling. Adding/upgrading dependencies, browser
+binary installers, downloading exec/dlx probes, config bootstrap and `npx --yes`
+need authority covering their actual effects. Missing tooling alone is not
+permission to install; report any uncovered action as a blocker.
 
 ## Evidence
 

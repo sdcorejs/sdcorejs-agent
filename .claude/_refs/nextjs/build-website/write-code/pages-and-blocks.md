@@ -4,6 +4,12 @@
 
 # Build Website — Pages & Section Blocks
 
+For a visual-library handoff, validate the current selected screen digest and
+editable HTML hash. Reuse its structure, content, responsive intent and project
+tokens. Map to existing Next.js components; Core/Portal pattern references do
+not authorize Angular dependencies, invented APIs or changed business behavior.
+An unresolved choice returns to its Design/Brainstorming owner.
+
 ## Purpose
 A landing site is composition: route pages coordinate content/data and compose
 feature-local blocks, cross-page reusable sections, and design-system UI. This

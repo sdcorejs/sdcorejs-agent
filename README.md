@@ -1,32 +1,220 @@
-# SDCoreJS
+<p align="center">
+  <img src="site/public/logo-text.png" width="300" alt="SDCoreJS">
+</p>
+
+<h1 align="center">SDCoreJS Agent</h1>
+
+<p align="center">
+  A portable skill pack for taking AI-assisted work from a clear brief to verified changes.
+</p>
+
+<p align="center">
+  <a href="#5-minute-adoption">Get started</a> ·
+  <a href="#choose-your-starting-point">Try a workflow</a> ·
+  <a href="#design-before-implementation">See design previews</a> ·
+  <a href="docs/ADOPTION.md">Adoption guide</a>
+</p>
 
 [![CI](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml)
 [![Full E2E](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml)
+[MIT license](LICENSE)
 
-An engineering-focused SDLC skill pack for developers and technical teams
-using AI coding agents. Works in Claude Code, GitHub Copilot, Codex, and
-Cursor.
+**25 skills for Claude Code, Codex, Cursor and GitHub Copilot.** Clarify
+requirements, compare designs, implement through the right technical track,
+and review the evidence before shipping. Small fixes stay small; substantial
+changes carry their decisions and verification through the workflow.
 
-Requests flow through:
+The pack consists of Markdown skills, shared references and local helpers.
+Your coding agent provides the model and tools. Available capabilities vary by
+host; the pack keeps explicit fallbacks and reports verification limits.
+
+## What you can do
+
+| Start with | Get to |
+|---|---|
+| An unfamiliar repository | Scoped instruction discovery, project context and a proposed setup that preserves existing rules. |
+| A feature brief or tracked ticket | Requirements, acceptance criteria, design decisions and an approved implementation plan. |
+| A UI decision | Editable HTML alternatives for business screens or websites, using the project's existing components and tokens. |
+| An approved plan | Angular, NestJS, Next.js or AI-agent implementation; Product, Design and Test work; a generic fallback for other stacks. |
+| A diff or failing behavior | Focused diagnosis, evidence-backed review and explicitly authorized repairs. |
+| A delivery candidate | Test evidence, documentation, artifact checks and a clear merge/release readiness verdict. |
+
+`sdcorejs-content` also supports personal and product editorial work. Drafting
+content does not authorize posting, scheduling or messaging.
+
+## 5-Minute Adoption
+
+Choose one installation path, restart the agent, then try the read-only smoke
+prompt below. Install the public pack; the authoring tools are for maintainers.
+
+### Claude Code Plugin
+
+Run in Claude Code:
 
 ```text
-brainstorming -> spec -> architecture when required -> plan -> execute-plan -> executor -> convergence -> branch-ready -> git
+/plugin marketplace add sdcorejs/sdcorejs-agent
+/plugin install sdcorejs-agent@sdcorejs
 ```
 
-The pack is documentation-driven: markdown skills plus `_refs/` knowledge. There is no runtime server.
+The plugin contains its generated skills, shared references and session hook.
 
-## Tracks
+### Codex Native Skills
 
-| Track | Executor |
+From a reviewed checkout, install the `sdcorejs-*` directories in
+[`codex/skills/`](codex/skills/) together with its `_refs/` directory into
+`$CODEX_HOME/skills`, or `~/.codex/skills` when `CODEX_HOME` is unset.
+Restart Codex after installation. Keep the shared references alongside the
+skills so relative links resolve.
+
+Inspect the destination first. Preserve unrelated skills and shared-reference
+files; if paths collide, review the conflict or use an isolated installation.
+Do not copy `authoring/`, evaluation runtimes or credentials into the skill root.
+
+### Attached Repo / Submodule
+
+For project-scoped adoption, add a pinned checkout alongside your project:
+
+```bash
+git submodule add https://github.com/sdcorejs/sdcorejs-agent.git .sdcorejs-agent
+```
+
+Connect the appropriate entrypoint through your host's project instructions.
+Preserve the project's existing `AGENTS.md`, `CLAUDE.md`, rules and skill folders;
+merge a reviewed reference instead of replacing them with symlinks.
+
+| Host | Project entrypoint / packaged surface |
 |---|---|
-| Angular Portal | `sdcorejs-angular` |
-| NestJS | `sdcorejs-nestjs` |
-| Next.js | `sdcorejs-nextjs` |
-| AI-agent | `sdcorejs-ai-agent` |
-| Product | `sdcorejs-product` |
-| Design | `sdcorejs-design` |
-| Test | `sdcorejs-test` |
-| Generic harness | `sdcorejs-execute-plan` fallback |
+| Codex attached repository | `AGENTS.md` with the canonical skills and references available. |
+| Claude Code direct | `CLAUDE.md` and `.claude/skills/`. |
+| Cursor | `AGENTS.md` and `.cursor/rules/sdcorejs-agent.mdc`. |
+| GitHub Copilot | `.github/copilot-instructions.md` or `.github/chatmodes/sdcorejs.chatmode.md`. |
+
+An available entrypoint is not proof that a host loaded it. Confirm activation
+in a fresh session with:
+
+```text
+Use sdcorejs-explore to summarize this repository and its verification commands.
+Stay read-only and report anything you cannot verify.
+```
+
+For existing projects, Explore can propose a bounded `AGENTS.md` block that
+records SDCoreJS use and offers installation when skills are missing. It can
+also propose consolidating shared `CLAUDE.md` instructions into same-scope
+`AGENTS.md`, preserving human rules and Claude-specific settings. Installation
+and instruction-file writes require their own scoped authorization.
+
+For reproducible adoption, pin a reviewed commit or an available published tag.
+See [adoption and compatibility](docs/ADOPTION.md) and
+[troubleshooting](docs/TROUBLESHOOTING.md).
+
+## Choose your starting point
+
+You can name a skill directly or describe the task in your own language.
+
+| Intent | Example prompt |
+|---|---|
+| Clarify a feature | `Use sdcorejs-brainstorming to clarify the request approval flow before planning.` |
+| Compare a layout | `Use sdcorejs-design to show two HTML layouts for this work queue. Preserve our tokens and actions.` |
+| Implement a plan | `Use sdcorejs-execute-plan to implement the approved plan and verify the affected behavior.` |
+| Diagnose a failure | `Use sdcorejs-debug to reproduce this failure and identify its cause before proposing a fix.` |
+| Review a change | `Use sdcorejs-review to inspect this diff. Report evidence and risks without editing code.` |
+| Check readiness | `Use sdcorejs-ship to assess merge readiness and distinguish passed, failed and unrun checks.` |
+
+## How work flows
+
+```mermaid
+flowchart LR
+  A[Clarify] --> B[Specify]
+  B --> C{Architecture needed?}
+  C -->|Yes| D[Architecture]
+  C -->|No| E[Plan]
+  D --> E
+  E --> F[Implement]
+  F --> G[Test and review]
+  G --> H[Verify readiness]
+```
+
+Spec and plan approval may be explicit or covered by a scoped delegation from
+the user. Architecture is conditional. Execution selects the appropriate track;
+parallel workers require observed host support and independent work. Git and
+publication actions retain their own authorization.
+
+Pure questions are answered directly. Bounded, low-risk fixes use targeted
+context, a small edit, focused verification and concise review. A larger risk or
+scope returns to the governed workflow.
+
+## Design before implementation
+
+The [visual library](_refs/design/visual-library/README.md) includes eight
+business-screen families, four website families, six optional themes and six
+paired comparisons. Core and Portal patterns and licensed design references
+inform the original HTML compositions.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/preview-workspace.png" alt="Illustrative work queue with list and record details"></td>
+    <td width="50%"><img src="docs/images/preview-product.png" alt="Illustrative product landing page with a split hero"></td>
+  </tr>
+  <tr>
+    <td>Business workspace: keep the list and record context visible.</td>
+    <td>Product website: compare content hierarchy and reading order.</td>
+  </tr>
+</table>
+
+These are **layout and visual-direction references**, not final project designs.
+The project still supplies its brand, real content, business states and verified
+component mappings. Selecting a preview is design feedback, not spec/plan approval.
+
+Static HTML works without a server. The optional local Visual Companion adds
+interactive comparison with separate runtime and browser-opening consent.
+
+## Documentation and evidence
+
+| Need | Read |
+|---|---|
+| Decide how to adopt the pack | [Adoption guide](docs/ADOPTION.md) |
+| Follow a complete example | [Worked example](docs/WORKED_EXAMPLE.md) |
+| Resolve installation or verification issues | [Troubleshooting](docs/TROUBLESHOOTING.md) |
+| Understand source and generated mirrors | [Mirror policy](MIRROR_POLICY.md) |
+| Inspect test strategy and recorded results | [Testing](TESTING.md) · [Validation](VALIDATION.md) |
+| Review changes and release requirements | [Changelog](CHANGELOG.md) · [Release process](docs/RELEASE_PROCESS.md) |
+| Record real tool activation and behavior | [Real-agent validation](docs/REAL_AGENT_VALIDATION.md) |
+
+Deterministic tests, real-browser checks, Full E2E and live-agent evaluations are
+separate evidence layers. A CI badge describes a particular remote revision;
+it does not certify uncommitted changes or every host. Skipped, stale and
+incomplete evidence is never presented as a pass.
+
+## Contributing
+
+The root repository tooling manifest defines a **private Node workspace**;
+this project is **not distributed through npm**. GitHub/plugin installation,
+project checkouts and native mirrors are the distribution paths.
+
+Root tooling requires Node.js `^22.22.3 || ^24.15.0 || >=26.0.0` and npm.
+The showcase site requires Node.js `>=22.23.4`. Before changing the skill pack,
+follow the [authoring prerequisites](authoring/prerequisites.md), including the
+installed authoring skills and independent audit. Consumers do not need those
+maintainer dependencies.
+
+```bash
+npm ci
+npm run check:authoring-prerequisites
+npm run check:text-hygiene
+npm run sync:skills
+npm run check:skills
+npm test
+```
+
+Keep reusable skill sources in English; generated project output follows the
+user's language. Preserve existing dirty work, generated-source ownership and
+historical evaluation reports. See the detailed contracts below when extending
+a workflow.
+
+---
+
+<details>
+<summary><strong>Workflow and governance reference</strong></summary>
 
 ## Workflow
 
@@ -154,6 +342,35 @@ hashes, errors, numbers, and verification results remain exact.
 Detailed policy is loaded just in time from
 `_refs/harness/communication-economy.md`. This is a communication contract, not
 a workflow gate or a new `sdcorejs-caveman` skill.
+
+## Review consistency and project bootstrap
+
+Review now records evidence coverage for semantic naming/routes, effective
+permissions/owner/tenant protection, list/detail/form patterns and hardcoded
+assumptions. Complete-data consumers must account for continuation and server
+limits: pageSize 1000 does not prove that 1,001 records were loaded. Findings
+include a trigger, source location, impact and the missing proving test.
+Calendar dates, timestamps, durations, maps and irregular plurals are classified
+by meaning; accepted public aliases and scoped exceptions are preserved.
+
+Small fixes retain a proportional baseline. Optional project AGENTS setup is
+owned by Explore and described in [_refs/shared/project-bootstrap.md](_refs/shared/project-bootstrap.md).
+It defaults to disabled. Manual setup needs explicit authority; standing sync
+needs a trusted policy and completed convention sync. Human text outside the
+managed block is preserved. If safe writer ownership cannot be established,
+Explore returns a patch proposal. Disable stops future sync without deleting rules.
+
+Legacy review contexts report unknown coverage. New contexts cannot claim a
+complete baseline with missing/stale evidence. Run the focused regression suites
+with npm run test:e2e:review-behavior and npm run test:e2e:project-bootstrap.
+The internal npm run eval:review:offline checks fixtures, routing and contracts;
+it does not prove that a language model detects defects. Real fresh-reviewer
+captures and adjudication remain a separate capability acceptance step.
+
+</details>
+
+<details>
+<summary><strong>Design, documentation and artifact reference</strong></summary>
 
 ## Visual Companion
 
@@ -319,6 +536,11 @@ contracts are protected. The finish gate presents simplification as a visible
 opt-in step; it never auto-runs, and current tests are evidence rather than a
 general semantic-equivalence proof.
 
+</details>
+
+<details>
+<summary><strong>Utilities, source layout and maintainer reference</strong></summary>
+
 ## Cleanup workflow utility
 
 `sdcorejs-cleanup` keeps a bounded repository/workspace scope clean after
@@ -334,8 +556,8 @@ native backend. Linux/macOS mutation requires a selected existing trusted
 CPython executable, a frozen native profile and explicitly approved cooperative
 maintenance; initial profiles are Linux local ext4 and macOS local APFS.
 Missing runtime, native or filesystem evidence blocks mutation. No runtime
-installation or existing permission change is performed. Real Linux/macOS
-acceptance remains `NOT_RUN` on the current Windows execution host.
+installation or existing permission change is performed. Native acceptance must be verified on the actual supported host/filesystem;
+consult `VALIDATION.md` for recorded coverage and limits.
 Automatic analysis is not automatic deletion, accepting an offer is not
 mutation approval, and `local_only` is not disposable.
 
@@ -367,95 +589,6 @@ dependency/global-cache and Docker/WSL metadata. Git history/worktree deletion,
 dependency pruning, Docker/database/cloud mutation and source refactors remain
 outside the filesystem mutation engine. Broad inspection never widens prior
 folder deletion authority or the automatic task-tail scope.
-
-## Quick Start
-
-This repository is public source, while the root repository tooling manifest
-describes a private root Node workspace with `private: true`. The root project
-is not distributed through npm. Use GitHub/plugin installation, submodules, or
-generated native skill mirrors as the distribution paths.
-
-The root `name` and `version` are synchronized repository/plugin release
-metadata, not an npm package identity. The canonical package manager for
-repository validation remains npm. Use the committed `package-lock.json` with:
-
-- Root repository tooling requires Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`.
-- The Astro showcase under `site/` requires Node.js `>=22.12.0`.
-
-```bash
-npm ci
-npm run check:text-hygiene
-npm run check:skills
-npm run test:e2e
-```
-
-## 5-Minute Adoption
-
-Pick one install path, start a fresh agent session, then use the smoke prompt to
-confirm dispatch behavior before adopting the pack for real work.
-
-| Tool path | Install or attach | Smoke prompt | Expected observation |
-|---|---|---|---|
-| Claude Code plugin | Install from the plugin marketplace. | `Use sdcorejs-explore to summarize this repo's validation posture.` | The explore skill loads in read-only summary mode, creates a tasklist for non-trivial work, and reports verification status. |
-| Codex attached repo | Add this repo as a submodule or keep `AGENTS.md` at the target root. | `Use the SDCoreJS flow to plan a small docs update.` | `AGENTS.md` routes to brainstorming/spec/plan discipline instead of writing immediately. |
-| Codex native skills | Copy `codex/skills/**` plus `codex/skills/_refs/**` into `$CODEX_HOME/skills`. | `Use sdcorejs-documentation to write a short technical doc.` | The skill resolves `../_refs/...` and follows tasklist/verification rules. |
-| Cursor | Use `AGENTS.md` plus `.cursor/rules/**`. | `Create acceptance criteria for a small feature using SDCoreJS.` | Product/design/test/doc routing selects the matching workflow. |
-| GitHub Copilot | Use `.github/copilot-instructions.md` or `.github/chatmodes/**`. | `Create acceptance criteria for a small feature using SDCoreJS.` | Product/design/test/doc routing selects the matching workflow. |
-
-For release adoption, pin a Git tag or GitHub Release rather than a floating
-branch, then record the exact tool versions and transcript evidence.
-
-### Claude Code Plugin
-
-```text
-/plugin marketplace add sdcorejs/sdcorejs-agent
-/plugin install sdcorejs-agent@sdcorejs
-```
-
-### Codex Native Skills
-
-```powershell
-npm run sync:skills
-$dest = if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME "skills" } else { Join-Path $HOME ".codex\skills" }
-New-Item -ItemType Directory -Force $dest | Out-Null
-Copy-Item .\codex\skills\* $dest -Recurse -Force
-```
-
-Restart Codex after copying. Keep `codex/skills/_refs` with the skills.
-
-### Attached Repo / Submodule
-
-```bash
-cd <your-project>
-git submodule add <repo-url> .sdcorejs-agent
-ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
-ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
-ln -s .sdcorejs-agent/skills skills
-ln -s .sdcorejs-agent/_refs _refs
-```
-
-## Tool Support
-
-| Tool | Reads | Verification |
-|---|---|---|
-| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**`, `plugin/sdcorejs-harness.json` | Mirror/action/capability drift checks |
-| Claude Code direct | `CLAUDE.md`, `.claude/skills/**`, `.claude/sdcorejs-harness.json` | Mirror and behavioral sentinel checks |
-| Codex attached repo | `AGENTS.md` | Entrypoint and behavioral sentinel checks |
-| Codex native | `codex/skills/**`, `codex/sdcorejs-harness.json` | Codex mirror/action/ref checks |
-| Cursor | `AGENTS.md`, `.cursor/rules/sdcorejs-agent.mdc`, `.cursor/sdcorejs-harness.json` | Generated rule/manifest drift checks |
-| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`, `.github/sdcorejs-harness.json` | Entrypoint and manifest checks |
-
-For adoption guidance, compatibility evidence, and expected live-tool
-transcripts, see:
-
-- `docs/ADOPTION.md` - when to use this pack, when not to use it, fast-fix
-  rules, compatibility matrix, and adoption checklist.
-- `docs/WORKED_EXAMPLE.md` - example full workflow from request through
-  evidence summary.
-- `docs/TROUBLESHOOTING.md` - mirror drift, Codex refs, text hygiene, plugin,
-  and Full E2E troubleshooting.
-- `docs/REAL_AGENT_VALIDATION.md` - sanitized transcript evidence template.
-- `docs/RELEASE_PROCESS.md` - tag/release checklist.
 
 ## Repo Layout
 
@@ -518,7 +651,7 @@ review rules.
 - Pure Q&A answers directly without entering the SDLC.
 - For explicitly small low-risk edits, use the fast-fix path in
   `docs/ADOPTION.md`; escalate to the full workflow if scope grows.
-- Explicit approval required for spec and plan.
+- Spec/plan approval follows explicit user decisions or recorded scoped session delegation.
 - Approved plans execute through `sdcorejs-execute-plan`.
 - `sdcorejs-execute-plan` asks sequential versus parallel only for two or more
   independent units when both modes are actually feasible.
@@ -530,7 +663,11 @@ review rules.
 - Confirmed AI-agent implementations use `sdcorejs-ai-agent`; under-specified
   AI-agent ideas return to brainstorming, while test, review, and debug requests
   keep their dedicated owners.
-- Codebase understanding, summaries, flow tracing, and local setup discovery use `sdcorejs-explore`.
+- Existing-project onboarding, scoped rule discovery, summaries, flow tracing,
+  and local runtime checks/startup use `sdcorejs-explore`. Read-only orientation
+  never starts services; authorized implementation/test work verifies and reuses
+  or starts the required local runtime. See the
+  [onboarding contract](_refs/shared/existing-project-onboarding.md).
 - Bounded behavior-preserving refinement of recently changed or explicitly
   scoped executable source uses `sdcorejs-simplify`; broad refactors return to
   planning.
@@ -543,34 +680,6 @@ review rules.
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 
-## License
-
-MIT
-
-## Review consistency and project bootstrap
-
-Review now records evidence coverage for semantic naming/routes, effective
-permissions/owner/tenant protection, list/detail/form patterns and hardcoded
-assumptions. Complete-data consumers must account for continuation and server
-limits: pageSize 1000 does not prove that 1,001 records were loaded. Findings
-include a trigger, source location, impact and the missing proving test.
-Calendar dates, timestamps, durations, maps and irregular plurals are classified
-by meaning; accepted public aliases and scoped exceptions are preserved.
-
-Small fixes retain a proportional baseline. Optional project AGENTS setup is
-owned by Explore and described in [_refs/shared/project-bootstrap.md](_refs/shared/project-bootstrap.md).
-It defaults to disabled. Manual setup needs explicit authority; standing sync
-needs a trusted policy and completed convention sync. Human text outside the
-managed block is preserved. If safe writer ownership cannot be established,
-Explore returns a patch proposal. Disable stops future sync without deleting rules.
-
-Legacy review contexts report unknown coverage. New contexts cannot claim a
-complete baseline with missing/stale evidence. Run the focused regression suites
-with npm run test:e2e:review-behavior and npm run test:e2e:project-bootstrap.
-The internal npm run eval:review:offline checks fixtures, routing and contracts;
-it does not prove that a language model detects defects. Real fresh-reviewer
-captures and adjudication remain a separate capability acceptance step.
-
 ## Social content
 
 `sdcorejs-content` serves personal brands and product marketing with brief,
@@ -579,3 +688,9 @@ feedback. Facebook/TikTok, formats and tech/marketing/travel references load
 independently. A caption needs no engineering workflow. Personal and product
 voices stay separate; claims need evidence. Drafting never authorizes posting,
 scheduling, messaging or persistent voice-profile changes.
+
+</details>
+
+## License
+
+[MIT](LICENSE). Adapted visual-library references retain their [source provenance and notices](_refs/design/visual-library/sources.json).

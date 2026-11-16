@@ -1,0 +1,51 @@
+{
+  "environment_presence_only": {
+    "SKILL_EVAL_LLM_PROVIDER": false,
+    "SKILL_EVAL_LLM_MODEL": false,
+    "SKILL_EVAL_LLM_BASE_URL": false,
+    "SKILL_EVAL_LLM_API_KEY": false,
+    "NVIDIA_API_KEY": false,
+    "OPENAI_API_KEY": false,
+    "ANTHROPIC_API_KEY": false,
+    "AWS_REGION": false,
+    "AWS_DEFAULT_REGION": false,
+    "AWS_ACCESS_KEY_ID": false,
+    "AWS_SECRET_ACCESS_KEY": false,
+    "AWS_SESSION_TOKEN": false,
+    "AWS_PROFILE": false,
+    "SKILL_EVAL_EMBEDDING_PROVIDER": false
+  },
+  "provider_label": "unset",
+  "modules": {
+    "harbor": false,
+    "openai": false,
+    "anthropic": false,
+    "litellm": false,
+    "boto3": false,
+    "dotenv": false
+  },
+  "executables": {
+    "codex": "/opt/codex/bin/codex",
+    "claude": null,
+    "claude-code": null,
+    "opencode": null,
+    "docker": "/usr/local/bin/docker",
+    "bwrap": "/usr/bin/bwrap",
+    "sandbox-exec": null,
+    "harbor": null
+  },
+  "auth_files_read": false,
+  "provider_calls": false,
+  "target_evals_present": {
+    "sdcorejs-architecture": false,
+    "sdcorejs-brainstorming": false,
+    "sdcorejs-documentation": false,
+    "sdcorejs-execute-plan": false,
+    "sdcorejs-explore": false,
+    "sdcorejs-plan": false,
+    "sdcorejs-product": false,
+    "sdcorejs-ship": false,
+    "sdcorejs-spec": false,
+    "sdcorejs-test": false
+  }
+}

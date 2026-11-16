@@ -1,0 +1,134 @@
+{
+  "auditor": "/root/onboarding_independent_audit",
+  "checked_at": "2026-11-14T10:40:56.857208+00:00",
+  "revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "dirty_worktree": true,
+  "prior_report": "final-findings.md",
+  "prior_evidence_preserved": true,
+  "all_17_manifest_hashes_match": true,
+  "final_hashes": {
+    "skills/shared/workflow/explore.md": "72e91df3ffe098e30c250f23ee06c8647e8a27a1d297a59da36435ddcbec4cf0",
+    "skills/shared/sdlc/04-execute-plan.md": "5f7ff60ae08d8c7bf167f5c839594b02ea7616181eb18b56fb37e6d037e16953",
+    "skills/tracks/test/sdcorejs-test.md": "27ff1c4b673771b368e3350878677c2278449bfffbc58460bf01d4c4bce7f500",
+    "_refs/shared/existing-project-onboarding.md": "f4957e9cd610008e8b4ad4c43ebbf16a1440876f7e2e29101e55d2a2577e78f1",
+    "_refs/shared/project-instructions.mjs": "163805f122824e6f5f0e3cb327a41a2fd03254a323c7fc051965314da402f19b",
+    "_refs/shared/project-runtime.mjs": "d2c1a4c19f4ad3b58805dfef038f6a1a13c5acd682a7f19b596919995dec6532",
+    "_refs/shared/project-context.md": "0a78718061a420ff07f6fcbf8ba9d501677acc6d98dddc01e3e7128f73619055",
+    "_refs/shared/project-context.mjs": "033f1341b357aeb9199292aa7e4cb6ef0905da0bf41e5aecf9e2afe762206153",
+    "_refs/shared/explore-contract.mjs": "3ccf1af150d2e7c95b5ee5bedd04ca5881fc922ec9f60bac6c99c049bc6538fb",
+    "_refs/shared/explore-context.md": "0216ca661fefc3b645889bfbba3c0a4f189012eac2cbdbd5eb0273bf81da3659",
+    "_refs/shared/explore-env-setup-actions.md": "01d9510d6c4af5e2b2ed9fe65c15426ff93414d1e070076d5361590de27cc94b",
+    "test/e2e/existing-project-onboarding.test.mjs": "d79e2a4a0c0f9570eec83dd2b821423ebfc19c97e5519cb845c495dc29483630",
+    "package.json": "05d04fca598af4a884e1d0ddc91ff4703087e97c3b8eec9469d252eb14beac9f",
+    ".claude/skills/sdcorejs-explore/SKILL.md": "a86b07657600346bb46b0122d8b9218c4d034cc6be5134c47efc3a332680a362",
+    ".claude/skills/sdcorejs-execute-plan/SKILL.md": "449e5a1474bfd227a01b158f5bc777c44c909143fe5a2f9ff6aa8abdbeb3a431",
+    ".claude/skills/sdcorejs-test/SKILL.md": "dabf057114d712d5e67d64814a1c2b24aa25e6349274ec71aca0be40758614db",
+    "_refs/shared/test-command-discovery.md": "e3f9d04aa57821514759b7a171343c3d04db90bbd732ee8497fbb7c6fb44356a"
+  },
+  "changed_inputs": {
+    "_refs/shared/project-runtime.mjs": {
+      "previous": "7867b76d83c010b1c3fa6a17862b4d2f04005e927dc6cf5444f817d4d5e355e6",
+      "sha256": "d2c1a4c19f4ad3b58805dfef038f6a1a13c5acd682a7f19b596919995dec6532"
+    },
+    "_refs/shared/explore-env-setup-actions.md": {
+      "previous": "4d070b9632c0a22b22606371bca804cdababc99a02475979640d1ed412837971",
+      "sha256": "01d9510d6c4af5e2b2ed9fe65c15426ff93414d1e070076d5361590de27cc94b"
+    },
+    "test/e2e/existing-project-onboarding.test.mjs": {
+      "previous": "70324614f8775de8eca1771baa4054e4b8ad56136bb41d31986524da03847f76",
+      "sha256": "d79e2a4a0c0f9570eec83dd2b821423ebfc19c97e5519cb845c495dc29483630"
+    }
+  },
+  "findings": [],
+  "disposition": "No validated source defect in bounded deadline repair; static scanner limitations from prior report remain.",
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "test/e2e/existing-project-onboarding.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at": "2026-11-14T10:40:09.336067+00:00",
+      "ended_at": "2026-11-14T10:40:10.120506+00:00",
+      "exit_code": 0,
+      "output": "/workspace/work/existing-repo-onboarding-20261114/audit/deadline-onboarding-tests.log"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "/workspace/work/existing-repo-onboarding-20261114/audit/deadline-fixtures.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at": "2026-11-14T10:40:09.371501+00:00",
+      "ended_at": "2026-11-14T10:40:10.157717+00:00",
+      "exit_code": 0,
+      "output": "/workspace/work/existing-repo-onboarding-20261114/audit/deadline-fixtures.log"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/sync-skills.mjs",
+        "--check"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at": "2026-11-14T10:40:09.368359+00:00",
+      "ended_at": "2026-11-14T10:40:11.832065+00:00",
+      "exit_code": 0,
+      "output": "/workspace/work/existing-repo-onboarding-20261114/audit/deadline-mirrors.log"
+    }
+  ],
+  "test_counts": {
+    "onboarding": 8,
+    "independent_deadline_fixtures": 4
+  },
+  "public_skill_count": 25,
+  "retained_evaluator_reports": [
+    {
+      "target": ".claude/skills/sdcorejs-explore",
+      "sha256": "a86b07657600346bb46b0122d8b9218c4d034cc6be5134c47efc3a332680a362",
+      "tier1_report": "final-tier1-explore/skillevaluator-tier1.json",
+      "tier1_exit": 1,
+      "overall_status": "failed",
+      "publication_status": "fail",
+      "incomplete_scans": [],
+      "quality_report": "final-quality-explore/skillevaluator-quality.json",
+      "quality_score": 86.2,
+      "reuse_reason": "Exact single-file target inventory unchanged; new shared refs remain outside original single-skill scan coverage."
+    },
+    {
+      "target": ".claude/skills/sdcorejs-execute-plan",
+      "sha256": "449e5a1474bfd227a01b158f5bc777c44c909143fe5a2f9ff6aa8abdbeb3a431",
+      "tier1_report": "final-tier1-execute/skillevaluator-tier1.json",
+      "tier1_exit": 0,
+      "overall_status": "passed",
+      "publication_status": "incomplete",
+      "incomplete_scans": [],
+      "quality_report": "final-quality-execute/skillevaluator-quality.json",
+      "quality_score": 83.8,
+      "reuse_reason": "Exact single-file target inventory unchanged; new shared refs remain outside original single-skill scan coverage."
+    },
+    {
+      "target": ".claude/skills/sdcorejs-test",
+      "sha256": "dabf057114d712d5e67d64814a1c2b24aa25e6349274ec71aca0be40758614db",
+      "tier1_report": "final-tier1-test/skillevaluator-tier1.json",
+      "tier1_exit": 1,
+      "overall_status": "failed",
+      "publication_status": "incomplete",
+      "incomplete_scans": [
+        "skillspector"
+      ],
+      "quality_report": "final-quality-test/skillevaluator-quality.json",
+      "quality_score": 86.8,
+      "reuse_reason": "Exact single-file target inventory unchanged; new shared refs remain outside original single-skill scan coverage."
+    }
+  ],
+  "evaluator_rerun": false,
+  "limitations": [
+    "The helper validates and returns a budget; the host must record one absolute deadline and enforce remaining time.",
+    "The real local HTTP polling fixture is audit-owned and is not a live-model behavior experiment.",
+    "NVIDIA targets are unchanged; shared helper/ref changes were manually reviewed and tested but are outside those retained scanner targets.",
+    "Tier 2, Tier 3, provider-backed evaluation and publication certification remain NOT RUN."
+  ]
+}

@@ -1,0 +1,297 @@
+{
+  "head": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "scope": "Implementation delta from preserved pre-task dirty tree",
+  "entries": [
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "f5faea234ea61f430d15dc434aac4594d5cc8ec6091da0be2154e0ac2d17c630",
+      "baseline_sha256": "3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+    },
+    {
+      "path": "_refs/design/visual-library/README.md",
+      "sha256": "ab4cd1423db8c390b0728b4d18254416a4a674919769e6e40d0dd7fc5d3b4462",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/catalog.json",
+      "sha256": "5058d88acb45f4f320212cb886b53abf184f58c4b94972092a126ce2677d40ad",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/compose-preview.mjs",
+      "sha256": "228617fa6d18473e530c8b273d05edec23cff76517a220f4fd3d389184ee1d7e",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/examples/form-flow.json",
+      "sha256": "fed59f63d59bc405be4cc06d625c848dc84c6c4e420d3a3256edf555f0275506",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/examples/hierarchy-presentation.json",
+      "sha256": "0037abff51bc9f2c89c3ab84778f89c596f011cca746e8e1cdd04c5a3e5cf085",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/examples/product-direction.json",
+      "sha256": "86cd7640673b7fcd54d634eaa6f74b1c6b426088d6cd2d7f9465fa4ce53def05",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/examples/queue-context.json",
+      "sha256": "dbc3de46bacc6518e396c8a487d355bdd236424d3412a22af6320421fa86c335",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/examples/record-context.json",
+      "sha256": "04d507bc4f0920601053e01660073c265797e020438c6a754ce658b676e620aa",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/examples/record-groups.json",
+      "sha256": "6669c3b41cfc0786f4f92282f1b3e976a5d29fa933d53c04f446d9eceda31798",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/interaction.mjs",
+      "sha256": "791bbd782f319b182c242cbe5b1890c775c97dd639dcf5b4a9d04cdfc38b3e02",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/library.mjs",
+      "sha256": "a3ba5055a4b2025dad70d33ecbfbb3529769f4d7aed696db12ceea6cc86686fb",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/licenses/anthropic.txt",
+      "sha256": "bc6b3af2f331cbc7fb0da1344efb2cbe5877a31498b4d70dbc7000f3405a1362",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/licenses/core.txt",
+      "sha256": "062ef605c9d5e70dced3281c95425de1e5069de502cf7b8d49a2940de39ccae4",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/licenses/portal.txt",
+      "sha256": "062ef605c9d5e70dced3281c95425de1e5069de502cf7b8d49a2940de39ccae4",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/licenses/uipro.txt",
+      "sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/pattern.schema.json",
+      "sha256": "b52c5d3c5ff8785d4ffbd4dcb3b5567459731715f42ee3c25f991e3ccacb00ff",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-detail.json",
+      "sha256": "49a8a8c020821b063ff425235b56cc9b3022fa4eefff17714b92bfb91982ddcb",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-drawer.json",
+      "sha256": "a3369eeed52fecd119759d0e26a72490a84de4e2af8af2321398fbe63b6f4f2f",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-form.json",
+      "sha256": "26e04b308c5d22f4d652ca773001cf622f4620cdbdb19d56820eff99fd6b0692",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-hierarchy.json",
+      "sha256": "a00c149dbd613dc8417782302e3e36357c4efbfa7d14c68a955e6a5aa5d1458a",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-list.json",
+      "sha256": "cd82d80f1e8cdcd8e449aef945591fe525ef79d4fea9cd70f9d056182d5e32f2",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-split.json",
+      "sha256": "bc7af6a3ac2a2c7ca4cdaaf303f76ded12519f24b24137fd62f6d59c6ee53896",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-tree.json",
+      "sha256": "85d730f5ab27224fcf03313eb95fac2836bc0ca7fd48ef8e15cd75a43a922274",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/op-wizard.json",
+      "sha256": "17a845a3cb571ca5c06a419329daac569bd7be4ec33e9c10ef41c69e440bea7d",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/web-editorial.json",
+      "sha256": "a0288595fe75f982815c43b11cbcbe83861b35364c9bb135303a0bbee06a9cd1",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/web-pricing.json",
+      "sha256": "6c5d3012ad6633db1aa4c72a15a5f3d4eefea56a5d3a974fe490e2ce1fb3e3b9",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/web-product.json",
+      "sha256": "8511bbc2c08cb8fe5de6fb11b55bd7a74cea967eb343568ff1144cf5000c39c2",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/patterns/web-service.json",
+      "sha256": "cca1297fce5c44add9a0a5c23822825c98ec9eec2366fc5d2ed5e5f325c5ed0d",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/preview.schema.json",
+      "sha256": "388dcbdbbdabc18adb755c4480447ce29bba8b38452c1b3533f28949245b139f",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/render-pattern.mjs",
+      "sha256": "c5c7d951804084fb34e28f27c005b3e94048f0d6f4f82c3f8df466625cf9df70",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/select-patterns.mjs",
+      "sha256": "246654075b6bbfa28ebbc19626226779f3eee73b450d44cea16714e60e69009f",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/selection.mjs",
+      "sha256": "8bc84aed7c175400723fbc2097dd7cf9ffd7f59c75b6c2bfbbb0731f4470270c",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/sources.json",
+      "sha256": "90a33eecff77cb567db2dc2ba0aba179b33ff64e9e1608d4861d16b550e59c78",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/styles.mjs",
+      "sha256": "c274ab09dd00838a3d1d2626d9b5d52f7d3bb918af4ed877fcb9238cfaa18b60",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/themes/arctic-frost.json",
+      "sha256": "66f0700b08744b4030b8776d3b8ccc1a7c26fc646d31e945260f3823777d07b3",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/themes/forest-canopy.json",
+      "sha256": "341c7066bbf416a5b17d1f08192410eeb926006f9b616a61ba0b9829ec1728d1",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/themes/golden-hour.json",
+      "sha256": "d0f6782cc164bd1c83aae548b5f33ba651fe0933249988d7efa29ea2c6650506",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/themes/midnight-galaxy.json",
+      "sha256": "e9a4a648e5161b7e14e51a7d069fa7c9a9115ee7318413526614c67599b0fb60",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/themes/modern-minimalist.json",
+      "sha256": "85e7a6d26cd87ba12cd9d468c7ffbe43517ad43f16f1a567c6147ee0bc0dec53",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/design/visual-library/themes/ocean-depths.json",
+      "sha256": "6bc2b377fb52a8c66dc659874676866759d3b030495529ab1f03bc3341b8730b",
+      "baseline_sha256": null
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/pages-and-blocks.md",
+      "sha256": "a1d5b2f8dd45a90d845ae22d492364a15468d522e30a596b874a5ad5153af480",
+      "baseline_sha256": "85091870bd98a52f1c3b9222df5fa9fc538fbe4d92ebd9f93134de1ad1dc812c"
+    },
+    {
+      "path": "_refs/sdlc/static-visual-composer.md",
+      "sha256": "cede595b5d03a38f14a7039a5fed9e8a977aa947dd24e0f91b3507f43b237c3d",
+      "baseline_sha256": "dc61ba3bc2791dad2263cadb83368a240372b76f1b221fcf78c3c230efd1468b"
+    },
+    {
+      "path": "_refs/sdlc/static-visual-composer.mjs",
+      "sha256": "084f5672078d9b63b4e95a53fc3b8595cf62bd668efc94dd562f0c3473809da1",
+      "baseline_sha256": "79deb8c9a3e07d49407a125de8000aa3756d1341a99a2b5adb332b5f7a82880c"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion/client-script.mjs",
+      "sha256": "cf906ceb4fb946f1e4254c809d69706e8a710490690540b6d837e0ceae2f0c08",
+      "baseline_sha256": "047ccea7e42ab7d7a87710a8944da10eace0fff6272eb407e52a86a1a7cde6ea"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion/live-document.mjs",
+      "sha256": "d99fecb5be10260f3765301f8f34682d507defc025554e5302bf93244bbe9bf4",
+      "baseline_sha256": "3c70cb6d48d5bc4dc3f0cb7d75580890f62b99f784bbe1a60827c861c02e4ee5"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion/renderer.mjs",
+      "sha256": "47a1155ec1f77034dbf9c11208594252112b7644e3e4de236081f0f2d426f9d8",
+      "baseline_sha256": "07deeefde106fb20ffb187970bc33e79747c8a41eecc8a52f10a3eab81f6c116"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion/screen.mjs",
+      "sha256": "749fd221c0d45d4461e629de1fe171381265f82887eeefcc47d7695f41be9e08",
+      "baseline_sha256": "bb68c5c53a97b42076be6ccf6c327f81925515a587b3fd0aa658af645c8ff08c"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion.md",
+      "sha256": "fc837aae52da146e0bb7d4bea690cb3ca9d575094a8a35939c8b3dcf3365c107",
+      "baseline_sha256": "d5f883ce006016ebefb2ad8b9e39dd7d7ebdd3b1ef94db09957c7fc799735ae6"
+    },
+    {
+      "path": "_refs/sdlc/visual-offer-policy.md",
+      "sha256": "52bd59052821708fd8be62beb36b172f5c75b524e4b41a7daa4cd5c2c5935a37",
+      "baseline_sha256": "1cb10059f13bd977da876ce1607fa3555faf4e8b845f5b1fa6f966314d9101c0"
+    },
+    {
+      "path": "_refs/sdlc/visual-screen.schema.json",
+      "sha256": "ba7e76f0a62f3a452783f03a896337e89089994df20b432000bea4a3705a6f7c",
+      "baseline_sha256": "123b29750124f0df2b275e9d4e2afe9ef1b5ec1491ef7d4227f25acf884556ab"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "d9dcfcf7219532459dc364c7b067bc339e6685272e16953a56cea9eed8d756e9",
+      "baseline_sha256": "747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+    },
+    {
+      "path": "_refs/shared/design-handoff.mjs",
+      "sha256": "e08c78d49583e6b804de0fbcaf2f1fa6433be442fa587a33891bcf506010ae54",
+      "baseline_sha256": "778499b00a828e21b91629a151ec6301e3c71c5fdea7aa204d37846bc99723ab"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "c9afcf3a03a3a489ab935a0c30f04708bed0818c8b851e76b1e135c882981632",
+      "baseline_sha256": "349f37d9fd6150a2f93fe5979b5376016fcf141441672de82e836084325259de"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "4fc23988178ad424b68711bd89f02baeb7151a17f04c4d6a7335e37d23100bcf",
+      "baseline_sha256": "5821395d976bbffa2f57e341055c915530666c6638235e8b170fa8a13f3c7e2e"
+    },
+    {
+      "path": "test/e2e/design-visual-browser.mjs",
+      "sha256": "adb31c6e69a8d2815adf45f435ef27b64057e9e8fd1a5e726d9a82c726cb7604",
+      "baseline_sha256": null
+    },
+    {
+      "path": "test/e2e/design-visual-library.test.mjs",
+      "sha256": "f923c3e81d1aeca3fb4f99d9b7ec2b4c63421459d23474865fa1a8f096a7ca43",
+      "baseline_sha256": null
+    },
+    {
+      "path": "authoring/tools/prepare-design-sources.mjs",
+      "sha256": "b51a928639fb79cc20bba49297b61b7869108798db6ed4f4f97a753b550fee7d",
+      "baseline_sha256": null
+    }
+  ],
+  "sha256": "0b0f83b8c137305c879dc332e7437fcea68db5df3461c05a965f43c4d4fff84e"
+}

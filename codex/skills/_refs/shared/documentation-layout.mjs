@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { inflateSync } from 'node:zlib';
 import { resolveArtifactOwner } from './repository-contract.mjs';
+import { stripDocumentationManagedMarkers } from '../documentation/documentation-profile.mjs';
 
 export const DOCUMENTATION_LAYOUT_VERSION = 2;
 export const DOCUMENTATION_ROOT = '.sdcorejs/documentation';
@@ -1128,7 +1129,7 @@ export function buildMultiRepositoryDocumentationAggregate({
         title,
         path: expectedSourcePath,
         kind: 'repository-link',
-        coverage: { total: 0, met: 0, partial: 0, missing: 0 },
+        coverage: { status: 'gap', total: null, met: null, partial: null, missing: null },
         body:
           `Canonical source: [${title}](${source.source_url})\n\n` +
           `Editable content remains owned by \`${repositoryId}\` at revision \`${revision}\`.`,
@@ -1223,15 +1224,7 @@ export function buildMultiRepositoryDocumentationAggregate({
     compareCodePoints(left.key, right.key));
   provenance.sort((left, right) =>
     compareCodePoints(lower(left.module_id), lower(right.module_id)));
-  const coverage = modules.reduce(
-    (total, module) => ({
-      total: total.total + module.coverage.total,
-      met: total.met + module.coverage.met,
-      partial: total.partial + module.coverage.partial,
-      missing: total.missing + module.coverage.missing,
-    }),
-    { total: 0, met: 0, partial: 0, missing: 0 },
-  );
+  const coverage = sumCoverage(modules);
   const output = renderAggregate({
     projectTitle: projectTitle || 'Project',
     generatedAt: generatedAt || '<ISO8601>',
@@ -1327,7 +1320,16 @@ export function buildAggregateUserGuide({
     }
     const title = stringValue(parsed.metadata.title) || titleFromKey(selected.key);
     const coverage = parseCoverage(parsed.metadata.coverage);
-    const body = shiftGuideBodyHeadings(parsed.body);
+    if (coverage.status === 'gap' || coverage.status === 'conflict') {
+      warnings.push({ code: 'UNRESOLVED_COVERAGE_AUTHORITY', path: selected.path, status: coverage.status });
+    }
+    let projectionBody;
+    try { projectionBody = stripDocumentationManagedMarkers(parsed.body); }
+    catch (error) {
+      errors.push({ code: 'INVALID_MANAGED_MARKERS', path: selected.path, message: error.message });
+      continue;
+    }
+    const body = shiftGuideBodyHeadings(projectionBody);
     const rewritten = rewriteAggregateLinks(body, {
       entryPath: selected.path,
       existingPaths: [...sourceFiles.keys()],
@@ -1363,15 +1365,7 @@ export function buildAggregateUserGuide({
     errors.push({ code: 'NO_MODULE_GUIDES' });
   }
 
-  const coverage = modules.reduce(
-    (total, module) => ({
-      total: total.total + module.coverage.total,
-      met: total.met + module.coverage.met,
-      partial: total.partial + module.coverage.partial,
-      missing: total.missing + module.coverage.missing,
-    }),
-    { total: 0, met: 0, partial: 0, missing: 0 },
-  );
+  const coverage = sumCoverage(modules);
   const output = renderAggregate({
     projectTitle: projectTitle || 'Project',
     generatedAt: generatedAt || '<ISO8601>',
@@ -2961,10 +2955,16 @@ function parseDocumentationFrontmatter(content) {
   }
   const block = normalized.slice(4, end);
   const metadata = {};
+  let section = null;
   for (const line of block.split('\n')) {
     const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)\s*$/);
-    if (!match) continue;
-    metadata[match[1]] = parseFrontmatterValue(match[2]);
+    if (match) {
+      section = match[2] === '' ? match[1] : null;
+      metadata[match[1]] = section ? {} : parseFrontmatterValue(match[2]);
+      continue;
+    }
+    const nested = line.match(/^  (status|total|met|partial|missing):\s*(.*?)\s*$/);
+    if (section === 'coverage' && nested) metadata.coverage[nested[1]] = coverageScalar(nested[2]);
   }
   return {
     exists: true,
@@ -2979,8 +2979,8 @@ function parseFrontmatterValue(value) {
   if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
     const result = {};
     for (const part of trimmed.slice(1, -1).split(',')) {
-      const match = part.trim().match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(\d+)$/);
-      if (match) result[match[1]] = Number(match[2]);
+      const match = part.trim().match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)$/);
+      if (match) result[match[1]] = coverageScalar(match[2]);
     }
     return result;
   }
@@ -2990,9 +2990,30 @@ function parseFrontmatterValue(value) {
   return trimmed.replace(/^(['"])([\s\S]*)\1$/, '$2');
 }
 
+function coverageScalar(value) {
+  const text = value.trim().replace(/^(['"])([\s\S]*)\1$/, '$2');
+  return text === 'null' ? null : /^\d+$/u.test(text) ? Number(text) : text;
+}
+
+function sumCoverage(modules) {
+  const unresolved = modules.find(module => module.coverage.status === 'conflict') ??
+    modules.find(module => module.coverage.status === 'gap');
+  if (unresolved) return { status: unresolved.coverage.status, total: null, met: null, partial: null, missing: null };
+  return { status: 'selected', ...modules.reduce((sum, module) => Object.fromEntries(
+    Object.keys(sum).map(key => [key, sum[key] + module.coverage[key]])),
+  { total: 0, met: 0, partial: 0, missing: 0 }) };
+}
+
 function parseCoverage(value) {
   const coverage = value && typeof value === 'object' ? value : {};
+  const keys = ['total', 'met', 'partial', 'missing'];
+  const validCounts = keys.every((key) => Number.isSafeInteger(coverage[key]) && coverage[key] >= 0) &&
+    coverage.total === coverage.met + coverage.partial + coverage.missing;
+  if (coverage.status !== 'selected' || !validCounts) {
+    return { status: coverage.status === 'conflict' ? 'conflict' : 'gap', total: null, met: null, partial: null, missing: null };
+  }
   return {
+    status: 'selected',
     total: nonNegativeInteger(coverage.total),
     met: nonNegativeInteger(coverage.met),
     partial: nonNegativeInteger(coverage.partial),
@@ -3051,10 +3072,10 @@ function renderAggregate({
   const rows = modules
     .map(
       (module) =>
-        `| ${module.title} | ${module.coverage.met} | ${module.coverage.partial} | ${module.coverage.missing} |`,
+        `| ${module.title} | ${coverageDisplay(module.coverage.met)} | ${coverageDisplay(module.coverage.partial)} | ${coverageDisplay(module.coverage.missing)} |`,
     )
     .join('\n');
-  const totalRow = `| **Total** | **${coverage.met}** | **${coverage.partial}** | **${coverage.missing}** |`;
+  const totalRow = `| **Total** | **${coverageDisplay(coverage.met)}** | **${coverageDisplay(coverage.partial)}** | **${coverageDisplay(coverage.missing)}** |`;
   const provenanceYaml =
     provenance.length === 0
       ? 'source_provenance: []'
@@ -3082,7 +3103,7 @@ title: ${yamlScalar(`${projectTitle} - User Guide`)}
 generated_at: ${yamlScalar(generatedAt)}
 git_head: ${yamlScalar(gitHead)}
 modules: [${moduleKeys}]
-coverage: { total: ${coverage.total}, met: ${coverage.met}, partial: ${coverage.partial}, missing: ${coverage.missing} }
+coverage: { ${coverage.status ? `status: ${coverage.status}, ` : ''}total: ${coverage.total}, met: ${coverage.met}, partial: ${coverage.partial}, missing: ${coverage.missing} }
 generated_projection: ${generatedProjection}
 editable_source: ${editableSource}
 ${provenanceYaml}
@@ -3107,6 +3128,10 @@ ${sections}
 ${rows}
 ${totalRow}
 `;
+}
+
+function coverageDisplay(value) {
+  return value === null ? 'Not assessed' : value;
 }
 
 function buildAggregateExportEvidence(aggregateMarkdown) {

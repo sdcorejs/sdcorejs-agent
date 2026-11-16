@@ -6,7 +6,7 @@ framework or new dependency. Blue/orange identity and system fonts are retained.
 
 ## Local preview
 
-From `site/`, with Node.js >=22.12.0:
+From `site/`, with Node.js >=22.23.4:
 
 ```bash
 npm ci

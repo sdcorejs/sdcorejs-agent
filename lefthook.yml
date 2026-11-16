@@ -15,7 +15,8 @@
 # If lefthook is missing, fall back to the manual command in .claude/README.md.
 
 pre-commit:
-  parallel: true
+  # Synchronization replaces generated files; readers must run after it finishes.
+  parallel: false
   commands:
     sync-skills:
       # Trigger when source skills OR reference data changed (both are mirrored).

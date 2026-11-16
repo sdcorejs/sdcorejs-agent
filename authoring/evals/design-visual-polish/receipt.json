@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "implemented-and-independently-reviewed-with-validation-gaps",
+  "date": "2026-11-15",
+  "head": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "baseline": "preserved pre-polish dirty tree; no reset/checkout",
+  "candidate_manifest_sha256": "99a746fc87013a712c51934769097a2b99a453e192f09f3426b9c6a3622aa418",
+  "source_manifest": "source-manifest.json",
+  "bound_input_count": 60,
+  "changed_source_files": 14,
+  "library_revision": "sha256:13cb09e7051fe7dfd3d85229394013f3a56dee371d1e26f72662c19d3b6689fa",
+  "verification": {
+    "main_node_tests": {
+      "passed": 889,
+      "failed": 0,
+      "skipped": 0
+    },
+    "full_npm_test": {
+      "exit_code": 1,
+      "cleanup_passed": 44,
+      "cleanup_failed": 110,
+      "cleanup_skipped": 5,
+      "reason": "trusted ext4/APFS fixture unavailable on overlayfs",
+      "later_chain_stages": "NOT RUN for this polish"
+    },
+    "browser_assertions": 551,
+    "browser": "Chromium 155.0.8059.79",
+    "remote_requests": 0,
+    "page_script_errors": 0,
+    "independent_focused_tests": 48,
+    "mirrors": "passed; 25 public skills",
+    "raw_command_receipts": "/workspace/work/sdcorejs-visual-polish-20261115-o0_ux36u/verification-commands-final.json"
+  },
+  "independent_review": {
+    "reviewer": "/root/visual_polish_review",
+    "report": "/workspace/work/sdcorejs-visual-polish-20261115-o0_ux36u/independent-review/round-4/REVIEW.md",
+    "report_sha256": "742f834db3db28701de873dfd145d99e3d6181c9c95e7617f4ff168f5d186a4f",
+    "final_binding": "/workspace/work/sdcorejs-visual-polish-20261115-o0_ux36u/independent-review/round-4/source-binding-final.json",
+    "final_binding_sha256": "25f25f2bb71d846f280fb47a1270c2c63ab9d13b86ec967ead03510c57aba0ed",
+    "remaining_actionable_findings": 0,
+    "repairs": [
+      "visible inset focus on table regions",
+      "relative text size and responsive reflow under font enlargement",
+      "definition label/value separation",
+      "response hidden until Copy"
+    ],
+    "visual_assessment": "selected actual desktop/mobile screenshots inspected; no user acceptance inferred"
+  },
+  "nvidia": {
+    "version": "0.9.0",
+    "mode": "tier1 --no-llm",
+    "design_static_quality": 87.5,
+    "brainstorming_static_quality": 83.8,
+    "overall": "INCOMPLETE / exit 1",
+    "limits": [
+      "SkillSpector exits 2",
+      "unchanged metadata.author governance error",
+      "guide-only inputs do not certify renderer code"
+    ],
+    "tier2": "NOT RUN",
+    "tier3": "NOT RUN",
+    "llm_rubric": "NOT RUN",
+    "additional_api_calls": 0,
+    "model": null,
+    "token_usage": null,
+    "cost": null
+  },
+  "preservation": {
+    "reviewed_source_drift": [],
+    "head_unchanged": true,
+    "index_unchanged": true,
+    "validation_history_prefix_intact": true,
+    "historical_eval_check": {
+      "head": "a71251fc03890326af14afd496d5955cc30ccc20",
+      "index_unchanged": true,
+      "pre_implementation_evaluation_files_checked": 767,
+      "historical_eval_drift": [],
+      "previous_visual_library_report_sha256": "32d2b00b9abf27aba9255cdd3fe0e7d751b577aa16e0421169645d2ec0d31a91"
+    }
+  },
+  "artifacts": {
+    "product-before.html": "9f9ffdf6cea95130ef1fa16b1231ea1e23ef78496a74811988940de8180e7ea1",
+    "product-before.png": "872c7c24259fc41334cbbb9dc5bcb8003594cfd74eba9fa700ebe6a11687f4f2",
+    "product-mobile.html": "1bf362aa3b70e936d69de33c3fc9b5b5ff88b6db4649def74659f45a46d86d31",
+    "product-mobile.png": "f6fa29c4f2da2778e81caee3e1db0ad3a5f63175029a97afaef0c45b99a628e4",
+    "product-story.html": "58e7b2f3c67ca653637cd7d140a07afd96c055139429dd613caf077f20c1551f",
+    "product-story.png": "64e3794e068d925e8d3db213e0e0047f0c331af65037bef74e433b7b08e48bb0",
+    "product.html": "1bf362aa3b70e936d69de33c3fc9b5b5ff88b6db4649def74659f45a46d86d31",
+    "product.png": "ad0675efa73753506d43d3ba976e0e2b47f1d0148e461bcb7a63032985696800",
+    "workspace-before.html": "1d4afe245ccd521e8ca34f31ac92a87d8322b0a7ecc88b2fefde7b85fef56cfe",
+    "workspace-before.png": "41c3f14925bf566ede3f916ad642898532bad41c8f8888c9dd33a865aeda29da",
+    "workspace.html": "5b8f0b572270db4dd9cca3178a7df086c7b806a459efdda7fb66e0bfba39a026",
+    "workspace.png": "033120bf34d7df9e7ecdd66ecf66274666395329da49c884cf328cd07e7aef9f"
+  },
+  "limits": [
+    "No full assistive-technology certification.",
+    "No publication or branch-ready claim.",
+    "Prior failed browser/audit rounds are retained.",
+    "Original historical evaluation reports remain unchanged."
+  ]
+}

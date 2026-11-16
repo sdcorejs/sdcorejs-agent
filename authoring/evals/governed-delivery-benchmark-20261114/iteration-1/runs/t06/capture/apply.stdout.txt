@@ -1,0 +1,15 @@
+{
+  "status": "applied",
+  "guide_path": "docs/operator-guide.md",
+  "guide_edit": "metadata prefix plus appended guidance; original bytes retained as one contiguous block",
+  "original_hash": "sha256:c0456df812cff0d0ff76a8d69f4b9f24d8f0e75a53e5bc8c5da089fc985ac9f5",
+  "guide_hash": "sha256:422c1596523c808b82b21bd22385c412d63ce9ddb126ae6d54e3ff9929f4b9e2",
+  "technical_path": ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md",
+  "technical_hash": "sha256:30abc15a04257e5724aa523261b95584184c6c47c57806c11864b7d66701775a",
+  "technical_generated_ownership": {
+    "owner": "sdcorejs-documentation",
+    "content_hash": "sha256:30abc15a04257e5724aa523261b95584184c6c47c57806c11864b7d66701775a"
+  },
+  "guide_generated_ownership": null,
+  "authority": "Explicit current user documentation request; preservation-only precise patch; no new product approval created."
+}

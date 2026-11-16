@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "op-split",
+  "name": "Work queue",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "process-queue",
+    "inspect-record"
+  ],
+  "data_shapes": [
+    "sequential"
+  ],
+  "applicability": "Process related records repeatedly while keeping context.",
+  "avoid_when": "Occasional detail inspection may use a drawer.",
+  "variants": [
+    {
+      "id": "split",
+      "layout": "split"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "core-split",
+    "portal-split"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": "22.3.4",
+    "verification": "Inspect exact installed component exports and pattern source before implementation."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original HTML composition derived from the cited source structure; domain fixtures are illustrative, not requirements."
+}

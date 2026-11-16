@@ -1,0 +1,543 @@
+{
+  "schema_version": 1,
+  "finalization_commands": [
+    {
+      "command": "rg -n -A 25 -B 3 'async function (listRepositoryFiles|readGitEvidence)' _refs/shared/project-context.mjs",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "593-  return null;\n594-}\n595-\n596:async function listRepositoryFiles(root) {\n597-  try {\n598-    const { stdout } = await execFileAsync(\n599-      'git',\n600-      ['ls-files', '--cached', '--others', '--exclude-standard', '-z'],\n601-      { cwd: root, encoding: 'buffer', maxBuffer: 20 * 1024 * 1024 }\n602-    );\n603-    const candidates = stdout\n604-      .toString('utf8')\n605-      .split('\\0')\n606-      .filter(Boolean)\n607-      .map(normalizeRelativePath)\n608-      .filter((item) => !isSkippedPath(item));\n609-    const present = await Promise.all(\n610-      candidates.map(async (item) => await exists(path.join(root, item)) ? item : null)\n611-    );\n612-    return present.filter(Boolean).sort();\n613-  } catch {\n614-    const result = [];\n615-    await walk(root, root, result);\n616-    return result.sort();\n617-  }\n618-}\n619-\n620-async function walk(root, current, result) {\n621-  if (result.length >= 20_000) return;\n--\n771-  }\n772-}\n773-\n774:async function readGitEvidence(root) {\n775-  try {\n776-    const { stdout } = await execFileAsync('git', ['status', '--short'], {\n777-      cwd: root,\n778-      encoding: 'utf8',\n779-      maxBuffer: 5 * 1024 * 1024,\n780-    });\n781-    return {\n782-      paths: stdout\n783-        .split(/\\r?\\n/)\n784-        .filter(Boolean)\n785-        .map((line) => normalizeRelativePath(line.slice(3).trim())),\n786-      commands: ['git status --short'],\n787-    };\n788-  } catch {\n789-    return { paths: [], commands: [] };\n790-  }\n791-}\n792-\n793-function parseSummaryMetadata(text) {\n794-  const block = extractFrontmatter(text);\n795-  const result = { fingerprints: {} };\n796-  let section = null;\n797-  for (const line of block.split(/\\r?\\n/)) {\n798-    const top = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\\s*(.*?)\\s*$/);\n799-    if (top) {\n"
+    },
+    {
+      "command": "python3 - <<'PY'\nimport hashlib, json\nfrom pathlib import Path\ncap=Path.cwd(); root=cap.parent/'target'\ntrace=json.loads((cap/'trace.json').read_text())\nassert (cap/'response.md').is_file()\nfor name in trace['verification_artifacts']:\n    assert (cap/name).is_file(), name\nchecks=json.loads((cap/'retrieval-check.json').read_text())\nassert checks['selected_by_explore']==['.sdcorejs/memories/node/normalization-category-null-input.md']\nassert checks['stale_source_control']['status']=='stale'\nassert checks['stale_proof_control']['status']=='stale'\nassert checks['old_memory']['promoted'] is False\nbaseline=json.loads((cap/'baseline.json').read_text())\nfor p,h in baseline.items():\n    if p!='AGENTS.md':\n        assert hashlib.sha256((root/p).read_bytes()).hexdigest()==h,p\nassert not (root/'.sdcorejs/conventions').exists()\nassert all(item['exit_code']==0 for item in trace['commands'])\nresult='PASS: captures parse; recorded verification exists; scoped memory retrieval and stale exclusion passed; existing application/tests/inputs/older memory unchanged; no convention rules created.\\n'\n(cap/'final-audit.txt').write_text(result)\nprint(result,end='')\nPY",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/capture",
+      "exit_code": 0,
+      "observed_output": "PASS: captures parse; recorded verification exists; scoped memory retrieval and stale exclusion passed; existing application/tests/inputs/older memory unchanged; no convention rules created.",
+      "output_file": "final-audit.txt"
+    }
+  ],
+  "final_capture_artifacts": [
+    "response.md",
+    "trace.json",
+    "final-audit.txt"
+  ],
+  "tool_events": [
+    {
+      "tool": "apply_patch",
+      "result": "A requested delete+add replacement of trace.json was rejected as multiple operations targeting one path; no replacement occurred. Resolved with a bounded update to this file.",
+      "affects_task_result": false
+    }
+  ],
+  "helper_observation_limit": "Internal child Git calls succeeded through helpers; their individual exit statuses were not separately instrumented.",
+  "task": "Verify an already-fixed normalizeCategory null-input regression and capture scoped advisory memory for Explore.",
+  "isolation": {
+    "pack_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+    "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+    "capture_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/capture",
+    "network_used": false,
+    "external_services_used": false,
+    "packages_installed": false,
+    "subagents_used": false,
+    "other_packs_or_sibling_trials_read": false,
+    "application_edits": false
+  },
+  "skill_dispatch": {
+    "method": "Read supplied AGENTS.md; inspect all 25 public skill frontmatters before selecting bodies.",
+    "selected": [
+      {
+        "name": "sdcorejs-test",
+        "action": "run-only",
+        "reason": "Direct execution of existing regression tests; no diagnostic repair requested."
+      },
+      {
+        "name": "sdcorejs-explore",
+        "action": "memories-write-approved",
+        "reason": "Explicit request to persist reusable scoped lesson and demonstrate discovery."
+      },
+      {
+        "name": "sdcorejs-using-skills",
+        "reason": "Session bootstrap and routing."
+      }
+    ],
+    "frontmatter_only_inventory_command": "python3 - <<'PY'\nfrom pathlib import Path\nfor path in sorted(Path('skills').rglob('*.md')):\n    content = path.read_text()\n    if content.startswith('---\\n'):\n        print(str(path))\n        print(content.split('---',2)[1].strip())\nPY",
+    "loaded_skill_and_reference_paths": [
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/AGENTS.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/using-skills.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/explore.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/test/sdcorejs-test.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/runtime-protocols.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/tasklist.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/communication-economy.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/session-authority.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/explore-memory-actions.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-bootstrap.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/testing-philosophy.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/test-command-discovery.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/test-environment-guard.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/test-generic.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/test-context.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/test-scope-and-coverage.md",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.mjs",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/explore-contract.mjs",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/explore-context.md"
+    ],
+    "executable_helpers_used": [
+      "assembleProjectContext",
+      "resolveExploreWriteAuthority",
+      "validateExploreClassification"
+    ],
+    "runtime_import_dependencies": "The two executable helpers also import same-pack local support modules for conventions, repository identity, registry and cleanup normalization; no authoring tools or other pack used."
+  },
+  "authority": {
+    "source": "User task in prompt.txt: scoped memory capture and minimal AGENTS pointer; no application edits or new team-wide rules.",
+    "role": "sequential owner of this isolated consuming-project task",
+    "scope": [
+      ".sdcorejs/memories/node/normalization-category-null-input.md",
+      "AGENTS.md minimal pointer"
+    ],
+    "excluded": [
+      "application source",
+      "tests/config",
+      "older unrelated memory",
+      "conventions policy/rules",
+      "commits",
+      "summary refresh"
+    ],
+    "bootstrap_note": "Automated convention bootstrap remains disabled (no policy). Added only the explicit user-authorized manual advisory memory pointer."
+  },
+  "commands": [
+    {
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/prompt.txt",
+      "cwd": "/workspace",
+      "exit_code": 0,
+      "observed_result": "Read isolated benchmark task; writes limited to scoped target memory/minimal AGENTS pointer and capture directory."
+    },
+    {
+      "command": "pwd && rg --files -g 'AGENTS.md' -g 'SKILL.md' -g 'package.json' -g '*lock*' -g '*.md' -g '*.diff' -g '*.js' -g '*.json' .",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_result": "Listed supplied pack paths; no other pack accessed."
+    },
+    {
+      "command": "cat AGENTS.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_result": "Read frontmatter dispatch, JIT loading, authority, project context and artifact lifecycle rules."
+    },
+    {
+      "command": "rg --files -g '!node_modules' -g '!package-lock.json' -g '!yarn.lock' -g '!pnpm-lock.yaml' -g '!.git' -g '*' .",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_result": "Inventoried isolated target files, including Git filenames; identified category source/test/diff and legacy payment memory."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nfor path in sorted(Path('skills').rglob('*.md')):\n    content = path.read_text()\n    if content.startswith('---\\n'):\n        print(str(path))\n        print(content.split('---',2)[1].strip())\nPY",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "skills/orchestration/documentation.md\nname: sdcorejs-documentation\ndescription: Documentation executor/gate for documentation artifacts. Use for code comments/docstrings/JSDoc/TSDoc, user guides/manuals with verified UI evidence, TASKID or requirement records, technical/API docs, doc rewrite/improve/structure/summarize/convert. Do not use for project summary/code maps/env setup/recovery, product PRDs/stories/AC/UAT/traceability, design handoff, code implementation, tests, review, or approved-plan execution. Runtime-localized.\nrequired-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose, user.approve\nskills/orchestration/parallel-dispatch.md\nname: sdcorejs-parallel-dispatch\ndescription: Use when two or more substantial independent investigations, failure groups, review scopes, or codebase explorations can proceed without shared mutation or sequential dependencies, even without explicit parallel wording. Also handles requested parallel audits and approved-\n[Reference/read output abbreviated in this trace; command exit recorded.]\nt.md\nname: sdcorejs-test\ndescription: Requirement-driven test executor for planning, authoring, running, TDD, UAT, test coverage analysis, authenticated browser testing, and verified UI evidence across existing project stacks. Use for direct test work; route product requirement/traceability coverage without test work to sdcorejs-product, debugging fixes to sdcorejs-debug, and guide or screenshot documentation to sdcorejs-documentation. Runtime-localized.\nrequired-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, user.approve\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat AGENTS.md README.md package.json",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "# Order Desk\n\nManual policy: preserve operator terminology and never log customer secrets.\n# Order Desk\n\nNode 24 ESM, no dependencies. Run `npm test` for unit tests, `npm run test:integration` for service tests, and `npm run test:e2e` for real HTTP boundary tests. No browser UI exists. No deployment is configured.\n{\n  \"name\": \"order-desk-fixture\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"engines\": {\n    \"node\": \">=24\"\n  },\n  \"scripts\": {\n    \"test\": \"node --test test/unit.test.mjs\",\n    \"test:integration\": \"node --test test/integration.test.mjs\",\n    \"test:e2e\": \"node --test test/e2e.test.mjs\"\n  }\n}\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat _refs/shared/project-context.md _refs/shared/runtime-protocols.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "# Project Context Preflight v2\n\nUse this read-oriented context assembler before non-trivial SDCoreJS skill\nexecution. It selects relevant evidence without making project writes.\n\nThe deterministic helper `_refs/shared/project-context.mjs` implements summary\nfreshness, context-strategy selection, graph-provider detection, and a\nside-effect-free runtime projection. Skills may call it when the helper is\navailable; the contract in this reference remains authoritative.\n\n## Contents\n\n- [Caller Contract](#caller-contract)\n- [Non-recursion](#non-recursion-rule)\n- [Context Priority](#context-priority)\n- [Resolve Target Root](#step-1---resolve-target-root)\n- [Detect Tracks And Profiles](#step-2---detect-tracks-and-profiles)\n- [Read Summary v2](#step-3---read-summary-v2)\n- [Select Code Context](#step-4---select-code-context-strategy)\n- [Select Related Artifacts](#step-5---select-related-artifacts)\n- [Redaction And Bounded Reads](#step-6---redaction-and-bounded-reads)\n- [No-write Invariant](#no-wr\n[Reference/read output abbreviated in this trace; command exit recorded.]\nces and lifecycle.\n- Significant hygiene observations from explore/test/review/design/docs, an\n  accepted cleanup offer, or current-task tail cleanup:\n  `_refs/cleanup/workflow.md`. One sequential/fan-in coordinator consumes\n  runtime signals and carries offer suppression across workflows. Analysis\n  acceptance never grants mutation authority; workers emit findings only.\n\nCurrent user instructions, files, diffs, logs, failing tests, and current\ncommand output override stored context. Match the user's language at runtime;\nkeep reusable sources, identifiers, paths, and contract keys in English.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat skills/shared/workflow/explore.md skills/tracks/test/sdcorejs-test.md skills/orchestration/using-skills.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "---\nname: sdcorejs-explore\ndescription: \"Explore/map a codebase, trace feature flows, find reusable code, read/refresh project summary, recover context, manage persona/memories/conventions, harvest documentation facts, or inspect env shape. Includes a parallel-opportunity check for substantial independent read-only investigations. Modes: summary-read, summary-refresh, code-map, trace-flow, env-setup, recovery, persona, memories, conventions, documentation-harvest. Runtime-localized.\"\nrequired-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose, web.fetch\n---\n\n# Explore\n\n## Purpose\n\n`sdcorejs-explore` is the canonical producer of project context, stack profile evidence, and safe exploration output for downstream SDCoreJS skills.\n\nIt is read-only by default. It writes only when the selected `explore_action`\nis explicitly write-approved, the target root is safe for that write, and the\nwrite is recorded in `explore_context`.\n\nUse it to:\n\n- read or refresh th\n[Reference/read output abbreviated in this trace; command exit recorded.]\nummary/code-map\nwork belongs to `sdcorejs-explore`; documentation does not own project context.\n\nConsistency and convention intent - \"consistency review\", \"review naming\nconsistency\", \"review API conventions\", singular/plural or casing drift - routes\nto `sdcorejs-review` with the `consistency` dimension. Review stays read-only.\nReading or persisting `.sdcorejs/conventions/**` belongs to `sdcorejs-explore`\n(`conventions-read` and `conventions-sync-write-approved`); `sdcorejs-git` never\ngenerates or updates conventions.\n\nKeep the risk baseline in `_refs/shared/finish-gate.md` on fast-fix paths.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat _refs/shared/tasklist.md _refs/harness/communication-economy.md _refs/shared/artifact-lifecycle.md _refs/shared/session-authority.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "# Tasks / Progress Protocol\n\nUse a visible task/progress mechanism before starting non-trivial work. The\nmechanism belongs to the active thread, agent harness, or client runtime. It is\nnot repository state.\n\n## When Required\n\nUse visible progress for multi-step edits, analysis, debugging, review,\ndependency/Git work, verification, and readiness checks. Skip it for simple\nQ&A, naming, short explanations, translations, and single-step answers.\n\n## Task Shape\n\nTasks must be outcome-based rather than microscopic. Prefer a few meaningful\noutcomes over line-by-line or command-by-command entries.\n\nClients may use an equivalent native progress API, task tool, checklist, or\nharness-owned state; Markdown checkboxes are not required when a native\nmechanism exists.\n\n## Derive From Existing Plans\n\nDerive progress from approved-plan outcomes, executor units, or utility\nworkflow phases, and keep one authoritative runtime tracker. The approved plan\nremains the immutable durable execution contract; pro\n[Reference/read output abbreviated in this trace; command exit recorded.]\ny capture. Unrelated disjoint edits remain untouched and unstaged;\nthey do not alone require consent. Unknown ownership or overlapping unrelated\nhunks block the affected writes; continue independent read-only diagnosis.\nNever auto-stash/reset/restore user work. Rollback restores only this operation's\nchanges to its captured pre-operation state, including authorized dirty edits.\n\nUse `evaluateWorkingTree` from `_refs/orchestration/execution-contract.mjs` for\npath overlap. Hunk provenance and baseline identity must come from inspection,\nnot a caller declaring every dirty file to be same-change.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat inputs/fix.diff src/category.mjs test/category.test.mjs && git status --short && git rev-parse HEAD && python3 - <<'PY'\nfrom pathlib import Path\np=Path('.sdcorejs/memories/workflow/old-payment-advice.md')\ns=p.read_text()\nprint(s.split('---',2)[1] if s.startswith('---\\n') else 'No frontmatter: unread legacy body')\nPY",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "-export function normalizeCategory(value) { return value.trim().toLowerCase(); }\n+export function normalizeCategory(value) { return value == null ? '' : value.trim().toLowerCase(); }\nexport function normalizeCategory(value) { return value == null ? '' : value.trim().toLowerCase(); }\nimport { test } from 'node:test'; import assert from 'node:assert/strict'; import { normalizeCategory } from '../src/category.mjs';\ntest('null is empty',()=>assert.equal(normalizeCategory(null),'')); test('undefined is empty',()=>assert.equal(normalizeCategory(undefined),'')); test('trim and lowercase',()=>assert.equal(normalizeCategory('  Tools  '),'tools'));\n11b80db173ba3a0bfd063f5318f24a7ac73ad97a\nNo frontmatter: unread legacy body\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat _refs/shared/explore-memory-actions.md _refs/shared/project-bootstrap.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "# Explore: Memory Actions\n\n## Memory Actions\n\n`memories-read` loads only relevant memory index/metadata first, not every\nmemory body.\n\n`memories-write-approved` requires explicit durable knowledge and user approval.\nDo not save secrets, credentials, PII, transient task state, speculation, or\nuncertain facts as memory. Do not default every memory to angular.\n\nMemory entries should include:\n\n```yaml\n---\nartifact_id: memory-<scope>-<timestamp>\nartifact_kind: memory\nchange_ref: shared-project-memory\nsource_spec: <path | none>\nsource_plan: <path | none>\ncommit_policy: conditional\nowner: sdcorejs-explore\ntrack: general\nstack_profile: general\nsource_skill: sdcorejs-explore\napplies_to: <scope>\ncreated_at: <ISO timestamp>\nevidence: <source>\nconfidence: high | medium | low\n---\n```\n\nSupported track labels include: general, angular, nestjs, nextjs, react, product, design, test, documentation, workflow, and repo-specific labels.\n# Controlled Project Instruction Bootstrap\n\nOwner: sdcorejs-explore, a\n[Reference/read output abbreviated in this trace; command exit recorded.]\nrs refuse. The helper does not create parent dirs.\nDetailed rules stay under .sdcorejs/conventions; the block carries a relative\npointer and stable baseline, without machine paths or copied source evidence.\n\nDisable future sync by setting mode disabled; this does not delete rules or the\nexisting block. Repair malformed markers by proposing an exact bounded patch\nfor the user. Removal likewise requires explicit scope/authority and preservation\nof surrounding human text; never restore a whole older AGENTS file. Re-run\naffected checks after any sync, before the final read-only branch-ready gate.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat skills/tracks/test/sdcorejs-test.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "---\nname: sdcorejs-test\ndescription: Requirement-driven test executor for planning, authoring, running, TDD, UAT, test coverage analysis, authenticated browser testing, and verified UI evidence across existing project stacks. Use for direct test work; route product requirement/traceability coverage without test work to sdcorejs-product, debugging fixes to sdcorejs-debug, and guide or screenshot documentation to sdcorejs-documentation. Runtime-localized.\nrequired-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, user.approve\n---\n\n# Test Track\n\n## Purpose and ownership\n\nOwn test planning, test authoring, safe execution, coverage matrices, UAT cases,\nRED-first TDD, authenticated runner evidence, and UI capture verification.\n`sdcorejs-debug` owns root-cause investigation and production bug fixes.\n`sdcorejs-documentation` owns guide prose and image placement. This skill must\nnot invoke Git, call `sdcorejs-git`, install dep\n[Reference/read output abbreviated in this trace; command exit recorded.]\na claims,\nderive the effective cap N and assert exact results/final IDs at N-1, N and N+1,\nincluding configured caps, server clamps and later-page errors.\nFor protection, call the real enforcement boundary with unauthenticated, wrong\npermission, wrong owner and cross-tenant identities. UI visibility is not denial.\nA targeted mutation removing continuation or enforcement must fail the relevant\nassertion, not an import/build/setup step. Preserve negative controls, current\nrevision/diff, exact command and test case IDs. Do not require new tests for a\nformatting-only change with no behavior risk.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat _refs/shared/testing-philosophy.md _refs/shared/test-command-discovery.md _refs/shared/test-environment-guard.md _refs/shared/test-generic.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "# Testing Knowledge - Principles (Cross-Track)\n\n> Cross-track testing principles loaded on demand by the `sdcorejs-test` skill\n> and by TDD mode. Not a dispatchable skill; no frontmatter.\n\n## Layer Selection\n\nThe test pyramid is a useful cost heuristic, not a universal quota. Prefer the\nsmallest layer that proves each requirement or risk, with enough integration\nand e2e evidence for real boundaries and critical journeys.\n\n| Layer | Purpose | Typical scope |\n|---|---|---|\n| Unit | Branching logic, validators, mappers, single-class behavior | No network, no real DB, no browser |\n| Integration | DI, router, real HTTP server, repository or DB boundaries | Real framework wiring, external services mocked |\n| E2E | Critical user-visible journeys | Real browser or API flow against a guarded environment |\n\nDo not invert the pyramid. If most safety comes from slow e2e tests, domain logic is probably buried too deeply in framework code.\n\n## What To Mock\n\nMock the things the project does not own: \n[Reference/read output abbreviated in this trace; command exit recorded.]\nAPI e2e;\n- critical user journey: browser e2e;\n- acceptance sign-off: UAT/manual evidence.\n\nFollow nearby naming, imports, lifecycle, and assertion style. Prefer observable\nbehavior over implementation details. Add retry, idempotency, performance, or\nexternal-effect cases only when required or risk-justified. Preserve project\nthresholds if they exist; never create a universal threshold.\n\n## Output\n\nReturn v2 `test_context`, independent `test_status`, append-oriented\n`test_evidence`, the requirement/risk coverage matrix, commands and cwd,\ncleanup outcome, blockers, and artifact classification.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat _refs/shared/tasklist.md _refs/shared/test-context.md _refs/shared/test-scope-and-coverage.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "# Tasks / Progress Protocol\n\nUse a visible task/progress mechanism before starting non-trivial work. The\nmechanism belongs to the active thread, agent harness, or client runtime. It is\nnot repository state.\n\n## When Required\n\nUse visible progress for multi-step edits, analysis, debugging, review,\ndependency/Git work, verification, and readiness checks. Skip it for simple\nQ&A, naming, short explanations, translations, and single-step answers.\n\n## Task Shape\n\nTasks must be outcome-based rather than microscopic. Prefer a few meaningful\noutcomes over line-by-line or command-by-command entries.\n\nClients may use an equivalent native progress API, task tool, checklist, or\nharness-owned state; Markdown checkboxes are not required when a native\nmechanism exists.\n\n## Derive From Existing Plans\n\nDerive progress from approved-plan outcomes, executor units, or utility\nworkflow phases, and keep one authoritative runtime tracker. The approved plan\nremains the immutable durable execution contract; pro\n[Reference/read output abbreviated in this trace; command exit recorded.]\nageSize cannot prove all data arrived.\nTrace finding -> trigger -> expected failure -> assertion -> case -> exact command\nand current source/diff. Use a dataset beyond the bound, verify last record and\nset/order, and exercise server clamps/continuation/error paths. For authorization,\nexercise the server boundary with owner/tenant/permission denial. Confirm a\nmutation removing the relevant behavior is killed by that assertion. Distinguish\nunit/contract, executable fixture/integration and fresh reviewer evidence; their\nresults are not interchangeable. Unknown or stale runs remain evidence gaps.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "rg -n 'export |memor|fingerprint|resolveExploreWriteAuthority' _refs/shared/project-context.mjs _refs/shared/explore-contract.mjs && cat _refs/shared/system-registry.json",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "_refs/shared/explore-contract.mjs:18:  'memories-read',\n_refs/shared/explore-contract.mjs:27:  'memories-write-approved',\n_refs/shared/explore-contract.mjs:48:export function buildExploreCleanupSignals(observations = []) {\n_refs/shared/explore-contract.mjs:54:export function validateExploreClassification({\n_refs/shared/explore-contract.mjs:71:export function resolveExploreWriteAuthority({\n_refs/shared/explore-contract.mjs:123:export async function discoverRepositoryTopology({ root } = {}) {\n_refs/shared/project-context.mjs:72:export async function assembleProjectContext({\n_refs/shared/project-context.mjs:92:  const fingerprintResult = await computeProjectFingerprints(targetRoot, files, {\n_refs/shared/project-context.mjs:95:  const summaryResult = assessSummaryFreshness(summaryText, fingerprintResult.fingerprints);\n_refs/shared/project-context.mjs:96:  const provider = graphProvider ?? detectExistingGraphProvider(targetRoot, files, fingerprintResult.packageJsonRecords);\n_refs/shared/pro\n[Reference/read output abbreviated in this trace; command exit recorded.]\nE\"\n  ],\n  \"executable_reference_classes\": [\n    \"executable\",\n    \"copy-ready\",\n    \"partial-example\",\n    \"pseudocode\"\n  ],\n  \"editorial_capabilities\": [\n    {\n      \"id\": \"content\",\n      \"skill\": \"sdcorejs-content\",\n      \"lifecycle\": [\n        \"brief\",\n        \"strategy\",\n        \"research\",\n        \"draft\",\n        \"edit\",\n        \"repurpose\",\n        \"review\",\n        \"feedback\"\n      ],\n      \"review_owner\": \"sdcorejs-content\",\n      \"engineering_finish_required\": false,\n      \"publication_authority\": \"separate-explicit-action\",\n      \"catalog\": \"_refs/content/catalog.json\"\n    }\n  ]\n}\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat _refs/harness/communication-economy.md && sed -n '1,95p' _refs/shared/artifact-lifecycle.md && cat skills/orchestration/using-skills.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "# Communication Economy Policy\n\nUse minimal sufficient communication across SDCoreJS runtime messages and\nhandoffs. Optimize total selected context and user-visible duplication without\nweakening approval, safety, verification, artifact lifecycle, evidence, or\ndownstream contracts.\n\nLoad this reference just in time for response-profile resolution, progress\nevents, typed-context projection, portable handoff, or related-artifact\nselection. Do not add it to every always-loaded bootstrap.\n\n## Contents\n\n- [Invariants](#invariants)\n- [Response Profiles](#response-profiles)\n- [Artifact Boundary](#artifact-boundary)\n- [Runtime Envelope](#runtime-envelope)\n- [Progress Events](#progress-events)\n- [Related Artifact Selection](#related-artifact-selection)\n- [Final Projection](#final-projection)\n- [Deterministic Contract](#deterministic-contract)\n\n## Invariants\n\n- Select the smallest sufficient evidence set before shortening prose.\n- Compact prose remains complete, professional, grammatical, and loc\n[Reference/read output abbreviated in this trace; command exit recorded.]\nummary/code-map\nwork belongs to `sdcorejs-explore`; documentation does not own project context.\n\nConsistency and convention intent - \"consistency review\", \"review naming\nconsistency\", \"review API conventions\", singular/plural or casing drift - routes\nto `sdcorejs-review` with the `consistency` dimension. Review stays read-only.\nReading or persisting `.sdcorejs/conventions/**` belongs to `sdcorejs-explore`\n(`conventions-read` and `conventions-sync-write-approved`); `sdcorejs-git` never\ngenerates or updates conventions.\n\nKeep the risk baseline in `_refs/shared/finish-gate.md` on fast-fix paths.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "sed -n '1,160p' _refs/shared/project-context.mjs && sed -n '688,760p' _refs/shared/project-context.mjs && sed -n '1,125p' _refs/shared/explore-contract.mjs && cat _refs/shared/explore-context.md",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+      "exit_code": 0,
+      "observed_output": "#!/usr/bin/env node\n\nimport { createHash } from 'node:crypto';\nimport { execFile } from 'node:child_process';\nimport { access, readFile, readdir, stat } from 'node:fs/promises';\nimport path from 'node:path';\nimport { promisify } from 'node:util';\nimport { fileURLToPath, pathToFileURL } from 'node:url';\nimport {\n  parseConventionDocument,\n  projectConventionContext,\n  validateConventionPolicy,\n  validateConventionRule,\n} from './convention-contract.mjs';\nimport {\n  CONVENTION_POLICY_PATH,\n  CONVENTION_ROOT,\n  classifyConventionPath,\n} from './convention-paths.mjs';\nimport { systemRegistry } from './system-registry.mjs';\n\nconst execFileAsync = promisify(execFile);\n\nconst SUMMARY_SECTIONS = [\n  'Purpose',\n  'Read First',\n  'Stack and Workspace',\n  'Application and Module Map',\n  'Entrypoints and Main Runtime Flows',\n  'Source-of-Truth and Generated Boundaries',\n  'Commands',\n  'Conventions and Invariants',\n  'Task-to-Path Navigation',\n  'Known Unknowns',\n  'Refresh Triggers',\n];\n\nconst SK\n[Reference/read output abbreviated in this trace; command exit recorded.]\nvalidate Summary v2. Dependency changes\ninvalidate stack/command/convention sections; workspace and source-root changes\ninvalidate only their mapped architecture/navigation sections.\n\nThe `entrypoint_contract` fingerprint includes package entrypoint fields\n(`main`, `bin`, `exports`, `module`, `browser`, and `types`), known\nadapter/plugin entrypoints, and the existence of declared\n`evidence.key_entrypoints`. Deleting or renaming one invalidates only\n`Application and Module Map`, `Entrypoints and Main Runtime Flows`, and\n`Task-to-Path Navigation`. Unknown fingerprints never pretend to be fresh.\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "python3 - <<'PY'\nimport hashlib, json, subprocess\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nroot=Path.cwd()\ncap=root.parent/'capture'\ncap.mkdir(exist_ok=True)\npaths=[p for p in root.rglob('*') if p.is_file() and '.git' not in p.relative_to(root).parts]\nbaseline={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}\n(cap/'baseline.json').write_text(json.dumps(baseline,indent=2)+'\\n')\nruns=[]\nfor args, filename in [(['node','--version'],'node-version.txt'),(['node','--test','test/category.test.mjs'],'category-regression.txt')]:\n    start=datetime.now(timezone.utc).isoformat()\n    r=subprocess.run(args,cwd=root,capture_output=True,text=True)\n    output=r.stdout+r.stderr\n    (cap/filename).write_text(output)\n    record={'command':args,'cwd':str(root),'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':r.returncode,'output_path':filename,'output_sha256':hashlib.sha256(output.encode()).hexdigest()}\n    runs.append(record)\n    print(json.dumps(record))\n    print(output,end='')\n(cap/'test-runs.json').write_text(json.dumps(runs,indent=2)+'\\n')\nprint(json.dumps({'source_and_proof_fingerprints':{p:baseline[p] for p in ['src/category.mjs','test/category.test.mjs','inputs/fix.diff','package.json','.sdcorejs/memories/workflow/old-payment-advice.md']}}))\nraise SystemExit(max(r['exit_code'] for r in runs))\nPY",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "{\"command\": [\"node\", \"--version\"], \"cwd\": \"/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target\", \"started_at\": \"2026-11-14T09:13:20.127094+00:00\", \"finished_at\": \"2026-11-14T09:13:20.134817+00:00\", \"exit_code\": 0, \"output_path\": \"node-version.txt\", \"output_sha256\": \"249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81\"}\nv24.22.1\n{\"command\": [\"node\", \"--test\", \"test/category.test.mjs\"], \"cwd\": \"/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target\", \"started_at\": \"2026-11-14T09:13:20.135073+00:00\", \"finished_at\": \"2026-11-14T09:13:20.392056+00:00\", \"exit_code\": 0, \"output_path\": \"category-regression.txt\", \"output_sha256\": \"9959cba1e459d1f9ab6c549e7e8d6b6e39b95e3c2069514b93e55042c0ab9f7f\"}\n✔ null is empty (1.471065ms)\n✔ undefined is empty (0.222096ms)\n✔ trim and lowercase (0.253645ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 160.908072\n{\"source_and_proof_fingerprints\": {\"src/category.mjs\": \"4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5\", \"test/category.test.mjs\": \"40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537\", \"inputs/fix.diff\": \"6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9\", \"package.json\": \"31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2\", \".sdcorejs/memories/workflow/old-payment-advice.md\": \"ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58\"}}\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "node ../capture/check-memory.mjs --preflight > ../capture/preflight.json 2> ../capture/preflight.stderr.txt",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat ../capture/preflight.json ../capture/preflight.stderr.txt",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "{\n  \"phase\": \"preflight\",\n  \"authority\": {\n    \"write_allowed\": true,\n    \"reason\": \"explicit or approved explore ownership\"\n  },\n  \"authority_source\": \"Explicit user scope: remember the verified normalization lesson; minimal AGENTS pointer allowed; no application changes or new team rules.\",\n  \"role\": \"sequential owner of the isolated consuming target\",\n  \"project_context\": {\n    \"target_root\": \"/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target\",\n    \"target_root_kind\": \"target-project\",\n    \"request_scope\": \"normalizeCategory category normalization null undefined trim lowercase\",\n    \"tracks\": [\n      \"node\"\n    ],\n    \"stack_profiles\": [\n      \"node-general\"\n    ],\n    \"summary\": {\n      \"status\": \"missing\",\n      \"schema\": \"missing\",\n      \"path\": \"none\",\n      \"usable_sections\": [],\n      \"invalidated_sections\": []\n    },\n    \"related_artifacts\": {\n      \"specs\": [],\n      \"plans\": [],\n      \"docs\": [],\n      \"handoffs\": [],\n      \"tasks\": [],\n      \"memories\": []\n    },\n    \"memory_policy\": {\n      \"authority\": \"advisory\",\n      \"current_source_precedence\": true\n    },\n    \"conventions\": {\n      \"policy_status\": \"missing\",\n      \"policy_path\": \"none\",\n      \"loaded_paths\": [],\n      \"accepted_rule_ids\": [],\n      \"observed_rule_ids\": [],\n      \"conflicted_rule_ids\": [],\n      \"deprecated_rule_ids\": [],\n      \"stale_rule_ids\": [],\n      \"invalid_paths\": [],\n      \"unresolved_owner_repositories\": []\n    },\n    \"code_context\": {\n      \"strategy\": \"targeted-read\",\n      \"scope\": \"normalizeCategory category normalization null undefined trim lowercase\",\n      \"entrypoints\": [\n        \"src/category.mjs\",\n        \"test/category.test.mjs\",\n        \"inputs/fix.diff\"\n      ],\n      \"evidence_paths\": [\n        \"src/category.mjs\",\n        \"test/category.test.mjs\",\n        \"inputs/fix.diff\"\n      ],\n      \"unresolved_relationships\": []\n    },\n    \"current_evidence\": {\n      \"files\": [\n        \"src/category.mjs\",\n        \"test/category.test.mjs\",\n        \"inputs/fix.diff\"\n      ],\n      \"diffs\": [],\n      \"commands\": [\n        \"git status --short\"\n      ]\n    },\n    \"writes_allowed\": false,\n    \"local_runtime_writes_allowed_after_consent\": false,\n    \"redaction_applied\": true,\n    \"legacy_notice\": \"none\"\n  },\n  \"duplicate_search\": \"No normalization-related memory selected; old payment filename unrelated and legacy metadata absent.\"\n}\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "node ../capture/check-memory.mjs > ../capture/retrieval-check.json 2> ../capture/retrieval-check.stderr.txt",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "cat ../capture/retrieval-check.json ../capture/retrieval-check.stderr.txt",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "{\n  \"phase\": \"retrieval-and-freshness-demonstration\",\n  \"request\": \"normalizeCategory category normalization null undefined trim lowercase\",\n  \"selected_by_explore\": [\n    \".sdcorejs/memories/node/normalization-category-null-input.md\"\n  ],\n  \"relationship_query_selected\": [\n    \".sdcorejs/memories/node/normalization-category-null-input.md\"\n  ],\n  \"selected_after_evidence_gate\": [\n    \".sdcorejs/memories/node/normalization-category-null-input.md\"\n  ],\n  \"current_fingerprints\": {\n    \"src/category.mjs\": \"4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5\",\n    \"test/category.test.mjs\": \"40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537\",\n    \"inputs/fix.diff\": \"6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9\",\n    \"package.json\": \"31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2\"\n  },\n  \"freshness\": {\n    \"status\": \"current-at-capture\",\n    \"advisory_only\": true,\n    \"current_verification_requires_rerun\": true,\n    \"mismatches\n[Reference/read output abbreviated in this trace; command exit recorded.]\n},\n  \"unrelated_task_selected\": [],\n  \"empty_scope_selected\": [],\n  \"old_memory\": {\n    \"path\": \".sdcorejs/memories/workflow/old-payment-advice.md\",\n    \"result\": \"excluded: unrelated filename; no relationship metadata; body not consumed as advice\",\n    \"unchanged_sha256\": \"ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58\",\n    \"promoted\": false\n  },\n  \"limitation\": \"Explore performs advisory relationship/scope retrieval, not freshness enforcement. The explicit fingerprint gate shown here supplements retrieval; future passing claims require rerunning the regression command.\"\n}\n",
+      "output_truncated_by_tool": false
+    },
+    {
+      "command": "python3 - <<'PY'\nimport hashlib, json, subprocess\nfrom pathlib import Path\nroot=Path.cwd(); cap=root.parent/'capture'\nbaseline=json.loads((cap/'baseline.json').read_text())\ncurrent={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.rglob('*')) if p.is_file() and '.git' not in p.relative_to(root).parts}\nchanged=sorted(p for p in baseline.keys()|current.keys() if baseline.get(p)!=current.get(p))\nexpected=['.sdcorejs/memories/node/normalization-category-null-input.md','AGENTS.md']\nassert changed==expected, changed\nr=subprocess.run(['git','diff','--check'],capture_output=True,text=True)\n(cap/'git-diff-check.txt').write_text(r.stdout+r.stderr)\nassert r.returncode==0, r.stderr\nr2=subprocess.run(['git','status','--short'],capture_output=True,text=True)\n(cap/'git-status.txt').write_text(r2.stdout+r2.stderr)\nassert r2.returncode==0\nresult={'changed_paths':changed,'application_tests_inputs_and_old_memory_unchanged':True,'old_memory_sha256':current['.sdcorejs/memories/workflow/old-payment-advice.md'],'git_diff_check_exit':r.returncode,'git_status_exit':r2.returncode,'new_memory_sha256':current[expected[0]],'agents_sha256':current['AGENTS.md']}\n(cap/'scope-check.json').write_text(json.dumps(result,indent=2)+'\\n')\nprint(json.dumps(result,indent=2))\nprint(r2.stdout,end='')\nPY",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "observed_output": "{\n  \"changed_paths\": [\n    \".sdcorejs/memories/node/normalization-category-null-input.md\",\n    \"AGENTS.md\"\n  ],\n  \"application_tests_inputs_and_old_memory_unchanged\": true,\n  \"old_memory_sha256\": \"ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58\",\n  \"git_diff_check_exit\": 0,\n  \"git_status_exit\": 0,\n  \"new_memory_sha256\": \"7a0faf2c873e72719481508839c4271fd3977b29d0532fd08e3fc14f89bc6004\",\n  \"agents_sha256\": \"8b7627bf762f48e5ea16dcdd8f9d783a867095f10fbe17fe75fd69ed18e65bef\"\n}\n M AGENTS.md\n?? .sdcorejs/memories/node/\n",
+      "output_truncated_by_tool": false
+    }
+  ],
+  "nested_verification_commands": [
+    {
+      "command": "node --version",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "result": "v24.22.1",
+      "output": "node-version.txt"
+    },
+    {
+      "command": "node --test test/category.test.mjs",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "result": "3 passed, 0 failed, 0 skipped",
+      "output": "category-regression.txt",
+      "output_sha256": "9959cba1e459d1f9ab6c549e7e8d6b6e39b95e3c2069514b93e55042c0ab9f7f"
+    },
+    {
+      "command": "git diff --check",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "result": "No whitespace errors",
+      "output": "git-diff-check.txt"
+    },
+    {
+      "command": "git status --short",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "exit_code": 0,
+      "result": "Only AGENTS.md modified and new .sdcorejs/memories/node/ directory untracked",
+      "output": "git-status.txt"
+    }
+  ],
+  "helper_internal_commands": [
+    {
+      "command": "git status --short",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "result": "Read-only Git evidence collection by assembleProjectContext; preflight showed no changes."
+    },
+    {
+      "command": "git ls-files --cached --others --exclude-standard -z",
+      "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "result": "Helper repository file discovery (see helper implementation); no Git mutation."
+    }
+  ],
+  "test_context": {
+    "schema_version": 2,
+    "source": "sdcorejs-test",
+    "change": {
+      "change_ref": "normalize-category-null-input",
+      "source_spec": "none",
+      "source_plan": "none",
+      "associated_HEAD_or_diff": "11b80db173ba3a0bfd063f5318f24a7ac73ad97a",
+      "source_fingerprint": "sha256:4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5"
+    },
+    "classification": {
+      "test_action": "run-only",
+      "stack_profile": "general",
+      "test_levels": [
+        "unit"
+      ],
+      "repository_kind": "single-app",
+      "environment_class": "local"
+    },
+    "scope": {
+      "owner_repository_id": "unknown (no remote identity required for isolated target)",
+      "target_paths": [
+        "src/category.mjs",
+        "test/category.test.mjs"
+      ],
+      "risk_dimensions": [
+        "nullish string-method invocation",
+        "preservation of string trimming and lowercase"
+      ]
+    },
+    "runner": {
+      "runner_name": "node:test",
+      "config_paths": [
+        "package.json"
+      ],
+      "command_sources": [
+        "package.json: test uses node --test",
+        "test/category.test.mjs: existing node:test file"
+      ]
+    },
+    "environment": {
+      "environment_id": "isolated-offline-target",
+      "class": "local",
+      "write_policy": "read-only source/tests",
+      "external_effects": [],
+      "required_services": [],
+      "blockers": []
+    },
+    "auth": {
+      "required": false,
+      "discovery_status": "not-applicable"
+    },
+    "data": {
+      "strategy": "read-only",
+      "cleanup_policy": "not-applicable",
+      "external_side_effect_policy": "blocked"
+    },
+    "execution": {
+      "working_directory": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+      "commands_run": [
+        "node --test test/category.test.mjs"
+      ],
+      "commands_skipped": [
+        {
+          "command": "npm test",
+          "reason": "Package script only targets unrelated test/unit.test.mjs; direct category regression is the relevant proof."
+        },
+        {
+          "command": "npm run test:integration / npm run test:e2e",
+          "reason": "No application edits or integration boundary changes; unrelated to scoped pure-function lesson."
+        }
+      ]
+    },
+    "redaction_applied": true
+  },
+  "test_status": {
+    "planning": "planned",
+    "authoring": "existing",
+    "executability": "ready",
+    "execution": "executed",
+    "result": "pass",
+    "evidence": "current",
+    "documentation": "not-requested",
+    "blockers": []
+  },
+  "test_evidence": {
+    "schema_version": 2,
+    "runs_reference": "test-runs.json",
+    "cases": [
+      {
+        "test_ref": "test/category.test.mjs: null is empty",
+        "result": "pass"
+      },
+      {
+        "test_ref": "test/category.test.mjs: undefined is empty",
+        "result": "pass"
+      },
+      {
+        "test_ref": "test/category.test.mjs: trim and lowercase",
+        "result": "pass"
+      }
+    ],
+    "evidence_class": "UNIT",
+    "redactions_applied": true
+  },
+  "explore_context": {
+    "source": "sdcorejs-explore",
+    "action": "memories-write-approved",
+    "target_root": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target",
+    "target_root_kind": "target-project",
+    "tracks": [
+      "node"
+    ],
+    "stack_profiles": [
+      "node-general"
+    ],
+    "profile_confidence": "high",
+    "profile_evidence": [
+      "package.json uses type=module, Node >=24, no dependencies",
+      "src/category.mjs pure ESM function"
+    ],
+    "project_context_reference": "preflight.json",
+    "writes": [
+      {
+        "path": ".sdcorejs/memories/node/normalization-category-null-input.md",
+        "reason": "Capture verified scoped lesson",
+        "approved": true,
+        "approval_source": "explicit user task",
+        "outcome": "written and fingerprint-checked"
+      },
+      {
+        "path": "AGENTS.md",
+        "reason": "Minimal discoverability pointer",
+        "approved": true,
+        "approval_source": "explicit user task",
+        "outcome": "manual text preserved; pointer appended"
+      }
+    ],
+    "freshness": {
+      "summary_status": "missing"
+    },
+    "redaction": {
+      "applied": true,
+      "notes": "Synthetic source/tests; no credentials, home files, env values, external content execution or customer data."
+    },
+    "next_skill_hint": {
+      "skill": "none",
+      "reason": "Requested task complete"
+    }
+  },
+  "artifact_context": {
+    "schema_version": 1,
+    "change_ref": "normalize-category-null-input",
+    "source_spec": "none",
+    "source_plan": "none",
+    "required_with_change": [],
+    "shared_owned": [
+      {
+        "path": ".sdcorejs/memories/node/normalization-category-null-input.md",
+        "kind": "memory",
+        "reason": "Explicit user-approved capture by isolated target's sequential Explore owner"
+      }
+    ],
+    "conditional": [],
+    "local_only": [
+      {
+        "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/capture",
+        "kind": "diagnostic",
+        "reason": "Explicitly requested offline capture outputs; not copied into durable memory"
+      }
+    ],
+    "unrelated_observed": [
+      {
+        "path": ".sdcorejs/memories/workflow/old-payment-advice.md",
+        "reason": "Unrelated legacy memory; no promotion or edit"
+      }
+    ]
+  },
+  "artifacts_changed": [
+    {
+      "tool": "apply_patch",
+      "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/capture/check-memory.mjs",
+      "action": "create local-only verification script"
+    },
+    {
+      "tool": "apply_patch",
+      "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target/.sdcorejs/memories/node/normalization-category-null-input.md",
+      "action": "create authorized advisory lesson"
+    },
+    {
+      "tool": "apply_patch",
+      "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t08/target/AGENTS.md",
+      "action": "append authorized minimal memory pointer; preserve manual policy"
+    }
+  ],
+  "verification_artifacts": [
+    "baseline.json",
+    "node-version.txt",
+    "category-regression.txt",
+    "test-runs.json",
+    "preflight.json",
+    "preflight.stderr.txt",
+    "check-memory.mjs",
+    "retrieval-check.json",
+    "retrieval-check.stderr.txt",
+    "scope-check.json",
+    "git-diff-check.txt",
+    "git-status.txt"
+  ],
+  "selection_demonstration": {
+    "output": "retrieval-check.json",
+    "exit_code": 0,
+    "results": [
+      "Future normalization query selects new lesson",
+      "Exact change_ref selects new lesson",
+      "Unrelated invoice task and empty scope select no lesson",
+      "Older payment memory excluded and hash unchanged",
+      "Current source, test, diff and config hashes match",
+      "Historical proof output hash verified",
+      "In-memory stale-source control uses actual pre-fix bytes from inputs/fix.diff and is rejected",
+      "In-memory changed-proof control is rejected"
+    ],
+    "stale_controls_are_simulations": true
+  },
+  "limitations": [
+    "Explore helper selects advisory candidates but does not automatically enforce content freshness; demonstrated explicit post-retrieval gate and documented re-verification.",
+    "No pre-fix failing run was executed; historical bug mechanism derives from supplied diff and current source inspection.",
+    "Only three existing category unit cases establish behavior; integration/E2E and unrelated suites were not run.",
+    "Raw proof output remains in capture directory and its digest is in memory; a future passing claim requires rerunning the command.",
+    "No convention policy or team-wide rule approved; no application/test/config edits or Git commits."
+  ]
+}

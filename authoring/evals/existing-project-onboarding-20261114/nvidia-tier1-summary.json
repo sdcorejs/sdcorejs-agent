@@ -1,0 +1,665 @@
+{
+  "scope": "Selected generated SKILL.md directories only; shared helper source manually reviewed and tested separately. Raw findings retained in independent-audit.md and workdir.",
+  "results": {
+    "final-tier1-explore": {
+      "version": "0.9.0",
+      "target_path": ".claude/skills/sdcorejs-explore",
+      "overall_passed": false,
+      "overall_status": "failed",
+      "publication_status": "fail",
+      "incomplete_scans": [],
+      "severity_counts": {
+        "critical": 0,
+        "high": 1,
+        "medium": 9,
+        "low": 9
+      },
+      "quality": [
+        {
+          "skill_name": "sdcorejs-explore",
+          "overall_score": 86.2,
+          "grade": "B"
+        }
+      ],
+      "coverage": [
+        {
+          "validator": "Schema & Repository Governance",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 8,
+            "errors": 0,
+            "warnings": 4,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 2,
+            "low_count": 1
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Semantic Version Validation",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Security Scan",
+          "status": "failed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 0,
+            "errors": 1,
+            "warnings": 1,
+            "critical_count": 0,
+            "high_count": 1,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "PII Scan",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 2,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "License Compliance",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 1,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Code Risk Analysis",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Secrets Detection",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Code Integrity & Hygiene",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 4,
+            "errors": 0,
+            "warnings": 1,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Dependency Vulnerability Audit",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Unicode Smuggling Detection",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "QUALITY",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 9,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 4,
+            "low_count": 5
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "SCRIPT_LINT",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Harness Compatibility",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 0,
+            "errors": 0,
+            "warnings": 14,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 3,
+            "low_count": 3
+          },
+          "incomplete_scans": []
+        }
+      ]
+    },
+    "final-tier1-execute": {
+      "version": "0.9.0",
+      "target_path": ".claude/skills/sdcorejs-execute-plan",
+      "overall_passed": true,
+      "overall_status": "passed",
+      "publication_status": "incomplete",
+      "incomplete_scans": [],
+      "severity_counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 12,
+        "low": 9
+      },
+      "quality": [
+        {
+          "skill_name": "sdcorejs-execute-plan",
+          "overall_score": 83.8,
+          "grade": "B"
+        }
+      ],
+      "coverage": [
+        {
+          "validator": "Schema & Repository Governance",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 7,
+            "errors": 0,
+            "warnings": 6,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 3,
+            "low_count": 2
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Semantic Version Validation",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Security Scan",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 2,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 1,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "PII Scan",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 2,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "License Compliance",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 1,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Code Risk Analysis",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Secrets Detection",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Code Integrity & Hygiene",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 4,
+            "errors": 0,
+            "warnings": 1,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Dependency Vulnerability Audit",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Unicode Smuggling Detection",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "QUALITY",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 9,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 5,
+            "low_count": 4
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "SCRIPT_LINT",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Harness Compatibility",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 0,
+            "errors": 0,
+            "warnings": 15,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 3,
+            "low_count": 3
+          },
+          "incomplete_scans": []
+        }
+      ]
+    },
+    "final-tier1-test": {
+      "version": "0.9.0",
+      "target_path": ".claude/skills/sdcorejs-test",
+      "overall_passed": false,
+      "overall_status": "failed",
+      "publication_status": "incomplete",
+      "incomplete_scans": [
+        "skillspector"
+      ],
+      "severity_counts": {
+        "critical": 0,
+        "high": 1,
+        "medium": 8,
+        "low": 10
+      },
+      "quality": [
+        {
+          "skill_name": "sdcorejs-test",
+          "overall_score": 86.8,
+          "grade": "B"
+        }
+      ],
+      "coverage": [
+        {
+          "validator": "Schema & Repository Governance",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 8,
+            "errors": 0,
+            "warnings": 5,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 2,
+            "low_count": 2
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Semantic Version Validation",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Security Scan",
+          "status": "failed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 0,
+            "errors": 2,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 1,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": [
+            "skillspector"
+          ]
+        },
+        {
+          "validator": "PII Scan",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 2,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "License Compliance",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 1,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Code Risk Analysis",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Secrets Detection",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Code Integrity & Hygiene",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 4,
+            "errors": 0,
+            "warnings": 1,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Dependency Vulnerability Audit",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Unicode Smuggling Detection",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 1,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "QUALITY",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 9,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 3,
+            "low_count": 6
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "SCRIPT_LINT",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 1,
+            "errors": 0,
+            "warnings": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0,
+            "low_count": 0
+          },
+          "incomplete_scans": []
+        },
+        {
+          "validator": "Harness Compatibility",
+          "status": "passed",
+          "summary": {
+            "files_scanned": 0,
+            "checks_performed": 0,
+            "errors": 0,
+            "warnings": 14,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 3,
+            "low_count": 2
+          },
+          "incomplete_scans": []
+        }
+      ]
+    }
+  },
+  "tier2": "NOT RUN: provider entry deferred by user",
+  "tier3": "NOT RUN: provider entry deferred by user"
+}

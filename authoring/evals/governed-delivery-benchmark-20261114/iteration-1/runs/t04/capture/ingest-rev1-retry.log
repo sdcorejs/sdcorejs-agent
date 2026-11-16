@@ -1,0 +1,21 @@
+Revision 1 ingested; source snapshot, reviewed image bytes, image provenance, and draft requirement record written.
+{
+  "revision": "rev-1",
+  "source_snapshot": ".sdcorejs/documentation/requirements/42/attachments/source-rev-1.json",
+  "image_sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+  "image_bytes": 68,
+  "image_inspection": {
+    "width": 1,
+    "height": 1,
+    "bit_depth": 8,
+    "color_type": 4,
+    "chunk_crc_valid": false,
+    "invalid_crc_chunks": [
+      "IDAT"
+    ],
+    "zlib_valid": true,
+    "decompressed_bytes": 3,
+    "verified_rendering": false,
+    "limitation": "Retained exact privacy-reviewed source bytes. PNG integrity defect is not repaired or waived by privacy approval."
+  }
+}

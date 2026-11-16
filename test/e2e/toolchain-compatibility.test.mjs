@@ -207,12 +207,12 @@ function assertCiToolchains(ci, fullE2e, deploySite) {
 
   assert.deepEqual(setupNodeVersions(ciWorkflow), [
     '22.22.3',
-    '22.22.3',
+    '22.23.4',
     '22.22.3',
     '18.20.8',
   ]);
   assert.deepEqual(setupNodeVersions(fullE2eWorkflow), ['22.22.3']);
-  assert.deepEqual(setupNodeVersions(deploySiteWorkflow), ['22.22.3']);
+  assert.deepEqual(setupNodeVersions(deploySiteWorkflow), ['22.23.4']);
 
   const visualCompanionJob = ciWorkflow.jobs['visual-companion-node18'];
   assert.ok(visualCompanionJob, 'Workflow job visual-companion-node18 must exist');
@@ -271,6 +271,23 @@ test('direct dependency engine checks reject a stricter dependency mutation', as
     () => assertToolchainCompatibility(manifest, lockfile),
     /not a subset of typescript >=24\.15\.1/u,
   );
+});
+
+test('site manifest and workflow runtimes satisfy the locked Astro engine', async () => {
+  const manifest = await readJson('site/package.json');
+  const lockfile = await readJson('site/package-lock.json');
+  assertToolchainCompatibility(manifest, lockfile);
+  const ci = parseWorkflow(await readText('.github/workflows/ci.yml'), 'ci.yml');
+  const deploy = parseWorkflow(await readText('.github/workflows/deploy-site.yml'), 'deploy-site.yml');
+  const siteJobs = [ci.jobs.site, ...Object.values(deploy.jobs)];
+  for (const job of siteJobs) {
+    for (const step of job.steps ?? []) {
+      if (step.uses !== 'actions/setup-node@v7') continue;
+      const runtime = step.with['node-version'];
+      assert.ok(rangeIsSubset(runtime, lockfile.packages['node_modules/astro'].engines.node), `Site CI Node ${runtime} must satisfy Astro`);
+      assert.ok(rangeIsSubset(runtime, manifest.engines.node), `Site CI Node ${runtime} must satisfy site engines`);
+    }
+  }
 });
 
 test('direct dependency engine checks reject a broadened root mutation', async () => {

@@ -90,6 +90,17 @@ session instructions or turn optional simplify/docs choices into blockers.
 - Reuse explicit instructions from the current session and execute them; no
   quick confirmation is needed solely because a skill or phase changed.
 
+## Ticket and learning tail
+
+For tracked work, load `_refs/shared/governed-delivery.md`. Product refreshes the
+source and binds current validation evidence before delivery. Complete authorized
+documentation and lesson writes, then verify; synchronize the tracker only within
+the explicit session scope and persist readback before the final branch-ready
+gate. Pending or conflicting sync remains pending. No tracker status is inferred
+from local test success. Behavioral E2E exceptions preserve a reason and suitable
+checks. Verified lessons use `_refs/shared/learning-loop.md`; reviewers/workers
+propose candidates and the authorized owner performs durable capture.
+
 ## Order of execution after the gate
 
 1. (if tests not skipped) `sdcorejs-test` - execute the approved
@@ -125,7 +136,7 @@ session instructions or turn optional simplify/docs choices into blockers.
 11. `_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
    workflow or integration owner is authorized to reconcile the shared durable
    backlog (and unless deferred). Never use it for live progress.
-12. `sdcorejs-explore (memories-readonly)` when durable knowledge surfaced;
+12. `sdcorejs-explore (memories-read)` when durable knowledge surfaced;
     persist only with action-specific memory-write authority.
 13. `sdcorejs-explore (conventions-sync-write-approved)` only when convention
     candidates or rule updates exist AND the project capture policy or explicit

@@ -119,6 +119,14 @@ decision boundary and a validation row together without a newly approved
 artifact is stale authority and blocks with
 `DECISION_COVERAGE_APPROVAL_INVALID`.
 
+Scoped session delegation uses `approval_source: delegated-session-scope`, a
+nonempty `instruction_reference` identifying the actual user authorization,
+`approved_by: null`, and `document_review_performed: false`. These fields are
+protected by the same artifact hash and exact canonical coverage body. The
+consumer must load the actual scoped authority; generating a hash does not
+create permission or prove that the user reviewed a document. Unknown approval
+sources, missing delegation evidence and stale or changed bodies remain invalid.
+
 ## Coverage and references
 
 - Requirements use source `explicit-user | approved-artifact |

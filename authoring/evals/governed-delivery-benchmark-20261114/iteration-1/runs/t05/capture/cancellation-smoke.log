@@ -1,0 +1,9 @@
+{"role":"operator","state":"draft","expected":true,"actual":true}
+{"role":"operator","state":"submitted","expected":false,"actual":false}
+{"role":"administrator","state":"draft","expected":false,"actual":false}
+{"role":"administrator","state":"submitted","expected":false,"actual":false}
+{"role":"viewer","state":"draft","expected":false,"actual":false}
+{"role":null,"state":"draft","expected":false,"actual":false}
+{"role":"operator","state":null,"expected":false,"actual":false}
+{"role":"operator","state":"cancelled","expected":false,"actual":false}
+Passed 8 supplemental predicate checks. These are not persisted application tests or cancellation workflow evidence.

@@ -1,0 +1,7 @@
+Refreshed current record to revision 2. Revision-1 snapshot and original rewrite preserved byte-for-byte; shared image unchanged.
+{
+  "revision": "rev-2",
+  "source_snapshot": ".sdcorejs/documentation/requirements/42/attachments/source-rev-2.json",
+  "preserved_rewrite": ".sdcorejs/documentation/requirements/42/attachments/record-rev-1.md",
+  "approval_status": "draft; conflict unresolved"
+}

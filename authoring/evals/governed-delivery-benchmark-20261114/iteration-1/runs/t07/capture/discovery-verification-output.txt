@@ -1,0 +1,8 @@
+file:///workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target/[eval1]:11
+assert.ok(context.related_artifacts.memories.includes(capture.lesson_path));
+                                    ^
+
+TypeError: Cannot read properties of undefined (reading 'memories')
+    at file:///workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t07/target/[eval1]:11:37
+
+Node.js v24.22.1

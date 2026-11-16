@@ -1,0 +1,51 @@
+{"argv": ["git", "rev-parse", "HEAD"], "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target", "env_overrides": {"GIT_OPTIONAL_LOCKS": "0"}, "started_at": "2026-11-14T09:16:53.252648+00:00", "finished_at": "2026-11-14T09:16:53.257067+00:00", "exit": 0, "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/01-head.stdout.txt", "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/01-head.stderr.txt", "stdout_sha256": "ba97490277e3765f5ded033e374344b61f884d5db6ee163845c3a8456d15af3e", "observed_stdout": "e5d7a58c8ea634dfb05768b676b72e17706154a2\n", "observed_stderr": ""}
+{"argv": ["git", "status", "--porcelain=v1", "--untracked-files=all"], "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target", "env_overrides": {"GIT_OPTIONAL_LOCKS": "0"}, "started_at": "2026-11-14T09:16:53.257244+00:00", "finished_at": "2026-11-14T09:16:53.263151+00:00", "exit": 0, "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/02-status.stdout.txt", "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/02-status.stderr.txt", "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "observed_stdout": "", "observed_stderr": ""}
+{"argv": ["git", "diff", "--no-ext-diff", "--no-textconv", "--name-only"], "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target", "env_overrides": {"GIT_OPTIONAL_LOCKS": "0"}, "started_at": "2026-11-14T09:16:53.263191+00:00", "finished_at": "2026-11-14T09:16:53.266278+00:00", "exit": 0, "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/03-worktree-diff.stdout.txt", "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/03-worktree-diff.stderr.txt", "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "observed_stdout": "", "observed_stderr": ""}
+{"argv": ["git", "diff", "--cached", "--no-ext-diff", "--no-textconv", "--name-only"], "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target", "env_overrides": {"GIT_OPTIONAL_LOCKS": "0"}, "started_at": "2026-11-14T09:16:53.266312+00:00", "finished_at": "2026-11-14T09:16:53.270946+00:00", "exit": 0, "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/04-index-diff.stdout.txt", "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/04-index-diff.stderr.txt", "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "observed_stdout": "", "observed_stderr": ""}
+{"argv": ["git", "diff", "--check"], "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target", "env_overrides": {"GIT_OPTIONAL_LOCKS": "0"}, "started_at": "2026-11-14T09:16:53.271073+00:00", "finished_at": "2026-11-14T09:16:53.274995+00:00", "exit": 0, "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/05-diff-check.stdout.txt", "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/05-diff-check.stderr.txt", "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "observed_stdout": "", "observed_stderr": ""}
+{"argv": ["node", "--version"], "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/target", "env_overrides": {"GIT_OPTIONAL_LOCKS": "0"}, "started_at": "2026-11-14T09:16:53.275027+00:00", "finished_at": "2026-11-14T09:16:53.283885+00:00", "exit": 0, "stdout_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/06-node-version.stdout.txt", "stderr_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t12/capture/06-node-version.stderr.txt", "stdout_sha256": "249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81", "observed_stdout": "v24.22.1\n", "observed_stderr": ""}
+{
+  "associated_HEAD": "e5d7a58c8ea634dfb05768b676b72e17706154a2",
+  "repository_expected": "github.com/benchmark-sdcorejs/order-desk",
+  "repository_observed": "github.com/elsewhere/billing",
+  "repository_matches": false,
+  "change_expected": "quantity-limits",
+  "change_observed": "invoice-rounding",
+  "change_matches": false,
+  "revision_expected": "rev-2",
+  "revision_observed": "rev-1",
+  "revision_matches": false,
+  "evidence_class": "UNIT",
+  "provided_result": "PASS",
+  "provided_run_id": "old-green",
+  "source_revision_binding_present": false,
+  "attachments": [
+    {
+      "path": ".sdcorejs/tickets/example/assets/reference/missing.png",
+      "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+      "role": "reference",
+      "within_target": true,
+      "exists": false,
+      "actual_sha256": null,
+      "hash_verified": false,
+      "visually_inspected": false
+    }
+  ],
+  "summary_exists": false,
+  "convention_policy_exists": false,
+  "target_file_hashes": {
+    "AGENTS.md": "2f9e532e6a305ed9d5c96a318a2e5ea7cf141fcdaa36240cb344d9f7f9bfb5d0",
+    "README.md": "11e3210c55398d28ef64ae53ec66d3cee4e0444b117f626ceb747db7522c33eb",
+    "inputs/note.md": "e64c891e8ac70edae199e2db6d67087484562a5b7a27a7577e08fe6c7cc6478c",
+    "inputs/snapshot.json": "037d1993e409adc567ae175b56ab3cd39c5231c1450124a699c26bbaca4c7175",
+    "inputs/validation.json": "57ece638c83fa02086e4e71bd1ca0c0eb6c67e3f8aac7bdc63d4890fd4cdae40",
+    "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2",
+    "src/order.mjs": "bb5c638bd489b6fe973245f69c35ed98e29432017f9ac9137a21710f5b66f256",
+    "src/server.mjs": "a3f4fb914f5508fc2d833245fc1411b1b4035725eb8ca62f9146c347280be1c9",
+    "test/e2e.test.mjs": "6cf15b0f74a3d8d3d7e3af7b675a493c08370136385364399195f95dc534fd1a",
+    "test/integration.test.mjs": "07a4969505499bf537d5e5c99e8d0e0a09688d8ee3c8a7bb4069d992d6355645",
+    "test/unit.test.mjs": "0ac7b1fd52c152ccb0c36da2d4c88fc78bd836ce362787a97649e0c67a8e1865"
+  },
+  "tests_executed": false,
+  "acceptance_verified": false
+}

@@ -1,0 +1,10 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index 040cef0..9638de3 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,3 +1,5 @@
+ # Order Desk
+ 
+ Manual policy: preserve operator terminology and never log customer secrets.
++
++For category normalization, Explore can find an advisory lesson at [.sdcorejs/memories/node/normalization-category-null-input.md](.sdcorejs/memories/node/normalization-category-null-input.md); its scope and evidence freshness checks are documented there.

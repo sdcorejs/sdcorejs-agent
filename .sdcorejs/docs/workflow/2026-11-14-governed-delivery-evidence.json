@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "artifact_id": "governed-delivery-verification",
+  "artifact_kind": "execution-doc",
+  "change_ref": "governed-delivery-2026-11-14",
+  "contract_id": "governed-delivery-2026-11-14",
+  "owner": "integration-owner",
+  "owner_repository_id": "github.com/sdcorejs/sdcorejs-agent",
+  "commit_policy": "with-change",
+  "redaction_applied": true,
+  "source_spec": ".sdcorejs/specs/workflow/2026-11-14-governed-delivery.md",
+  "source_plan": ".sdcorejs/plans/workflow/2026-11-14-governed-delivery.md",
+  "source_revision": "diff:d99e0bca1795a769cacfadd39064b008b21c9407548d6f7d5af4e1926a887d9b",
+  "base_revision": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "created_at": "2026-11-14T08:34:42.658Z",
+  "authoring_prerequisites": {
+    "result": "PASS",
+    "required": [
+      "skill-installer",
+      "skill-creator",
+      "writing-skills",
+      "test-driven-development",
+      "skillevaluator"
+    ],
+    "evaluator_version": "0.9.0",
+    "sources": {
+      "openai_skills": "49f948faa9258a0c61caceaf225e179651397431",
+      "superpowers": "7.0.2",
+      "nvidia_skill_evaluator": "f5bf6c1f3666699fd145612a2e9162e9721db3f9"
+    }
+  },
+  "verification": {
+    "repository_core": {
+      "passed": 861,
+      "failed": 0,
+      "skipped": 0,
+      "output_sha256": "00ab1cd3a4b9b4888c0830bdfc01119b33aa7a5f92f84042a14234a25cb7c5ce",
+      "command": "node --test test/e2e/content-skill.test.mjs test/e2e/audit-contract-regression.test.mjs test/e2e/audit-template-producers.test.mjs test/e2e/audit-workflow-behavior.test.mjs test/e2e/ai-agent-identity-contract.test.mjs test/e2e/ai-agent-track-contract.test.mjs test/e2e/angular-production-contract.test.mjs test/e2e/architecture-contract.test.mjs test/e2e/artifact-path-convention.test.mjs test/e2e/cli-adapters.test.mjs test/e2e/communication-economy.test.mjs test/e2e/convergence-contract.test.mjs test/e2e/convention-artifact-lifecycle.test.mjs test/e2e/convention-contract.test.mjs test/e2e/convention-review.test.mjs test/e2e/debug-contract.test.mjs test/e2e/decision-coverage-contract.test.mjs test/e2e/design-handoff-contract.test.mjs test/e2e/documentation-layout-contract.test.mjs test/e2e/entrypoint-smoke.test.mjs test/e2e/explore-topology.test.mjs test/e2e/git-closure-contract.test.mjs test/e2e/golden-target-app.test.mjs test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/module-e2e-contract.test.mjs test/e2e/nextjs-production-contract.test.mjs test/e2e/npm-publication-contract.test.mjs test/e2e/parallel-dispatch-protocol.test.mjs test/e2e/parallel-opportunity.test.mjs test/e2e/product-ledger-contract.test.mjs test/e2e/product-task-breakdown-contract.test.mjs test/e2e/product-task-breakdown-cli.test.mjs test/e2e/product-task-breakdown-flow-contract.test.mjs test/e2e/production-readiness-contract.test.mjs test/e2e/mirror-refs-resolution.test.mjs test/e2e/project-context-artifact-lifecycle.test.mjs test/e2e/repair-contract.test.mjs test/e2e/review-contract.test.mjs test/e2e/ship-readiness-contract.test.mjs test/e2e/simplify-protected-contract.test.mjs test/e2e/simplify-skill-contract.test.mjs test/e2e/skill-authoring-contract.test.mjs test/e2e/skill-pack-runner.test.mjs test/e2e/static-visual-composer.test.mjs test/e2e/test-track-contract.test.mjs test/e2e/toolchain-compatibility.test.mjs test/e2e/validation-map-contract.test.mjs test/e2e/visual-companion-runtime.test.mjs test/e2e/uiux-knowledge.test.mjs test/e2e/uiux-review-regression.test.mjs test/e2e/uiux-skill-creator-regression.test.mjs authoring/evals/uiux/evidence.test.mjs test/e2e/visual-offer-policy.test.mjs test/e2e/visual-offer-behavior.test.mjs test/e2e/review-behavior-fixtures.test.mjs test/e2e/review-risk-contract.test.mjs test/e2e/review-test-adequacy.test.mjs test/e2e/review-agent-evaluation.test.mjs test/e2e/project-bootstrap-contract.test.mjs test/e2e/project-bootstrap-filesystem.test.mjs test/e2e/static-analysis-compatibility-contract.test.mjs test/e2e/authoring-prerequisites.test.mjs test/e2e/blueprint-learning-contract.test.mjs test/e2e/documentation-profile.test.mjs test/e2e/ticket-intake-contract.test.mjs test/e2e/governed-delivery-integration.test.mjs",
+      "command_source": "package.json test:e2e:repository before the separate cleanup suite",
+      "cwd": "."
+    },
+    "governed_delivery": {
+      "passed": 85,
+      "failed": 0,
+      "skipped": 0,
+      "output_sha256": "f5fed2e616fd27eb0283f6e3e8aed3e77946e2133c5c79b698f3c08683dfd595",
+      "command": "npm run test:e2e:governed-delivery",
+      "cwd": ".",
+      "note": "Subset of repository_core, not an additional 85 tests."
+    },
+    "mirrors": "PASS",
+    "text_hygiene": "PASS",
+    "executable_reference_syntax": "PASS including in-memory Python compilation",
+    "git_diff_check": "PASS",
+    "evidence_class": "contract and temporary-filesystem fixtures; not live application or tracker E2E"
+  },
+  "independent_audits": [
+    {
+      "auditor": "independent-contract-audit",
+      "round": 3,
+      "result": "no-blocking-findings-within-reviewed-scope",
+      "resolved_findings": [
+        {
+          "id": "C1",
+          "status": "verified-fixed",
+          "evidence": "Wrong change, applied run repository, approved coverage scope and requirement owner are blocked. Rehashed plan evidence does not bypass preconditions or readback; matching evidence succeeds."
+        },
+        {
+          "id": "C2",
+          "status": "verified-fixed",
+          "evidence": "Rehashed incomplete snapshots with asserted completeness or erased blockers are rejected, along with malformed, unsanitized and approved-criterion variants. Ordinary snapshots round trip."
+        },
+        {
+          "id": "C3",
+          "status": "verified-fixed",
+          "evidence": "Wrong-ticket delivery directories and inconsistent receipt/readback/source fields are rejected. Lifecycle rejects missing and symlinked source snapshots; legitimate stored-source controls pass."
+        },
+        {
+          "id": "C4",
+          "status": "verified-fixed",
+          "evidence": "The original missing-PNG reproduction now returns ambiguous with required-artifact-missing and unknown-artifact blockers; the absent asset appears in missing_required_paths. Restoring exact image bytes yields complete and adds the asset to required_paths. Tampered and symlinked assets fail. Ignored uncommitted assets block push. Regression fixtures also cover already-committed source dependencies and deleted assets."
+        }
+      ],
+      "report_sha256": "3554e3e75af1da71fcb4bb7bee042b3ac4d0b6a058d93a49a077ceaa60ac63c5",
+      "verified_source_count": 54
+    },
+    {
+      "auditor": "independent-skill-audit",
+      "round": 3,
+      "result": "no blocking findings within reported findings and related regression scope",
+      "resolved_findings": [
+        {
+          "id": "SKILL-001",
+          "status": "RESOLVED",
+          "reason": "The authority selector and guide flow from round2 remain byte-identical. Active accepted criteria require a current trusted-host approval receipt; proposals, conflicts and observations remain distinct. Relevant profile tests rerun successfully."
+        },
+        {
+          "id": "SKILL-002",
+          "status": "RESOLVED",
+          "reason": "parseCoverage requires selected plus safe nonnegative integer counts with matching sum; invalid/legacy/missing authority produces gap and null counts. The common reducer retains selected for valid inputs and propagates gap/conflict. Repository-link-only modules remain unassessed. Original reproductions and related positive/negative and multi-repository controls pass.",
+          "locations": [
+            "_refs/shared/documentation-layout.mjs:3008",
+            "_refs/shared/documentation-layout.mjs:2998",
+            "_refs/shared/documentation-layout.mjs:1132",
+            "_refs/shared/documentation-layout.md:20"
+          ]
+        }
+      ],
+      "report_sha256": "4980df60d4179a948d323f1521f5e54b9d39659a0cf26bca343b5ef339e74ae3",
+      "verified_source_count": 54
+    }
+  ],
+  "nvidia_quality": {
+    "version": "0.9.0",
+    "inputs": "10 unchanged generated skill files; final independent auditor verified the reuse",
+    "results": [
+      {
+        "skill": "sdcorejs-architecture",
+        "score": 87.8,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 3,
+          "low": 6
+        }
+      },
+      {
+        "skill": "sdcorejs-brainstorming",
+        "score": 83.8,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 5,
+          "low": 4
+        }
+      },
+      {
+        "skill": "sdcorejs-documentation",
+        "score": 88,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 3,
+          "low": 5
+        }
+      },
+      {
+        "skill": "sdcorejs-execute-plan",
+        "score": 83.8,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 5,
+          "low": 4
+        }
+      },
+      {
+        "skill": "sdcorejs-explore",
+        "score": 86.2,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 4,
+          "low": 5
+        }
+      },
+      {
+        "skill": "sdcorejs-plan",
+        "score": 87.5,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 4,
+          "low": 4
+        }
+      },
+      {
+        "skill": "sdcorejs-product",
+        "score": 86.2,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 4,
+          "low": 5
+        }
+      },
+      {
+        "skill": "sdcorejs-ship",
+        "score": 87.5,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 4,
+          "low": 4
+        }
+      },
+      {
+        "skill": "sdcorejs-spec",
+        "score": 88.8,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 4,
+          "low": 3
+        }
+      },
+      {
+        "skill": "sdcorejs-test",
+        "score": 86.8,
+        "grade": "B",
+        "overall_passed": true,
+        "publication_status": "incomplete",
+        "severity_counts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 3,
+          "low": 6
+        }
+      }
+    ],
+    "publication_status": "incomplete"
+  },
+  "limitations": [
+    "The full test:e2e:repository command reached 843 passing core tests before its unchanged cleanup suite failed environment admission. After repairs, the final core command passed 861 tests separately.",
+    "Native cleanup acceptance is BLOCKED in this environment: no selected trusted ext4/APFS fixture and current filesystem is overlayfs; the available runtime Python path also failed native trust admission. No filesystem provisioning or admission weakening was performed.",
+    "Full NVIDIA scanner Tier 1, model-backed rubric/security, Tier 2 and Tier 3 live baseline/with-skill benchmarks were NOT RUN. Scanner dependencies are unavailable. Standalone quality scores do not certify publication.",
+    "No live Jira/GitHub read/write, attachment upload or real application browser/API/CLI/job E2E was performed. No external tracker target was supplied.",
+    "No commit, push, deployment or publication was performed. Raw logs and auditor probe fixtures remain local; this receipt retains sanitized results and content hashes."
+  ],
+  "approved_scope_note": "VALIDATION.md measurements and the project summary were refreshed for repository consistency; there is no claim that generated spec/plan documents received separate human review.",
+  "source_manifest_sha256": "d99e0bca1795a769cacfadd39064b008b21c9407548d6f7d5af4e1926a887d9b",
+  "source_manifest": [
+    {
+      "path": ".sdcorejs/architecture/workflow/2026-11-14-governed-delivery.md",
+      "sha256": "b615df9d3c38da75d9bc0f1088f0b5084ed51fc4cc5aad5bab81fc4fc515e48b"
+    },
+    {
+      "path": ".sdcorejs/plans/workflow/2026-11-14-governed-delivery.md",
+      "sha256": "2ac139e855f7697624a8cba82e090d32ba5f3ad8468b99ae242f49f8d51bd5d8"
+    },
+    {
+      "path": ".sdcorejs/specs/workflow/2026-11-14-governed-delivery.md",
+      "sha256": "854cfe4d31c6e663bc182d7d5a2918262efc9a08c9cb8b45a0d3681bb6ced626"
+    },
+    {
+      "path": ".sdcorejs/summary.md",
+      "sha256": "752a31c7fa1e2228cc925b2f46efa5a4a6f1fda638b395e2d4e7f39362b350f4"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "27744af72252f7c57b5e35525c2fd21e52aef92f651009f9864e7502d844be49"
+    },
+    {
+      "path": "README.md",
+      "sha256": "f7fe325c16f9d26cfe3103e38598fd8f1902bcdd08d6a144b36e750529f13fcd"
+    },
+    {
+      "path": "VALIDATION.md",
+      "sha256": "73620b029ab3ae20d3ce8166cd9e0de26c5e7e95d37861ce63418398a8b4ae10"
+    },
+    {
+      "path": "_refs/documentation/documentation-profile.md",
+      "sha256": "390ae74a9eb8526963c9c8e6f0a9e38c8e6d463fbfbe5d1cabfcaf7d64209698"
+    },
+    {
+      "path": "_refs/documentation/documentation-profile.mjs",
+      "sha256": "0705ba3c0b652a97e631a3de653a30d967f17811923b2cb97b669b8ba6acb3a3"
+    },
+    {
+      "path": "_refs/documentation/write-requirement.md",
+      "sha256": "3028c5ec2d625d8245306d3f198cb69af16d10e119f70c2112d2d95178feac27"
+    },
+    {
+      "path": "_refs/documentation/write-technical-doc.md",
+      "sha256": "c5a100e272bfd976693296f29aa7f12773c422daa8164bcd48313ab9cff178ac"
+    },
+    {
+      "path": "_refs/documentation/write-user-guide.md",
+      "sha256": "0cb9e2c107e141c4a330601c581a5f71f49759dade55ab6dea0787fb1334b1aa"
+    },
+    {
+      "path": "_refs/product/ticket-intake.md",
+      "sha256": "a79443a987ce528e7469905765d5b732598a4d23ef5e4f1328e2e77ad961a699"
+    },
+    {
+      "path": "_refs/product/ticket-intake.mjs",
+      "sha256": "995d4f71be804568ca3f9f5349c46fa0ea57633f9f410230c8f6337e2a786bb1"
+    },
+    {
+      "path": "_refs/product/traceability-report.md",
+      "sha256": "9e1a6a50a0cfb371adaeab90277e3722e34279808d7427ac867f62c3dc6daa41"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.md",
+      "sha256": "8a7afee95ab2bb4419a95d0039da81206f1f5356f26817896b98ccf2d463f8c4"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "f8a4a4029d152da969e9c0d5c97b6a575a6adeb995b601fa6559e4256def7acf"
+    },
+    {
+      "path": "_refs/shared/documentation-layout.md",
+      "sha256": "59aee3b1d13b256dbf3f5aafe6e73d0c035636173177453b70f2e72579a1b0f6"
+    },
+    {
+      "path": "_refs/shared/documentation-layout.mjs",
+      "sha256": "15fb3316ed23e87f53ebebf15b77701de414db190988d56954fb2f65f6607ccb"
+    },
+    {
+      "path": "_refs/shared/explore-contract.mjs",
+      "sha256": "cf9af4a4cb65ccd955aa3320319cee18a447ffbf99028d0c792acd7f301aa857"
+    },
+    {
+      "path": "_refs/shared/finish-gate.md",
+      "sha256": "c53e81b1ae2065cfffba2bfd8c9f012cbea0a19e1b607e91e02610847fb9b5a6"
+    },
+    {
+      "path": "_refs/shared/governed-delivery.md",
+      "sha256": "17b3a3c8622e56bb9ea8f3c4c6b7c37c7d2f5ed6c8877bbabfd5387cc36e4c37"
+    },
+    {
+      "path": "_refs/shared/learning-loop.md",
+      "sha256": "a903e0e2e46ab4436124f7d0172e96e0f6e7a774527c1b2ef9f180bc9d11b875"
+    },
+    {
+      "path": "_refs/shared/learning-loop.mjs",
+      "sha256": "45ff9987abce0f2a306d0936681eea0fa809df0e429010407695ce3208cd1023"
+    },
+    {
+      "path": "_refs/shared/project-blueprint.md",
+      "sha256": "9d3815c5f7a21be4348192e4bd6ccd44499925e9678bd968aca45931eb9bf461"
+    },
+    {
+      "path": "_refs/shared/project-blueprint.mjs",
+      "sha256": "7507658b8e31dc9e2b0f5949f28ce385609ba52a680d1362198dd8ab7ca14ff6"
+    },
+    {
+      "path": "_refs/shared/project-bootstrap.md",
+      "sha256": "773dad5e96aea7a9dcd25350ecc298ca05eb3aff5a45683869eaec25e8380c07"
+    },
+    {
+      "path": "_refs/shared/project-context.md",
+      "sha256": "6a7e7228c4e531fe797601f5c5ec1e35333b73641252bd6a685fc3fba78d69da"
+    },
+    {
+      "path": "_refs/shared/project-context.mjs",
+      "sha256": "09c2f86315486183d0c011495bcd19ce9c35a187d5ad9a02c7c87d7308ef27b0"
+    },
+    {
+      "path": "_refs/shared/system-registry.json",
+      "sha256": "b2bacc600486a1c0d4ac11efaf395aa0f85605aee6036d254dfdb8408851bae8"
+    },
+    {
+      "path": "_refs/shared/system-registry.mjs",
+      "sha256": "0c97ba0580dc548ee049e26eaffa2ea87ae68fdef2376b79293aede0283fb78a"
+    },
+    {
+      "path": "_refs/shared/user-guide-template.md",
+      "sha256": "a31a022c61cc6b15356370b31cce7d425a1032e6cd96f74af60818a88c2dab7b"
+    },
+    {
+      "path": "authoring/README.md",
+      "sha256": "088008fd463a9ded101c502f001c36a9e11329d50cc6aba52c26dbe3b71f59af"
+    },
+    {
+      "path": "authoring/prerequisites.md",
+      "sha256": "19116a51e84e1f8da707a71afb4dbbb0245f36f50c40a0b9eb536ac648c1b127"
+    },
+    {
+      "path": "authoring/tools/check-prerequisites.mjs",
+      "sha256": "b2d334eb1556cc126bdbf3dc69939fe50e0e7f6859c970ae02de90c844cd3a5b"
+    },
+    {
+      "path": "package.json",
+      "sha256": "925f39a7fa49f7f7c286b6af0dac0a5ca431b01a1ec3aa98cbde66dbe7cd83d7"
+    },
+    {
+      "path": "skills/orchestration/documentation.md",
+      "sha256": "55cbb3f373a217d48ee915ba6ae346d109c9494e7efd931bc56996bf5c1ee7a5"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "349f37d9fd6150a2f93fe5979b5376016fcf141441672de82e836084325259de"
+    },
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "sha256": "206f356890ba33c6b50a5293f3a189cbc9423dff124ab16fb1492ef99444129a"
+    },
+    {
+      "path": "skills/shared/sdlc/03-plan.md",
+      "sha256": "886da927b4de0c0b8e2c7e90519c95a8229b9724b81f6630ed375ac09fc3f772"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "b77dcf37113bd38d971ef0913c9e60031ca4c3d68550d8deab787eb8b9b0ef65"
+    },
+    {
+      "path": "skills/shared/sdlc/architecture.md",
+      "sha256": "ae85ca310d136a10b17dfce9ef3b99221af2ffc945e586041959ab352d2eb811"
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "sha256": "5bfdec5138117e0fd14e41785a2b858fb4963500b0427ae9a8fdf5b08847029c"
+    },
+    {
+      "path": "skills/shared/workflow/ship.md",
+      "sha256": "66ad304ddbdcaa28c65d1446e2958639569a85e55e090e43dc2aa7917c93a100"
+    },
+    {
+      "path": "skills/tracks/product/sdcorejs-product.md",
+      "sha256": "63503944339dc1bd45480261252b22a1447619fa4c20ccaa3d428d1739eab7c3"
+    },
+    {
+      "path": "skills/tracks/test/sdcorejs-test.md",
+      "sha256": "e64fafd7df1c29365c50a7b858b033577fb6964c3b9e61c62dd64c7346b23ad1"
+    },
+    {
+      "path": "test/e2e/artifact-path-convention.test.mjs",
+      "sha256": "d837126ad20038064e74949e7e87ae0b8c977573314417a99d2294188ea799a3"
+    },
+    {
+      "path": "test/e2e/authoring-prerequisites.test.mjs",
+      "sha256": "e52bdf62b9349db694363b145986f9a1a527222215f82979604e0cba851af03a"
+    },
+    {
+      "path": "test/e2e/blueprint-learning-contract.test.mjs",
+      "sha256": "16adb514cec7895d18fe301c7b64750b3cde4639cb9a4aa95fa945fc615f07d9"
+    },
+    {
+      "path": "test/e2e/documentation-layout-contract.test.mjs",
+      "sha256": "051e6afa4006ffdf260891bc83bae1a53d066454560d2510c7e16afa7b8c50ba"
+    },
+    {
+      "path": "test/e2e/documentation-profile.test.mjs",
+      "sha256": "771f3362f7672950c1b983652ffc19c9d507c5120a728a963b20d2dc6054ba16"
+    },
+    {
+      "path": "test/e2e/fixtures/ticket-intake-inputs.mjs",
+      "sha256": "1c2babd751fbf4232af6e1e0a1e844e0da5d7716681db9e2a323ea19cf82c056"
+    },
+    {
+      "path": "test/e2e/governed-delivery-integration.test.mjs",
+      "sha256": "435e79b657f3bc5da073e04477a5163e051725a52822106eebec25652ca3c8ad"
+    },
+    {
+      "path": "test/e2e/ticket-intake-contract.test.mjs",
+      "sha256": "97bf323c9f37acf48119ec7e45c63d746bf6e3ff4e42379868c7bdb6849e0781"
+    }
+  ]
+}

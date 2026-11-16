@@ -1,0 +1,38 @@
+[
+  {
+    "path": ".sdcorejs/documentation/requirements/42/42.md",
+    "sha256": "sha256:4ecf7520cea6d96fcf770c5fdf79f07bbb4a7df5e197ddaf55ebc8c10303e4a9",
+    "bytes": 11428,
+    "classification": "required_with_change"
+  },
+  {
+    "path": ".sdcorejs/documentation/requirements/42/attachments/image-review.json",
+    "sha256": "sha256:0e0279c62cb54f0bd23709d31f887ae882652d5e2ad3681d7f4df791cd3d2326",
+    "bytes": 1670,
+    "classification": "required_with_change"
+  },
+  {
+    "path": ".sdcorejs/documentation/requirements/42/attachments/record-rev-1.md",
+    "sha256": "sha256:228d8ce69721f242d16889f4f8b807386177b1593be229cb045d59bdf92a4c10",
+    "bytes": 5519,
+    "classification": "required_with_change"
+  },
+  {
+    "path": ".sdcorejs/documentation/requirements/42/attachments/source-rev-1.json",
+    "sha256": "sha256:d9da419ea85612b5cdc30acf24802218f605891d66d4dc7f8324fff446537937",
+    "bytes": 2810,
+    "classification": "required_with_change"
+  },
+  {
+    "path": ".sdcorejs/documentation/requirements/42/attachments/source-rev-2.json",
+    "sha256": "sha256:adcab63866035138fb6afdf5ca76606ae04cd22b541c0520e714cbe32995c34a",
+    "bytes": 3006,
+    "classification": "required_with_change"
+  },
+  {
+    "path": ".sdcorejs/documentation/requirements/42/images/quantity.png",
+    "sha256": "sha256:6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+    "bytes": 68,
+    "classification": "required_with_change"
+  }
+]

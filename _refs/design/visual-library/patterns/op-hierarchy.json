@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "id": "op-hierarchy",
+  "name": "Hierarchy selection",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "select-hierarchy"
+  ],
+  "data_shapes": [
+    "hierarchical",
+    "permission-matrix"
+  ],
+  "applicability": "Compare or select an explicitly requested hierarchy.",
+  "avoid_when": "This is not backend authorization or an invitation to add permissions.",
+  "variants": [
+    {
+      "id": "tree",
+      "layout": "hierarchy"
+    },
+    {
+      "id": "matrix",
+      "layout": "hierarchy"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "portal-hierarchy",
+    "portal-pages"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": "22.3.4",
+    "verification": "Inspect exact installed component exports and pattern source before implementation."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original HTML composition derived from the cited source structure; domain fixtures are illustrative, not requirements."
+}

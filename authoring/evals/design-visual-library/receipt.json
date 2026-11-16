@@ -1,0 +1,630 @@
+{
+  "schema_version": 1,
+  "status": "implemented-and-independently-reviewed-with-validation-gaps",
+  "date": "2026-11-15",
+  "head": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "baseline": "preserved pre-task dirty tree; not clean main",
+  "candidate_manifest_sha256": "0b0f83b8c137305c879dc332e7437fcea68db5df3461c05a965f43c4d4fff84e",
+  "library_revision": "sha256:c5c7c0cff18d666fab85de9a8fc912aba591edb3a54d7078aceba8786e7330b5",
+  "source_manifest": "source-manifest.json",
+  "inventory": {
+    "operational_families": 8,
+    "website_families": 4,
+    "themes": 6,
+    "paired_examples": 6,
+    "public_skills": 25,
+    "pinned_sources": 25
+  },
+  "verification": {
+    "main_node_tests": {
+      "passed": 889,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native_cleanup": {
+      "passed": 44,
+      "failed": 110,
+      "skipped": 5,
+      "status": "environment-blocked",
+      "reason": "overlayfs; trusted supported ext4/APFS fixture unavailable"
+    },
+    "focused_after_repairs": {
+      "passed": 110,
+      "failed": 0
+    },
+    "browser_assertions": 403,
+    "independent_tests": 81,
+    "independent_adversarial_checks": 71,
+    "separate_chain_stages": {
+      "angular_golden": 1,
+      "nestjs_contracts": 25,
+      "nestjs_golden": 2,
+      "nextjs_golden": 2
+    },
+    "mirror_count": 3,
+    "mirror_runtime_identical": true,
+    "text_hygiene": "passed",
+    "executable_reference_check": "passed",
+    "artifact_closure": "complete"
+  },
+  "review": {
+    "reviewer": "/root/visual_library_independent_review",
+    "first_round_p2_findings": 5,
+    "resolved_on_r2": 5,
+    "new_actionable_findings": 0,
+    "walkthrough_scenarios": 24,
+    "walkthrough_turns": 31,
+    "walkthrough_html_artifacts": 8,
+    "walkthrough_class": "expert fresh-agent walkthrough; expected labels visible; not a controlled A/B trial",
+    "report": "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/audit-r2/REVIEW.md",
+    "binding": "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/audit-r2/source-binding-final.json",
+    "report_sha256": "6d02a15cd707068c8d55c697e32eb0ddb48052cb3a40db67c63a0e886afc3c94",
+    "binding_sha256": "c8c9c1c3718b1f4771874351954f697ff8132e293e0601101eb480ee4b8e140a"
+  },
+  "nvidia": {
+    "version": "0.9.0",
+    "mode": "tier1 --no-llm",
+    "design_static_quality": 87.5,
+    "brainstorming_static_quality": 83.8,
+    "overall": "incomplete/failed",
+    "security": "SkillSpector exit 2; zero scanned files",
+    "schema": "preexisting metadata.author requirement missing",
+    "tier2": "NOT RUN",
+    "tier3": "NOT RUN",
+    "llm_rubric": "NOT RUN"
+  },
+  "new_live_study": {
+    "planned_logical_trials": 48,
+    "actual_provider_calls": 0,
+    "status": "NOT RUN",
+    "model": null,
+    "effort": null,
+    "token_usage": null,
+    "cost": null,
+    "reason": "Dedicated model/effort/spend ceiling run manifest not finalized; old 80-trial authorization/evidence not reused."
+  },
+  "formal_validation_map": {
+    "status": "BLOCKED",
+    "reason": "Existing validator accepts only user-approved-decision-coverage; actual session authority is delegated-session-scope. No explicit document approval is fabricated. AC-008 remains partial."
+  },
+  "audit_tooling_incident": "Auditor accidentally overwrote r1 source-binding-start.json with the initial r2 binding. Original r1 final binding and source snapshots remain untouched; r2 documents the incident and keeps the reconstruction separate. No repository source or pre-task report was affected.",
+  "preservation": {
+    "prior_files_present": 2800,
+    "missing_prior_files": 0,
+    "changed_historical_eval_files": 0,
+    "index_unchanged": true,
+    "checkout_unchanged": true
+  },
+  "limits": [
+    "No publication/branch-ready claim.",
+    "No full assistive-technology certification or real consumer Core version verification.",
+    "Live document controls and existing runtime protocol tests passed; no authenticated browser v2 session was exercised.",
+    "Comparison CLI emits English fixture chrome; localized comparisons use the documented module API."
+  ],
+  "raw_evidence_root": "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl",
+  "commands": [
+    {
+      "receipt": "angular-golden.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:angular:golden"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:31:02.914098+00:00",
+      "finished_at_utc": "2026-11-15T10:31:42.433961+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "approval-graph.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/snapshot-contracts.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:04:20.739583+00:00",
+      "finished_at_utc": "2026-11-15T10:04:20.847957+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "browser-1.command.json",
+      "argv": [
+        "node",
+        "test/e2e/design-visual-browser.mjs",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/browser-1"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:19:14.187186+00:00",
+      "finished_at_utc": "2026-11-15T10:19:15.637686+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "browser-2.command.json",
+      "argv": [
+        "node",
+        "test/e2e/design-visual-browser.mjs",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/browser-2"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:21:55.867853+00:00",
+      "finished_at_utc": "2026-11-15T10:22:00.595385+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "browser-3.command.json",
+      "argv": [
+        "node",
+        "test/e2e/design-visual-browser.mjs",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/browser-3"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:23:06.247126+00:00",
+      "finished_at_utc": "2026-11-15T10:23:11.040205+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "browser-4.command.json",
+      "argv": [
+        "node",
+        "test/e2e/design-visual-browser.mjs",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/browser-4"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:39:44.131173+00:00",
+      "finished_at_utc": "2026-11-15T10:39:50.219878+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "communication-1.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "report:communication-economy"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:25:15.599385+00:00",
+      "finished_at_utc": "2026-11-15T10:25:15.956131+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "data-intake.command.json",
+      "argv": [
+        "python3",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/build-data.py"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:07:30.513310+00:00",
+      "finished_at_utc": "2026-11-15T10:07:30.549617+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "deterministic-1.command.json",
+      "argv": [
+        "node",
+        "authoring/evals/run-deterministic.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:25:15.585956+00:00",
+      "finished_at_utc": "2026-11-15T10:25:15.786179+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "executable-refs-1.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "check:executable-references"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:26:14.481380+00:00",
+      "finished_at_utc": "2026-11-15T10:26:15.406508+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "executable-refs-2.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "check:executable-references"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:41:27.999245+00:00",
+      "finished_at_utc": "2026-11-15T10:41:29.326740+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "execution-contract-1.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/finish-contract.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:29:16.229362+00:00",
+      "finished_at_utc": "2026-11-15T10:29:16.305399+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "execution-contract-2.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/finish-contract.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:29:22.251738+00:00",
+      "finished_at_utc": "2026-11-15T10:29:22.363203+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "execution-contract-3.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/finish-contract.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:29:32.678151+00:00",
+      "finished_at_utc": "2026-11-15T10:29:32.770262+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "execution-contract-4.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/finish-contract.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:29:44.146177+00:00",
+      "finished_at_utc": "2026-11-15T10:29:44.244985+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "execution-contract-5.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/finish-contract.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:29:52.970404+00:00",
+      "finished_at_utc": "2026-11-15T10:29:53.070715+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "execution-contract-6.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/finish-contract.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:30:01.806395+00:00",
+      "finished_at_utc": "2026-11-15T10:30:02.395474+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "focused-final-1.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs",
+        "test/e2e/design-handoff-contract.test.mjs",
+        "test/e2e/static-visual-composer.test.mjs",
+        "test/e2e/visual-offer-policy.test.mjs",
+        "test/e2e/visual-offer-behavior.test.mjs",
+        "test/e2e/uiux-knowledge.test.mjs",
+        "test/e2e/skill-authoring-contract.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:24:35.680744+00:00",
+      "finished_at_utc": "2026-11-15T10:24:39.503052+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "focused-final-2.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs",
+        "test/e2e/design-handoff-contract.test.mjs",
+        "test/e2e/static-visual-composer.test.mjs",
+        "test/e2e/visual-companion-runtime.test.mjs",
+        "test/e2e/visual-offer-policy.test.mjs",
+        "test/e2e/visual-offer-behavior.test.mjs",
+        "test/e2e/skill-pack-runner.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:40:28.685305+00:00",
+      "finished_at_utc": "2026-11-15T10:40:33.467046+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "green-audit-repairs.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs",
+        "test/e2e/design-handoff-contract.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:38:33.585312+00:00",
+      "finished_at_utc": "2026-11-15T10:38:34.011959+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "green-handoff-locale.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs",
+        "test/e2e/design-handoff-contract.test.mjs",
+        "test/e2e/visual-companion-runtime.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:17:19.651053+00:00",
+      "finished_at_utc": "2026-11-15T10:17:24.115119+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "green-library-1.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs",
+        "test/e2e/static-visual-composer.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:15:54.395299+00:00",
+      "finished_at_utc": "2026-11-15T10:15:54.653236+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "mirror-check-1.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "check:skills"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:30:18.440915+00:00",
+      "finished_at_utc": "2026-11-15T10:30:20.824999+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "mirror-check-2.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "check:skills"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:41:27.982377+00:00",
+      "finished_at_utc": "2026-11-15T10:41:29.861233+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "mirror-sync-1.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "sync:skills"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:24:58.981285+00:00",
+      "finished_at_utc": "2026-11-15T10:25:00.237645+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "mirror-sync-2.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "sync:skills"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:27:29.852485+00:00",
+      "finished_at_utc": "2026-11-15T10:27:30.943803+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "mirror-sync-3.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "sync:skills"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:40:12.858459+00:00",
+      "finished_at_utc": "2026-11-15T10:40:14.175356+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "nestjs-contracts.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:nestjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:31:02.910190+00:00",
+      "finished_at_utc": "2026-11-15T10:31:04.792204+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "nestjs-golden.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:nestjs:golden"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:31:02.922934+00:00",
+      "finished_at_utc": "2026-11-15T10:31:43.931520+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "nextjs-golden.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:nextjs:golden"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:31:02.929249+00:00",
+      "finished_at_utc": "2026-11-15T10:32:00.024503+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "npm-test-1.command.json",
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:26:02.399963+00:00",
+      "finished_at_utc": "2026-11-15T10:26:15.316091+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "npm-test-2.command.json",
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:30:18.456963+00:00",
+      "finished_at_utc": "2026-11-15T10:30:33.309541+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "npm-test-3.command.json",
+      "argv": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:41:27.967307+00:00",
+      "finished_at_utc": "2026-11-15T10:41:42.266339+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "pinned-intake.command.json",
+      "argv": [
+        "node",
+        "authoring/tools/prepare-design-sources.mjs",
+        "--cache-dir",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/source-cache"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:18:31.663195+00:00",
+      "finished_at_utc": "2026-11-15T10:18:31.720196+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "red-audit-repairs.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:37:21.732452+00:00",
+      "finished_at_utc": "2026-11-15T10:37:22.121081+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "red-handoff-locale.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:16:38.907875+00:00",
+      "finished_at_utc": "2026-11-15T10:16:39.192751+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "red-library.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:05:19.330139+00:00",
+      "finished_at_utc": "2026-11-15T10:05:19.494025+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "red-task-fit.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/design-visual-library.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:22:44.410000+00:00",
+      "finished_at_utc": "2026-11-15T10:22:44.689525+00:00",
+      "exit_code": 1
+    },
+    {
+      "receipt": "scenario-intake.command.json",
+      "argv": [
+        "node",
+        "scripts/eval-visual-offer.mjs",
+        "--scenarios",
+        "authoring/evals/design-visual-library/scenarios.json"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:26:01.958841+00:00",
+      "finished_at_utc": "2026-11-15T10:26:02.018419+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "text-hygiene-1.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "check:text-hygiene"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:25:15.590310+00:00",
+      "finished_at_utc": "2026-11-15T10:25:16.802835+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "text-hygiene-2.command.json",
+      "argv": [
+        "npm",
+        "run",
+        "check:text-hygiene"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:41:27.957846+00:00",
+      "finished_at_utc": "2026-11-15T10:41:29.348902+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "track-affected-1.command.json",
+      "argv": [
+        "node",
+        "--test",
+        "test/e2e/angular-production-contract.test.mjs",
+        "test/e2e/nextjs-production-contract.test.mjs",
+        "test/e2e/mirror-refs-resolution.test.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:30:18.458316+00:00",
+      "finished_at_utc": "2026-11-15T10:30:19.397718+00:00",
+      "exit_code": 0
+    },
+    {
+      "receipt": "validation-map.command.json",
+      "argv": [
+        "node",
+        "/workspace/work/sdcorejs-design-implementation-20261115-lisa43vl/validation-map.mjs"
+      ],
+      "cwd": "/workspace/sdcorejs-agent",
+      "started_at_utc": "2026-11-15T10:43:05.825288+00:00",
+      "finished_at_utc": "2026-11-15T10:43:05.912259+00:00",
+      "exit_code": 1
+    }
+  ]
+}

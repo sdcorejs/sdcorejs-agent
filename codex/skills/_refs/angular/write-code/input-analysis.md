@@ -1,5 +1,12 @@
 # Angular Input Analysis and UI Reuse Preflight
 
+If the Design handoff includes a visual-library selection, validate its current
+screen digest and editable-source hash before using the pattern/variant. Treat
+catalog component mappings as candidates. Inspect installed Core exports and
+`modules/pattern` source, not just `published-docs`; resolve source-version
+conflicts through the actual project. Preserve tokens, ownership and approved
+business scope. HTML preview interactions do not supply application behavior.
+
 Loaded by `sdcorejs-angular` before implementing Angular UI work when the
 request includes visual input, PRD/requirements input, user stories,
 acceptance criteria, mock API/API-contract input, or any UI-affecting feature

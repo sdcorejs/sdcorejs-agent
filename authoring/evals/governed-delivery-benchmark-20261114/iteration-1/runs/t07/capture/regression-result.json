@@ -1,0 +1,25 @@
+{
+  "command": "node --test test/category.test.mjs",
+  "cwd": ".",
+  "exit_code": 0,
+  "started_at": "2026-11-14T09:12:26.766237+00:00",
+  "finished_at": "2026-11-14T09:12:27.134974+00:00",
+  "source_revision": "11b80db173ba3a0bfd063f5318f24a7ac73ad97a",
+  "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+  "node_version": "v24.22.1",
+  "source_fingerprints": {
+    "src/category.mjs": "4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5",
+    "test/category.test.mjs": "40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537",
+    "inputs/fix.diff": "6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9",
+    "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2",
+    ".sdcorejs/memories/workflow/old-payment-advice.md": "ac803e9d539e974826054ba196a535381380d1c5b731a0b973906c493562ac58",
+    "AGENTS.md": "2f9e532e6a305ed9d5c96a318a2e5ea7cf141fcdaa36240cb344d9f7f9bfb5d0"
+  },
+  "output_path": "regression-output.txt",
+  "output_sha256": "222ef4dcc805efa3b1e43fc4307b8b007d3ef663de50878e015445bda6019ccc",
+  "screening": {
+    "sensitive_patterns_found": false,
+    "review": "Synthetic case names and runner statistics only"
+  },
+  "post_run_source_unchanged": true
+}

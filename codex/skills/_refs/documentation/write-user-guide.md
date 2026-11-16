@@ -16,6 +16,8 @@ Internal reference loaded by `sdcorejs-documentation` in `write-user-guide`
 mode. This file is not a dispatchable skill.
 Load `_refs/shared/documentation-layout.md` before resolving, discovering,
 migrating, aggregating, exporting, or placing guide assets.
+Load `_refs/documentation/documentation-profile.md` before choosing an outline
+or updating content; call its pure profile and safe-update helpers.
 
 ## Purpose
 
@@ -32,8 +34,10 @@ Generate and maintain **evergreen end-user feature references** for generated SD
 Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go
 to `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md`; their
 assets stay in the same documentation unit. The aggregate goes to
-`<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`. Both are generated
-artifacts and are idempotently overwritten.
+`<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`. These storage units
+remain stable while their content can follow module, entity, feature, task,
+role, state or journey scope. Update only owned managed blocks or an explicitly
+owned generated document; retain manual content and reject conflicting edits.
 
 ## Modes
 
@@ -84,6 +88,20 @@ repository is missing, ambiguous, unavailable, or unwritable, block; never
 write an editable module guide into the portal as fallback. Then probe the
 semantic owner project for routes, permissions, entity fields, and screens.
 
+Determine the reader and actual tasks first. Harvest only relevant evidence:
+module boundaries, features, entities, tasks, roles, state transitions, journey
+steps or API contracts. Attach inspected source references to each fact and call
+`selectDocumentationProfile({ audience, requested_scope, evidence })` from
+`_refs/documentation/documentation-profile.mjs`. A blocked selection is an
+evidence gap, not permission to assume CRUD. If the selected audience is
+technical, use `write-technical-doc` for that requested output instead.
+
+The framework-specific probes below are optional discovery examples when those
+surfaces exist. A workflow or role guide does not need entity columns or CRUD
+screens; an API-only feature does not need a UI capture. Inherited controller
+methods require inspected base-controller and registration evidence before
+being documented as exposed endpoints.
+
 **Angular — routes & permissions:**
 ```bash
 # Permission data on routes
@@ -130,7 +148,7 @@ artifact.read path match: <fe>/src/libs/<module>/features/<entity>/pages/*/
 rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<module>
 ```
 
-### 3. Render the per-module guide
+### 3. Render the selected profile in the existing guide unit
 
 Resolve the canonical exact entry first. For a new write, write
 `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md` from the
@@ -153,27 +171,48 @@ Fill the YAML frontmatter:
 - `routes` — list of `{ path, screen, permission }` from the harvest
 - `permissions` — flat list of all permission codes found
 - `entities` — list of `{ name, fields[] }` from entity harvest
-- `screens` — list of screen types detected: `[list, detail, create, update]`
+- `screens` — only actual observed screen types; use `[]` when no UI applies
+- `documentation_profile_version: 1`, `documentation_scope` and
+  `documentation_audience` — the selected profile; these never change storage
+  nesting or semantic ownership
 - `spec_refs` — path(s) to the relevant spec selected by contract, change,
   requirement, module, or explicit user reference
 - `prd_refs` — path(s) to `<target>/.sdcorejs/prd/<feature>.md` if they exist (leave `[]` if absent)
-- `coverage` — filled by Mode 4 below; initialize to `{ total: 0, met: 0, partial: 0, missing: 0 }`
+- `coverage` — filled by Mode 4; initialize with `status: gap` and null counts
+  until the current approved AC selector succeeds
 
-Fill the body sections using the harvested data:
-1. **Overview** — plain-language description of what the module does for the user.
-2. **Screens and tasks** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include `![<screen>](images/<screen>.png)` only when current `ui_capture_context` verifies that same-unit file during this run; file existence alone is insufficient. Otherwise omit the image markdown and rely on the screenshot checklist.
-3. **Permission table** — table of all permission codes with their action and typical role.
-4. **Data reference** — table of entity fields (name / type / required / constraints) from the `@Column` / Zod harvest.
-5. **Special actions** — workflow transitions, bulk actions, custom side-effects (omit section if none found).
-6. **Core UI components used** (**angular only**) — table of every `@sdcorejs/angular` component/service/directive the module actually imports/uses, each with a one-line feature-specific purpose (the same table the orchestrator showed the user after generating). Harvest from the templates/components (`sd-*` tags, `inject(Sd*Service)`, `*sd*` directives). Omit this section for nestjs/nextjs.
-7. **Coverage vs requirements** — filled by Mode 4 (see below).
-8. **Illustration images — capture checklist** — `- [ ] images/<screen>.png`
-   for every detected screen, plus the required `ui-evidence-capture` scenario
-   inputs.
+Render the returned `sections` using the adaptive template and inspected facts:
 
-**Idempotent after approval:** this file is a generated artifact — after the
-gate has approved creation/update, overwrite it. Do not append to an existing
-file.
+1. **Overview** states the reader's goal and supported scope in plain language.
+2. **Scope-specific sections** follow the selected profile: capabilities for a
+   module, reader-relevant records/fields for an entity, behavior for a feature,
+   steps/outcome for a task, responsibilities/allowed tasks for a role,
+   transitions for state scope, or ordered steps/handoffs for a journey.
+   Include prerequisites, results, recovery and permission details where
+   evidenced. Do not force screen-oriented or CRUD headings on other scopes.
+3. **Access and permissions** include only observed task restrictions and
+   roles. **Data fields** include only values that help the reader perform the
+   task; database schema inventories belong in technical docs.
+4. **Coverage vs requirements** is filled by Mode 4, using the actual rendered
+   section titles.
+5. **Illustration images — capture checklist** lists only required observed UI
+   states and their `ui-evidence-capture` inputs. Include
+   `![<screen>](images/<screen>.png)` only when current `ui_capture_context`
+   verifies that same-unit file during this run. File existence is insufficient.
+   Omit image links for missing/stale evidence and omit this section when no UI
+   evidence is needed.
+
+Keep framework/component/service/directive inventories, including Angular Core
+UI usage, in technical documentation only.
+
+Before writing, call `planDocumentationUpdate` with the original content and
+its hash. Approved updates target existing managed blocks with previous body
+hashes or a whole document with matching explicit generated ownership. For an
+existing unmarked/human guide, return a scoped patch/proposal that preserves its
+text. Malformed markers, stale content hashes and manual edits within owned
+content conflict; never replace the whole file to resolve them. Update metadata
+only within its established ownership or as an explicit narrow patch, preserving
+human frontmatter. Compare current bytes again immediately before writing.
 
 ### 4. Run Mode 4 — Coverage (always)
 
@@ -183,6 +222,8 @@ After rendering the body sections, immediately run **Mode 4** to fill the `## Co
 
 Documentation owns the guide and image placement; it does not invent a browser
 runner or certify screenshots by file existence alone.
+If the selected scope needs no UI illustration, record this step as not
+applicable and do not probe or invent a browser environment.
 
 1. Inspect the target project's existing browser runner, base URL key
    references, persona catalog, and screenshot fixture.
@@ -206,7 +247,7 @@ runner or certify screenshots by file existence alone.
    visuals retain generator provenance and must never be presented as observed
    application state.
 
-Keep the `## Illustration images` checklist. For each missing, blocked, or stale
+When UI evidence is required, keep the `## Illustration images` checklist. For each missing, blocked, or stale
 image, record its requested state and blocker without a broken markdown link.
 Login pages, access-denied pages, blank/error states, unverified manual files,
 and diagnostic failure screenshots cannot satisfy the checklist.
@@ -221,20 +262,32 @@ Failure captures, traces, videos, and auth state remain local-only.
 
 ### Purpose
 
-Map every requirement from the approved spec / PRD to either ✅ documented & implemented, ⚠️ partial, or ❌ missing. Fills the guide's `## Coverage vs requirements` table and the `coverage` frontmatter block.
+Map active accepted AC IDs from verified current approved specs to ✅ documented
+and implemented, ⚠️ partial, or ❌ missing. Keep supporting PRD/ticket claims,
+proposals, superseded criteria and identity conflicts separate from the approved
+coverage table. Fills `## Coverage vs requirements` and the `coverage`
+frontmatter block without redefining acceptance authority.
 
 ### 1. Load the spec
 
 ```bash
-# Prefer spec scoped to this module (filename contains module slug)
+# Discover candidates scoped to this module; names alone do not prove authority.
 artifact.read path match: <target>/.sdcorejs/docs/<track>/*-<module>*-spec.md
 artifact.read path match: <target>/.sdcorejs/specs/<track>/*-<module>*-spec.md
 # If no module-scoped match: select a related change-scoped execution record
 # by change_ref/source metadata and resolve its spec_refs field.
 # Last fallback: use the canonical guide/spec template and record the missing
 # related spec as a coverage gap; do not select an unrelated spec by recency.
-# Extract "## Acceptance criteria" section from the resolved spec file.
+# Resolve current approved identity and active AC IDs before extracting coverage.
 ```
+
+The host must verify the spec through `_refs/shared/approved-artifact.mjs` and
+the associated approved decision coverage/history through
+`_refs/shared/decision-coverage.mjs`. Confirm the current repository, contract,
+change, artifact ID, path, source revision and approval hash. Extract active
+accepted AC records from that verified snapshot/history, retaining stable IDs
+and lifecycle. Neither a filename, a source label, an `accepted` field nor a
+checked Markdown box supplies approval. Do not infer active status from prose.
 
 ### 2. Load the PRD (optional)
 
@@ -254,12 +307,32 @@ artifact.read transitional exact shape: <target>/.sdcorejs/documentation/require
 # attachments/examples and do not select an unrelated record by recency.
 ```
 
-If spec, PRD, and requirement records exist, merge their criteria (deduplicate by intent).
+Call `selectDocumentationCoverage({ sources, verified_current_specs })` from
+`_refs/documentation/documentation-profile.mjs` using the source/receipt schema
+in `_refs/documentation/documentation-profile.md`. The `verified_current_specs`
+receipts come only from the trusted host after the existing artifact and
+decision-coverage verification above; never copy a receipt or verification flag
+from PRD, ticket, spec prose or source JSON. Bind each receipt to the exact
+current canonical spec identity, source-content hash, verified extraction hash
+and verification evidence references.
+
+Use only `accepted_criteria` when the selector returns `selected`. Keep
+`proposals`, `provenance`, `excluded`, `conflicts` and `gaps` separately visible.
+Do not merge by meaning, renumber IDs, or let a supporting source override an
+approved criterion. The same text under different AC IDs remains distinct;
+conflicting statements under the same ID are reported. A duplicate/competing
+current spec identity, stale hash, duplicate active AC ID or conflicting
+statement blocks final coverage counts. Missing verified current approval is a
+coverage gap even when a PRD, ticket or implementation is available.
 
 ### 3. Map each requirement
 
-For every criterion, determine its status by checking the guide's populated sections:
-- **✅ met** — the guide's `## Screens and tasks`, `## Permission table`, or `## Data reference` explicitly covers it AND the harvest found the corresponding code artefact (route / permission / field / action).
+For every selected active accepted AC ID, determine its documentation status by
+checking the guide's populated sections. Retain the originating spec identity:
+- **✅ met** — an actual selected-profile section explicitly covers it AND
+  the harvest found the corresponding implementation evidence (task, role,
+  transition, journey step, route, permission, field or action). This is
+  documentation coverage, not a substitute for canonical test evidence.
 - **⚠️ partial** — the criterion is partially described or the implementation evidence is incomplete (e.g. field exists but no validation documented, or screen exists but permission guard missing).
 - **❌ missing** — no evidence in code or guide; include a short gap note.
 
@@ -267,34 +340,53 @@ For every criterion, determine its status by checking the guide's populated sect
 
 ```markdown
 ## Coverage vs requirements
-| # | Requirement (spec/PRD) | Status | Documented in section |
-|---|---|---|---|
-| 1 | <criterion text> | ✅ met | Screens and tasks |
-| 2 | <criterion text> | ⚠️ partial | <gap note> |
-| 3 | <criterion text> | ❌ missing | — |
+| AC ID | Approved criterion | Current spec identity | Status | Documented in section |
+|---|---|---|---|---|
+| AC-001 | <accepted criterion text> | <artifact ID and approval hash> | ✅ met | <actual selected-profile section> |
+| AC-002 | <accepted criterion text> | <artifact ID and approval hash> | ⚠️ partial | <gap note> |
+| AC-003 | <accepted criterion text> | <artifact ID and approval hash> | ❌ missing | — |
 ```
+
+Render supporting-source provenance and proposals outside this table, with
+their source ID/path, claimed status and lifecycle. Surface conflicts rather
+than choosing a version silently. These sections do not contribute to counts.
 
 ### 5. Update frontmatter counts
 
 ```yaml
 coverage:
-  total: <N>
+  status: selected
+  total: <selector coverage_total>
   met: <count of ✅>
   partial: <count of ⚠️>
   missing: <count of ❌>
 ```
 
-### 6. No spec or PRD
+Only publish these counts for `status: selected`; verify that the three status
+counts sum to `coverage_total`. Otherwise record the selector's `gap` or
+`conflict` status, use null counts and preserve the unresolved reasons. An
+aggregate must retain those gaps/conflicts rather than turn nulls into zero or
+claim complete coverage.
 
-If no spec or PRD file is found (legacy project or early-stage feature), write:
+### 6. No verified current approved spec
+
+If approval/current identity is missing or unverified, retain code observations
+and PRD/ticket proposals in separate sections. Do not label them approved or
+met. For example:
 ```markdown
 ## Coverage vs requirements
-> No spec/PRD was found, so the coverage table is filled best-effort from code.
+> Coverage gap: no verified current approved spec is available. Approved
+> requirement coverage is not assessed.
 
-| # | Feature detected from code | Status | Note |
-|---|---|---|---|
-| 1 | <harvested route / permission / screen> | ✅ met | from code |
+## Observed behavior
+| Source | Observed behavior | Evidence |
+|---|---|---|
+| <inspected path> | <task / transition / route / permission / screen> | <code evidence; not an approved AC> |
 ```
+
+Use `coverage: { status: gap, total: null, met: null, partial: null,
+missing: null }` until the existing spec/decision-coverage workflow provides
+verified current approval. Documentation must not create that approval itself.
 
 ---
 
@@ -303,7 +395,11 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 ### MUST DO
 - Render from `_refs/shared/user-guide-template.md` — do NOT hard-code the template inline.
 - **Creation approval required** — when the canonical-first documentation gate returns `missing` for `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md`, create it only after `_refs/documentation/gate.md` returns `user_guide=create` or the current request explicitly asks for it.
-- **Idempotent overwrite after approval** — once creation/update is approved, `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md` is a generated artifact; overwrite it, never append. A detected legacy guide must be migrated through the authorized complete preflight, not duplicated.
+- **Safe repeatable updates** — use the selected profile and
+  `planDocumentationUpdate`; preserve human content and fail on ownership/hash
+  or marker conflicts. Existing unmarked docs default to a patch/proposal.
+  A detected legacy guide must be migrated through the authorized complete
+  preflight, not duplicated.
 - Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo). **Guard:** if `TARGET_ROOT` basename matches `sdcorejs-agent`, or the directory contains no `src/`, `frontend/`, or `package.json` at its root (no evidence of an app project), **abort and ask** the user to provide the target project path explicitly — do not write user guides into the agent repo.
 - **Runtime-localized** — section headings and prose use the user's session language; field names, permission codes, and route paths stay English.
 - Emit the capture checklist and request `ui-evidence-capture` only for required
@@ -325,12 +421,16 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
   that exact action.
 - Write any artifact into the `sdcorejs-agent` repo (the agent repo holds skills, not project content).
 - Invent routes, permissions, or field names not found in the harvest — prefer "<localized text>" over fabrication.
+- Force CRUD/screens onto a role, task, state, journey or API-only scope, or
+  include framework inventories in an end-user guide.
 
 ## Related
 
 - `_refs/shared/user-guide-template.md` — per-module + aggregate templates + pandoc export command
 - `_refs/shared/documentation-layout.md` — Layout v2 path, migration,
   aggregate-link, export, and containment contract
+- `_refs/documentation/documentation-profile.md` — audience/scope selection,
+  generated ownership and preservation of manual edits
 - `sdcorejs-explore` — discovery engine used by Mode 3 (legacy reverse-engineer)
 - `_refs/orchestration/tail/auto-docs.md` — change-scoped execution-record tail
   (distinct from evergreen guides)
@@ -404,7 +504,10 @@ Build `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the **aggre
    `../../_shared/diagrams/system-flow.png` becomes
    `_shared/diagrams/system-flow.png`. Do not rewrite external URLs, anchors,
    absolute paths, fenced code, or inline code.
-5. **`## Coverage vs requirements summary`** — global summary table; sum each module's `coverage` frontmatter counts:
+5. **`## Coverage vs requirements summary`** — sum each module's counts only
+   when every source records selected approved coverage. Propagate any gap or
+   conflict with null totals and its reasons; never treat missing approval as
+   zero requirements satisfied:
 
 ```markdown
 ## Coverage vs requirements summary
@@ -416,7 +519,11 @@ Build `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the **aggre
 
 Update the aggregate frontmatter `coverage` block with the summed totals.
 
-**Idempotent:** overwrite `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` unconditionally — never append to an existing file.
+Pass the rendered aggregate through `planDocumentationUpdate`. A complete
+replacement of an existing aggregate requires a matching explicit generated
+ownership receipt. A manual edit invalidates that receipt; preserve the
+existing aggregate and report the conflict/proposal. Creation and repeat builds
+must retain producer hashes. Never append or overwrite unconditionally.
 
 ### 4. Export to DOCX / PDF
 
@@ -487,9 +594,10 @@ Output:  module list + per-module facts used as the harvest basis for step 3
 
 If the `sdcorejs-explore` output lacks a `Documentation harvest` section, rerun
 `sdcorejs-explore (code-map mode)` and explicitly request the documentation
-harvest add-on. If a module still has unresolved route, permission, entity, or
-screen data after that harvest, keep the module and mark missing values as
-`unknown - fill manually`; do not probe from this reference.
+harvest add-on. If facts needed by a selected scope are still unresolved after
+that harvest, keep the unit and mark those values as `unknown - fill manually`;
+do not probe from this reference or treat absent optional UI/entity data as a
+mandatory gap.
 
 ### 3. Render per-module guides
 
@@ -498,13 +606,19 @@ For **each module** discovered by `sdcorejs-explore`, render
 per-module template in `_refs/shared/user-guide-template.md`, best-effort from
 the harvested facts.
 
-Fill frontmatter and all body sections exactly as in Mode 1, Step 3 (including the angular-only Core UI components table), using only data found in the harvest — **do NOT invent** routes, permissions, field names, or Core UI components not present in the code. Where a value could not be resolved, write `<localized text>` rather than fabricating.
+Select audience and scope from the harvested evidence, then fill frontmatter
+and applicable profile sections as in Mode 1, Step 3. Use the same safe-update
+contract for existing guides. Do not invent routes, permissions, fields, roles
+or transitions. Keep framework inventories in technical docs. A value needed
+for the selected scope but unresolved from evidence remains an explicit gap.
 
-**FLAG unresolved modules explicitly.** For every module where routes and/or permission codes could NOT be resolved from the harvest, add a prominent notice at the top of that module's guide:
+**FLAG unresolved evidence explicitly.** When facts required by the selected
+scope could not be resolved from the harvest, add a prominent notice. The lack
+of routes/screens is not a gap when the selected behavior has no UI:
 
 ```markdown
-> ⚠️ **Harvest incomplete** — routes and/or permission codes could not be resolved for this
-> module (the project may not follow SDCoreJS conventions). The sections below are best-effort;
+> ⚠️ **Harvest incomplete** — some facts needed for the selected documentation scope
+> could not be resolved. The sections below are best-effort;
 > a developer should verify and fill in the missing details manually.
 ```
 
@@ -514,12 +628,17 @@ Do not silently omit such modules — include them with the flag so the gap is v
 
 After all per-module guides are written, immediately run **Mode 2** to assemble `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the full set of per-module guides. Follow all Mode 2 steps (assemble, frontmatter, coverage summary, pandoc export offer).
 
-### 5. Coverage section — "reverse-engineered" note
+### 5. Coverage section — legacy authority gap
 
-Because Mode 3 targets legacy projects, there is typically no approved spec or PRD. In the `## Coverage vs requirements` section of each module guide, apply the **Mode 4 "No spec or PRD"** path (see Mode 4 §6) and add this note at the top of the table:
+Legacy discovery often lacks a verified current approved spec. Apply Mode 4's
+selector; when approval is unavailable, use its explicit gap outcome and keep
+code observations outside approved requirement coverage:
 
 ```markdown
-> Reverse-engineered — no spec/PRD. Coverage is best-effort from code harvest.
+> Reverse-engineered observations are available. Approved requirement coverage
+> is not assessed without a verified current approved spec.
 ```
 
-**Exception:** if `<target>/.sdcorejs/prd/<feature>.md` exists for a given module, load that PRD and apply the full **Mode 4** comparison (map each criterion, render status ✅ / ⚠️ / ❌, update frontmatter `coverage` counts). In that case omit the "no spec/PRD" note and use the standard PRD-coverage table instead.
+A PRD or ticket alone does not remove this gap. Load it as supporting provenance
+or proposals. Only a verified current approved spec and active accepted AC IDs
+permit the approved coverage table and counts.

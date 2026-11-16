@@ -1,0 +1,3185 @@
+{
+  "version": "0.9.0",
+  "target_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test",
+  "overall_passed": true,
+  "overall_status": "passed",
+  "incomplete_scans": [],
+  "total_validators": 13,
+  "total_skipped": 0,
+  "total_advisory_skipped": 0,
+  "total_errors": 0,
+  "total_warnings": 31,
+  "severity_counts": {
+    "critical": 0,
+    "high": 0,
+    "medium": 8,
+    "low": 10
+  },
+  "finding_counts": {
+    "raw_occurrences": 27,
+    "distinct_occurrences": 27,
+    "unique_findings": 27,
+    "duplicates_removed": 0,
+    "occurrences_grouped": 0,
+    "raw_by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 8,
+      "low": 10,
+      "info": 9
+    },
+    "unique_by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 8,
+      "low": 10,
+      "info": 9
+    }
+  },
+  "finding_groups": [
+    {
+      "finding_id": "SEF-017aa1c770be2947806e",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "OC-ALLOWED-TOOLS",
+      "message": "opencode: allowed-tools is ignored by OpenCode.",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+      "metadata": {
+        "harness": "opencode",
+        "effect": "advisory",
+        "verified_version": "1.19.5",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-529f8e60b160e57ddb7a",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-01a064412744ade41964",
+      "category": "QUALITY",
+      "severity": "medium",
+      "check_name": "quality_correctness",
+      "message": "SKILL_SPEC recommended field missing: 'version'",
+      "suggestion": "Add 'version' to frontmatter \u2014 Semantic version (e.g., \"1.0.0\")",
+      "metadata": {
+        "dimension": "correctness",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-a3dcfe7a1a53bf06cb90",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-03e029934351881ba688",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "OC-RELOAD",
+      "message": "opencode: Skill list and text are cached at startup; edits need a restart.",
+      "suggestion": null,
+      "metadata": {
+        "harness": "opencode",
+        "effect": "advisory",
+        "verified_version": "1.19.5",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-d2d0947a4568679f22dd",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-0498456e344a658ba70e",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "CX-ALLOWED-TOOLS",
+      "message": "codex: allowed-tools is ignored by Codex.",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+      "metadata": {
+        "harness": "codex",
+        "effect": "advisory",
+        "verified_version": "0.166.0",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-bd5183356cc69328fdc3",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-0d2215183b14101ae2c2",
+      "category": "QUALITY",
+      "severity": "low",
+      "check_name": "quality_correctness",
+      "message": "No examples provided",
+      "suggestion": "Add example usage with code blocks",
+      "metadata": {
+        "dimension": "correctness",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-d11fb4a133f690deeead",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-1017300978cb9cb0eae9",
+      "category": "QUALITY",
+      "severity": "low",
+      "check_name": "quality_discoverability",
+      "message": "Broad description without negative triggers may cause over-triggering",
+      "suggestion": "Add boundary phrases like 'Do NOT use for...'",
+      "metadata": {
+        "dimension": "discoverability",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-7a5c9b0611f87f2b0c5f",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-1bd2ad09a5956df78989",
+      "category": "SCHEMA",
+      "severity": "low",
+      "check_name": "description_trigger",
+      "message": "Description has its trigger at characters 189-196; some harnesses show only the first ~60 characters in their skill list",
+      "suggestion": "State when to use the skill within the first 60 characters",
+      "metadata": null,
+      "validators": [
+        "Schema & Repository Governance"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-cf0489cb00b438e2514a",
+          "validator": "Schema & Repository Governance",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-28414463d8d7c6b8288f",
+      "category": "HARNESS",
+      "severity": "medium",
+      "check_name": "CX-ROOT",
+      "message": "codex: Codex reads .agents/skills and .codex/skills (project and user).",
+      "suggestion": "Install it under .agents/skills or .codex/skills.",
+      "metadata": {
+        "harness": "codex",
+        "effect": "not_loaded",
+        "verified_version": "0.166.0",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-5fd4ded386c8b1aab332",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-2ab016a817c566724ba9",
+      "category": "SCHEMA",
+      "severity": "medium",
+      "check_name": "body_recommended_section",
+      "message": "Missing recommended section: '## Instructions'",
+      "suggestion": "Consider adding a '## Instructions' or '## Usage' section. Per agentskills.io the body format is unrestricted, so this is a convention nudge \u2014 it also gives the quality scorer a stable anchor for instruction-quality heuristics.",
+      "metadata": {
+        "missing_section": "## Instructions"
+      },
+      "validators": [
+        "Schema & Repository Governance"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-d57356c0bee7f5d2aae8",
+          "validator": "Schema & Repository Governance",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-3661379ea9e5c1072875",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "CP-RELOAD",
+      "message": "copilot-cli: New skills appear only after `/skills reload` or a restart; edits to existing skills apply at once.",
+      "suggestion": null,
+      "metadata": {
+        "harness": "copilot-cli",
+        "effect": "advisory",
+        "verified_version": "1.0.105",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-39a1f64926c638b614ba",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-378f24adfec67572e606",
+      "category": "QUALITY",
+      "severity": "low",
+      "check_name": "quality_reliability",
+      "message": "No troubleshooting section documented",
+      "suggestion": "Add '## Troubleshooting' with Error/Cause/Solution patterns",
+      "metadata": {
+        "dimension": "reliability",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-4bbbe13b07d85b09e97c",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-4a6560f4aec006f302f9",
+      "category": "QUALITY",
+      "severity": "low",
+      "check_name": "quality_reliability",
+      "message": "No prerequisites/requirements documented",
+      "suggestion": "Document dependencies, API keys, or setup needed",
+      "metadata": {
+        "dimension": "reliability",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-4a951c309c66d6c9de96",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-50a6ef93167f5463b35d",
+      "category": "HARNESS",
+      "severity": "medium",
+      "check_name": "HM-ROOT",
+      "message": "hermes: Hermes reads ~/.hermes/skills, and project .hermes/skills or .agents/skills only when trusted.",
+      "suggestion": "Install it under ~/.hermes/skills, or .hermes/skills or .agents/skills in a trusted repo.",
+      "metadata": {
+        "harness": "hermes",
+        "effect": "not_loaded",
+        "verified_version": "main @ c419cf7c864a (binary reports 2026.9.24)",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-9bd31e5dda61cfefdb43",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-5e6a43e243ce82a1f952",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "HM-ALLOWED-TOOLS",
+      "message": "hermes: allowed-tools is ignored by Hermes.",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+      "metadata": {
+        "harness": "hermes",
+        "effect": "advisory",
+        "verified_version": "main @ c419cf7c864a (binary reports 2026.9.24)",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-e385ecd33f8eb7586663",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-69578ea0671ee92a43f4",
+      "category": "QUALITY",
+      "severity": "low",
+      "check_name": "quality_discoverability",
+      "message": "Description very long (420 chars, recommend 50-150)",
+      "suggestion": "Keep descriptions concise for progressive disclosure",
+      "metadata": {
+        "dimension": "discoverability",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-70c0baab590976a5b262",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-7d8d9f72f99ec61dbf58",
+      "category": "SCHEMA",
+      "severity": "low",
+      "check_name": "author_missing",
+      "message": "Author not specified in metadata",
+      "suggestion": "Add 'metadata.author' with a person, team, or organization name, or 'Name <email@example.com>' to include a contact address",
+      "metadata": {
+        "profile": "default"
+      },
+      "validators": [
+        "Schema & Repository Governance"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-a7f5ba791acbe23f06a0",
+          "validator": "Schema & Repository Governance",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-8384ed85e117759caec1",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "CP-ALLOWED-TOOLS",
+      "message": "copilot-cli: allowed-tools is ignored in -p (headless) mode; interactive behaviour unverified.",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+      "metadata": {
+        "harness": "copilot-cli",
+        "effect": "advisory",
+        "verified_version": "1.0.105",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-4a0dec2842da2ac32e82",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-8729279b989ad060d385",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "OW-ALLOWED-TOOLS",
+      "message": "openclaw: allowed-tools is ignored by OpenClaw.",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+      "metadata": {
+        "harness": "openclaw",
+        "effect": "advisory",
+        "verified_version": "2026.10.9",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-3d718103256ca2dabee2",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-8eb89c9cd7cab031496e",
+      "category": "HARNESS",
+      "severity": "low",
+      "check_name": "CC-LIST-BUDGET",
+      "message": "claude-code: The 25 skills in this folder have 10,320 description chars; Claude Code's skill list fits 8,000 (1% of the context window at 4 chars per token; 8,000 if the window is unknown), so descriptions get shortened.",
+      "suggestion": "Shorten descriptions (trigger first) or install fewer skills here.",
+      "metadata": {
+        "harness": "claude-code",
+        "effect": "degraded",
+        "verified_version": "2.1.316",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-e465afb47dba7fda5ce9",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-92dc2f30484b6c339ad8",
+      "category": "HARNESS",
+      "severity": "low",
+      "check_name": "CX-LIST-BUDGET",
+      "message": "codex: The 25 skills in this folder have 10,320 description chars; Codex's skill list fits about 8,000 (2% of the context window at 4 bytes per token; 8,000 chars if unknown), so descriptions get shortened, then removed, then skills left out.",
+      "suggestion": "Shorten descriptions (trigger first) or install fewer skills here.",
+      "metadata": {
+        "harness": "codex",
+        "effect": "degraded",
+        "verified_version": "0.166.0",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-7b452c405a0739cff244",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-a491fddbd29ee4b6bdf1",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "CC-ALLOWED-TOOLS",
+      "message": "claude-code: allowed-tools only pre-approves tools, never restricts, and applies only when the skill is invoked through the Skill tool (e.g. /name), not when the model reads the file. With --headless, see CC-ALLOWED-TOOLS-HEADLESS.",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+      "metadata": {
+        "harness": "claude-code",
+        "effect": "advisory",
+        "verified_version": "2.1.316",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-d97643e73f07a78e89ae",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-bf2d85d8c9d7a282e7ad",
+      "category": "QUALITY",
+      "severity": "medium",
+      "check_name": "quality_correctness",
+      "message": "SKILL_SPEC recommended field missing: 'metadata.author'",
+      "suggestion": "Add 'author' under metadata: \u2014 Author name or team (under metadata:)",
+      "metadata": {
+        "dimension": "correctness",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-e99b2d62161641e85dd8",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-dd828fd8f6476dc5f3c7",
+      "category": "QUALITY",
+      "severity": "medium",
+      "check_name": "quality_correctness",
+      "message": "SKILL_SPEC recommended field missing: 'metadata.tags'",
+      "suggestion": "Add 'tags' under metadata: \u2014 Categorization tags (under metadata:, list of 1-5 items)",
+      "metadata": {
+        "dimension": "correctness",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-bd820ed75c4c21195ef4",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-e0623bdfb91d6bbb829f",
+      "category": "HARNESS",
+      "severity": "info",
+      "check_name": "HM-DESC-60",
+      "message": "hermes: The skill list shows only the first ~60 chars of the description (57 + '...' in 0.16, a word boundary near 59 on main), and the trigger isn't in them.",
+      "suggestion": "Put the trigger (\"Use when \u2026\") in the first 57 characters.",
+      "metadata": {
+        "harness": "hermes",
+        "effect": "advisory",
+        "verified_version": "main @ c419cf7c864a (binary reports 2026.9.24)",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-d0b3fe3ad371c11d0358",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-e3f5c930756d6b8f695b",
+      "category": "SCHEMA",
+      "severity": "medium",
+      "check_name": "body_recommended_section",
+      "message": "Missing recommended section: '## Examples'",
+      "suggestion": "Consider adding a '## Examples' section. If examples are already inline under instructions, this can be skipped.",
+      "metadata": {
+        "missing_section": "## Examples"
+      },
+      "validators": [
+        "Schema & Repository Governance"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-0590ed707f6015c66164",
+          "validator": "Schema & Repository Governance",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-f0a6d5746f0611a645c7",
+      "category": "HARNESS",
+      "severity": "medium",
+      "check_name": "OW-ROOT",
+      "message": "openclaw: OpenClaw reads skills/, .agents/skills, ~/.agents/skills and ~/.openclaw/skills.",
+      "suggestion": "Install it under skills/ or .agents/skills in the workspace, or ~/.openclaw/skills.",
+      "metadata": {
+        "harness": "openclaw",
+        "effect": "not_loaded",
+        "verified_version": "2026.10.9",
+        "verified_date": "2026-11-01"
+      },
+      "validators": [
+        "Harness Compatibility"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-824bfa0abf7a2436c852",
+          "validator": "Harness Compatibility",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    },
+    {
+      "finding_id": "SEF-fc6fe3747c071963a76e",
+      "category": "QUALITY",
+      "severity": "low",
+      "check_name": "quality_reliability",
+      "message": "No limitations documented",
+      "suggestion": "Add '## Limitations' section with known issues/constraints",
+      "metadata": {
+        "dimension": "reliability",
+        "deduction": 5
+      },
+      "validators": [
+        "QUALITY"
+      ],
+      "occurrences": [
+        {
+          "occurrence_id": "SEO-f07905689c8bf5416cb7",
+          "validator": "QUALITY",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null
+        }
+      ],
+      "occurrence_count": 1
+    }
+  ],
+  "message_counts": {
+    "informational": 1,
+    "independent_errors": 0,
+    "independent_warnings": 3
+  },
+  "skills": [
+    {
+      "name": "sdcorejs-test",
+      "passed": true,
+      "issue_count": 27
+    }
+  ],
+  "contributors": [
+    {
+      "author": "Unknown",
+      "items": [
+        {
+          "name": "sdcorejs-test",
+          "passed": true,
+          "issue_count": 27
+        }
+      ],
+      "total_items": 1,
+      "passed_count": 1,
+      "failed_count": 0,
+      "total_issues": 27
+    }
+  ],
+  "top_issues": [
+    {
+      "message": "Missing recommended section: '## Instructions'",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "SCHEMA",
+      "suggestion": "Consider adding a '## Instructions' or '## Usage' section. Per agentskills.io the body format is unrestricted, so this is a convention nudge \u2014 it also gives the quality scorer a stable anchor for instruction-quality heuristics."
+    },
+    {
+      "message": "Missing recommended section: '## Examples'",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "SCHEMA",
+      "suggestion": "Consider adding a '## Examples' section. If examples are already inline under instructions, this can be skipped."
+    },
+    {
+      "message": "SKILL_SPEC recommended field missing: 'version'",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Add 'version' to frontmatter \u2014 Semantic version (e.g., \"1.0.0\")"
+    },
+    {
+      "message": "SKILL_SPEC recommended field missing: 'metadata.author'",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Add 'author' under metadata: \u2014 Author name or team (under metadata:)"
+    },
+    {
+      "message": "SKILL_SPEC recommended field missing: 'metadata.tags'",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Add 'tags' under metadata: \u2014 Categorization tags (under metadata:, list of 1-5 items)"
+    },
+    {
+      "message": "codex: Codex reads .agents/skills and .codex/skills (project and user).",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Install it under .agents/skills or .codex/skills."
+    },
+    {
+      "message": "hermes: Hermes reads ~/.hermes/skills, and project .hermes/skills or .agents/skills only when trusted.",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Install it under ~/.hermes/skills, or .hermes/skills or .agents/skills in a trusted repo."
+    },
+    {
+      "message": "openclaw: OpenClaw reads skills/, .agents/skills, ~/.agents/skills and ~/.openclaw/skills.",
+      "severity": "medium",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Install it under skills/ or .agents/skills in the workspace, or ~/.openclaw/skills."
+    },
+    {
+      "message": "Author not specified in metadata",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "SCHEMA",
+      "suggestion": "Add 'metadata.author' with a person, team, or organization name, or 'Name <email@example.com>' to include a contact address"
+    },
+    {
+      "message": "Description has its trigger at characters 189-196; some harnesses show only the first ~60 characters in their skill list",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "SCHEMA",
+      "suggestion": "State when to use the skill within the first 60 characters"
+    },
+    {
+      "message": "No examples provided",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Add example usage with code blocks"
+    },
+    {
+      "message": "Description very long (420 chars, recommend 50-150)",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Keep descriptions concise for progressive disclosure"
+    },
+    {
+      "message": "Broad description without negative triggers may cause over-triggering",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Add boundary phrases like 'Do NOT use for...'"
+    },
+    {
+      "message": "No prerequisites/requirements documented",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Document dependencies, API keys, or setup needed"
+    },
+    {
+      "message": "No limitations documented",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Add '## Limitations' section with known issues/constraints"
+    },
+    {
+      "message": "No troubleshooting section documented",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "QUALITY",
+      "suggestion": "Add '## Troubleshooting' with Error/Cause/Solution patterns"
+    },
+    {
+      "message": "claude-code: The 25 skills in this folder have 10,320 description chars; Claude Code's skill list fits 8,000 (1% of the context window at 4 chars per token; 8,000 if the window is unknown), so descriptions get shortened.",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Shorten descriptions (trigger first) or install fewer skills here."
+    },
+    {
+      "message": "codex: The 25 skills in this folder have 10,320 description chars; Codex's skill list fits about 8,000 (2% of the context window at 4 bytes per token; 8,000 chars if unknown), so descriptions get shortened, then removed, then skills left out.",
+      "severity": "low",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Shorten descriptions (trigger first) or install fewer skills here."
+    },
+    {
+      "message": "claude-code: allowed-tools only pre-approves tools, never restricts, and applies only when the skill is invoked through the Skill tool (e.g. /name), not when the model reads the file. With --headless, see CC-ALLOWED-TOOLS-HEADLESS.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings."
+    },
+    {
+      "message": "codex: allowed-tools is ignored by Codex.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings."
+    },
+    {
+      "message": "copilot-cli: New skills appear only after `/skills reload` or a restart; edits to existing skills apply at once.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": null
+    },
+    {
+      "message": "copilot-cli: allowed-tools is ignored in -p (headless) mode; interactive behaviour unverified.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings."
+    },
+    {
+      "message": "hermes: The skill list shows only the first ~60 chars of the description (57 + '...' in 0.16, a word boundary near 59 on main), and the trigger isn't in them.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Put the trigger (\"Use when \u2026\") in the first 57 characters."
+    },
+    {
+      "message": "hermes: allowed-tools is ignored by Hermes.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings."
+    },
+    {
+      "message": "openclaw: allowed-tools is ignored by OpenClaw.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings."
+    },
+    {
+      "message": "opencode: Skill list and text are cached at startup; edits need a restart.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": null
+    },
+    {
+      "message": "opencode: allowed-tools is ignored by OpenCode.",
+      "severity": "info",
+      "total_count": 1,
+      "skills_affected": [
+        "sdcorejs-test"
+      ],
+      "category": "HARNESS",
+      "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings."
+    }
+  ],
+  "results": [
+    {
+      "validator": "Schema & Repository Governance",
+      "description": "Validate SKILL.md frontmatter and repository structure",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 8,
+        "errors": 0,
+        "warnings": 5,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 2,
+        "low_count": 2
+      },
+      "finding_counts": {
+        "raw_occurrences": 4,
+        "distinct_occurrences": 4,
+        "unique_findings": 4,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 2,
+          "low": 2,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 2,
+          "low": 2,
+          "info": 0
+        }
+      },
+      "findings": [
+        {
+          "finding_id": "SEF-2ab016a817c566724ba9",
+          "occurrence_id": "SEO-d57356c0bee7f5d2aae8",
+          "category": "SCHEMA",
+          "severity": "medium",
+          "check_name": "body_recommended_section",
+          "message": "Missing recommended section: '## Instructions'",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Consider adding a '## Instructions' or '## Usage' section. Per agentskills.io the body format is unrestricted, so this is a convention nudge \u2014 it also gives the quality scorer a stable anchor for instruction-quality heuristics.",
+          "metadata": {
+            "missing_section": "## Instructions"
+          }
+        },
+        {
+          "finding_id": "SEF-e3f5c930756d6b8f695b",
+          "occurrence_id": "SEO-0590ed707f6015c66164",
+          "category": "SCHEMA",
+          "severity": "medium",
+          "check_name": "body_recommended_section",
+          "message": "Missing recommended section: '## Examples'",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Consider adding a '## Examples' section. If examples are already inline under instructions, this can be skipped.",
+          "metadata": {
+            "missing_section": "## Examples"
+          }
+        },
+        {
+          "finding_id": "SEF-7d8d9f72f99ec61dbf58",
+          "occurrence_id": "SEO-a7f5ba791acbe23f06a0",
+          "category": "SCHEMA",
+          "severity": "low",
+          "check_name": "author_missing",
+          "message": "Author not specified in metadata",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add 'metadata.author' with a person, team, or organization name, or 'Name <email@example.com>' to include a contact address",
+          "metadata": {
+            "profile": "default"
+          }
+        },
+        {
+          "finding_id": "SEF-1bd2ad09a5956df78989",
+          "occurrence_id": "SEO-cf0489cb00b438e2514a",
+          "category": "SCHEMA",
+          "severity": "low",
+          "check_name": "description_trigger",
+          "message": "Description has its trigger at characters 189-196; some harnesses show only the first ~60 characters in their skill list",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "State when to use the skill within the first 60 characters",
+          "metadata": null
+        }
+      ],
+      "success_details": [
+        {
+          "check": "manifest_exists",
+          "message": "Found skill manifest: SKILL.md",
+          "metadata": {
+            "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md"
+          }
+        },
+        {
+          "check": "frontmatter_valid",
+          "message": "Valid frontmatter for skill 'sdcorejs-test'",
+          "metadata": {
+            "description_length": 420
+          }
+        },
+        {
+          "check": "folder_hierarchy",
+          "message": "Valid general skill structure: skills/sdcorejs-test/",
+          "metadata": null
+        },
+        {
+          "check": "naming_convention",
+          "message": "Folder name 'sdcorejs-test' follows kebab-case convention",
+          "metadata": {
+            "name_length": 13
+          }
+        },
+        {
+          "check": "line_count",
+          "message": "SKILL.md within line limit (239/500)",
+          "metadata": {
+            "line_count": 239,
+            "limit": 500
+          }
+        },
+        {
+          "check": "body_heading",
+          "message": "Body contains a top-level heading",
+          "metadata": null
+        },
+        {
+          "check": "optional_files",
+          "message": "Skill directory contains only expected files",
+          "metadata": null
+        },
+        {
+          "check": "name_consistency",
+          "message": "Directory name matches frontmatter: 'sdcorejs-test'",
+          "metadata": null
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [
+          "[SCHEMA-MEDIUM] Missing recommended section: '## Instructions' in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[SCHEMA-MEDIUM] Missing recommended section: '## Examples' in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[SCHEMA-LOW] Author not specified in metadata in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[SCHEMA-LOW] Description has its trigger at characters 189-196; some harnesses show only the first ~60 characters in their skill list in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "Workflow scope: llm skipped. LLM checks disabled by --no-llm."
+        ],
+        "messages": [
+          "[OK] manifest_exists: Found skill manifest: SKILL.md",
+          "[OK] frontmatter_valid: Valid frontmatter for skill 'sdcorejs-test'",
+          "[OK] folder_hierarchy: Valid general skill structure: skills/sdcorejs-test/",
+          "[OK] naming_convention: Folder name 'sdcorejs-test' follows kebab-case convention",
+          "[OK] line_count: SKILL.md within line limit (239/500)",
+          "[OK] body_heading: Body contains a top-level heading",
+          "[OK] optional_files: Skill directory contains only expected files",
+          "[OK] name_consistency: Directory name matches frontmatter: 'sdcorejs-test'"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "schema"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Semantic Version Validation",
+      "description": "Validate optional metadata.version labels and require strict bumps",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "version_optional",
+          "message": "No semantic version label present; resource will use commit-hash history",
+          "metadata": {
+            "previous_version": null
+          }
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "[OK] version_optional: No semantic version label present; resource will use commit-hash history"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "version"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Security Scan",
+      "description": "Detect security vulnerabilities and PII/secrets",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "scanners": {
+        "skillspector": "2.13.4"
+      },
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 1,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "skillspector",
+          "message": "No security vulnerabilities detected (secrets, API keys, credentials)",
+          "metadata": null
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [
+          "SkillSpector reported 1 reference(s) to files the skill does not bundle (SKILL.md:121 [reference_resolution; reference_missing]); SkillSpector reported no other gap for them, and those lines name no file left out of the scan, so they do not mark the scan incomplete. Files not in the scan, including any outside the scanned path, were not inspected"
+        ],
+        "messages": [
+          "[OK] skillspector: No security vulnerabilities detected (secrets, API keys, credentials)"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "skillspector_version": "2.13.4",
+      "skillspector_applicability": {
+        "artifact_type": "skill",
+        "kept_issues": 0,
+        "suppressed_inapplicable_issues": 0,
+        "suppressed_by_file_role": {},
+        "raw_risk_score": 0,
+        "applicable_risk_score": 0
+      },
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "security"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "PII Scan",
+      "description": "Detect PII and local identifiers",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 1,
+        "checks_performed": 2,
+        "errors": 0,
+        "warnings": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "pii_scan_start",
+          "message": "Scanning 1 files for PII",
+          "metadata": {
+            "file_count": 1
+          }
+        },
+        {
+          "check": "pii_detection",
+          "message": "No PII detected in 1 files (emails, SSNs, phone numbers, paths)",
+          "metadata": {
+            "files_scanned": 1
+          }
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "[OK] pii_scan_start: Scanning 1 files for PII",
+          "[OK] pii_detection: No PII detected in 1 files (emails, SSNs, phone numbers, paths)"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "pii"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "License Compliance",
+      "description": "Validate license compliance for Skills, Rules, and Workflows",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 1,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "license_compliance",
+          "message": "License compliance scan completed (not detected)",
+          "metadata": {
+            "license_status": "not_detected"
+          }
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [
+          "No license information found - manual review required. Add a LICENSE file or 'license' field in frontmatter."
+        ],
+        "messages": [
+          "No license detected in any tier",
+          "[OK] license_compliance: License compliance scan completed (not detected)"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "license"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Code Risk Analysis",
+      "description": "Static code analysis using Bandit and packaged Semgrep rules",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "code_file_discovery",
+          "message": "No code files found - code risk analysis is not applicable",
+          "metadata": {
+            "file_counts": {
+              "py": 0,
+              "sh": 0,
+              "js": 0
+            }
+          }
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "[OK] code_file_discovery: No code files found - code risk analysis is not applicable"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "code-integrity"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Secrets Detection",
+      "description": "Detect hardcoded secrets, API keys, and credentials using Gitleaks",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "scanners": {
+        "gitleaks": "8.30.0"
+      },
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "gitleaks",
+          "message": "No secrets detected by Gitleaks",
+          "metadata": null
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "[OK] gitleaks: No secrets detected by Gitleaks"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "code-integrity"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Code Integrity & Hygiene",
+      "description": "Validate dead links, dependencies, and static Python test-file discovery",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 1,
+        "checks_performed": 4,
+        "errors": 0,
+        "warnings": 1,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "dead_links_scan",
+          "message": "Checking 1 markdown files for dead links",
+          "metadata": {
+            "file_count": 1
+          }
+        },
+        {
+          "check": "dead_links",
+          "message": "All relative links valid in 1 markdown file(s)",
+          "metadata": {
+            "files_checked": 1
+          }
+        },
+        {
+          "check": "dependencies",
+          "message": "No dependency files found (requirements.txt, pyproject.toml)",
+          "metadata": null
+        },
+        {
+          "check": "test_discovery",
+          "message": "No standard Python test-file candidates found; target tests were not executed and coverage was not measured. Consider adding tests.",
+          "metadata": {
+            "test_count": 0,
+            "execution_performed": false,
+            "coverage_measured": false,
+            "patterns": [
+              "test_*.py",
+              "*_test.py"
+            ]
+          }
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [
+          "No standard Python test-file candidates found; consider adding tests"
+        ],
+        "messages": [
+          "[OK] dead_links_scan: Checking 1 markdown files for dead links",
+          "[OK] dead_links: All relative links valid in 1 markdown file(s)",
+          "[OK] dependencies: No dependency files found (requirements.txt, pyproject.toml)",
+          "[OK] test_discovery: No standard Python test-file candidates found; target tests were not executed and coverage was not measured. Consider adding tests."
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "code-integrity"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Dependency Vulnerability Audit",
+      "description": "Scan dependencies for CVE vulnerabilities using pip-audit and Safety",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "dependency_file_discovery",
+          "message": "No dependency files found - vulnerability audit is not applicable",
+          "metadata": null
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "[OK] dependency_file_discovery: No dependency files found - vulnerability audit is not applicable"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "dependency"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Unicode Smuggling Detection",
+      "description": "Detect invisible Unicode characters and ASCII smuggling",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 1,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "unicode_scan",
+          "message": "No invisible Unicode characters detected in 1 file(s)",
+          "metadata": {
+            "files_scanned": 1
+          }
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "[OK] unicode_scan: No invisible Unicode characters detected in 1 file(s)"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "unicode"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "QUALITY",
+      "description": "Skill quality scoring across Correctness (35%), Discoverability (25%), Reliability (25%), and Efficiency (15%)",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 9,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 3,
+        "low_count": 6
+      },
+      "finding_counts": {
+        "raw_occurrences": 9,
+        "distinct_occurrences": 9,
+        "unique_findings": 9,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 3,
+          "low": 6,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 3,
+          "low": 6,
+          "info": 0
+        }
+      },
+      "findings": [
+        {
+          "finding_id": "SEF-0d2215183b14101ae2c2",
+          "occurrence_id": "SEO-d11fb4a133f690deeead",
+          "category": "QUALITY",
+          "severity": "low",
+          "check_name": "quality_correctness",
+          "message": "No examples provided",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add example usage with code blocks",
+          "metadata": {
+            "dimension": "correctness",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-01a064412744ade41964",
+          "occurrence_id": "SEO-a3dcfe7a1a53bf06cb90",
+          "category": "QUALITY",
+          "severity": "medium",
+          "check_name": "quality_correctness",
+          "message": "SKILL_SPEC recommended field missing: 'version'",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add 'version' to frontmatter \u2014 Semantic version (e.g., \"1.0.0\")",
+          "metadata": {
+            "dimension": "correctness",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-bf2d85d8c9d7a282e7ad",
+          "occurrence_id": "SEO-e99b2d62161641e85dd8",
+          "category": "QUALITY",
+          "severity": "medium",
+          "check_name": "quality_correctness",
+          "message": "SKILL_SPEC recommended field missing: 'metadata.author'",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add 'author' under metadata: \u2014 Author name or team (under metadata:)",
+          "metadata": {
+            "dimension": "correctness",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-dd828fd8f6476dc5f3c7",
+          "occurrence_id": "SEO-bd820ed75c4c21195ef4",
+          "category": "QUALITY",
+          "severity": "medium",
+          "check_name": "quality_correctness",
+          "message": "SKILL_SPEC recommended field missing: 'metadata.tags'",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add 'tags' under metadata: \u2014 Categorization tags (under metadata:, list of 1-5 items)",
+          "metadata": {
+            "dimension": "correctness",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-69578ea0671ee92a43f4",
+          "occurrence_id": "SEO-70c0baab590976a5b262",
+          "category": "QUALITY",
+          "severity": "low",
+          "check_name": "quality_discoverability",
+          "message": "Description very long (420 chars, recommend 50-150)",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Keep descriptions concise for progressive disclosure",
+          "metadata": {
+            "dimension": "discoverability",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-1017300978cb9cb0eae9",
+          "occurrence_id": "SEO-7a5c9b0611f87f2b0c5f",
+          "category": "QUALITY",
+          "severity": "low",
+          "check_name": "quality_discoverability",
+          "message": "Broad description without negative triggers may cause over-triggering",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add boundary phrases like 'Do NOT use for...'",
+          "metadata": {
+            "dimension": "discoverability",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-4a6560f4aec006f302f9",
+          "occurrence_id": "SEO-4a951c309c66d6c9de96",
+          "category": "QUALITY",
+          "severity": "low",
+          "check_name": "quality_reliability",
+          "message": "No prerequisites/requirements documented",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Document dependencies, API keys, or setup needed",
+          "metadata": {
+            "dimension": "reliability",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-fc6fe3747c071963a76e",
+          "occurrence_id": "SEO-f07905689c8bf5416cb7",
+          "category": "QUALITY",
+          "severity": "low",
+          "check_name": "quality_reliability",
+          "message": "No limitations documented",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add '## Limitations' section with known issues/constraints",
+          "metadata": {
+            "dimension": "reliability",
+            "deduction": 5
+          }
+        },
+        {
+          "finding_id": "SEF-378f24adfec67572e606",
+          "occurrence_id": "SEO-4bbbe13b07d85b09e97c",
+          "category": "QUALITY",
+          "severity": "low",
+          "check_name": "quality_reliability",
+          "message": "No troubleshooting section documented",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Add '## Troubleshooting' with Error/Cause/Solution patterns",
+          "metadata": {
+            "dimension": "reliability",
+            "deduction": 5
+          }
+        }
+      ],
+      "success_details": [
+        {
+          "check": "quality_score",
+          "message": "Score: 86.8/100 (Grade: B)",
+          "metadata": {
+            "overall_score": 86.8,
+            "grade": "B",
+            "skill_type": "guide-only"
+          }
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [
+          "[QUALITY-LOW] No examples provided in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-MEDIUM] SKILL_SPEC recommended field missing: 'version' in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-MEDIUM] SKILL_SPEC recommended field missing: 'metadata.author' in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-MEDIUM] SKILL_SPEC recommended field missing: 'metadata.tags' in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-LOW] Description very long (420 chars, recommend 50-150) in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-LOW] Broad description without negative triggers may cause over-triggering in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-LOW] No prerequisites/requirements documented in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-LOW] No limitations documented in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[QUALITY-LOW] No troubleshooting section documented in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md"
+        ],
+        "messages": [
+          "[OK] quality_score: Score: 86.8/100 (Grade: B)"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "quality": {
+        "overall_score": 86.8,
+        "grade": "B",
+        "skill_type": "guide-only",
+        "skill_name": "sdcorejs-test",
+        "dimensions": {
+          "correctness": {
+            "score": 80.0,
+            "weight": 0.35,
+            "issues_count": 4,
+            "issues": [
+              {
+                "severity": "info",
+                "message": "No examples provided",
+                "suggestion": "Add example usage with code blocks",
+                "deduction": 5
+              },
+              {
+                "severity": "warning",
+                "message": "SKILL_SPEC recommended field missing: 'version'",
+                "suggestion": "Add 'version' to frontmatter \u2014 Semantic version (e.g., \"1.0.0\")",
+                "deduction": 5
+              },
+              {
+                "severity": "warning",
+                "message": "SKILL_SPEC recommended field missing: 'metadata.author'",
+                "suggestion": "Add 'author' under metadata: \u2014 Author name or team (under metadata:)",
+                "deduction": 5
+              },
+              {
+                "severity": "warning",
+                "message": "SKILL_SPEC recommended field missing: 'metadata.tags'",
+                "suggestion": "Add 'tags' under metadata: \u2014 Categorization tags (under metadata:, list of 1-5 items)",
+                "deduction": 5
+              }
+            ]
+          },
+          "discoverability": {
+            "score": 90.0,
+            "weight": 0.25,
+            "issues_count": 2,
+            "issues": [
+              {
+                "severity": "info",
+                "message": "Description very long (420 chars, recommend 50-150)",
+                "suggestion": "Keep descriptions concise for progressive disclosure",
+                "deduction": 5
+              },
+              {
+                "severity": "info",
+                "message": "Broad description without negative triggers may cause over-triggering",
+                "suggestion": "Add boundary phrases like 'Do NOT use for...'",
+                "deduction": 5
+              }
+            ]
+          },
+          "reliability": {
+            "score": 85.0,
+            "weight": 0.25,
+            "issues_count": 3,
+            "issues": [
+              {
+                "severity": "info",
+                "message": "No prerequisites/requirements documented",
+                "suggestion": "Document dependencies, API keys, or setup needed",
+                "deduction": 5
+              },
+              {
+                "severity": "info",
+                "message": "No limitations documented",
+                "suggestion": "Add '## Limitations' section with known issues/constraints",
+                "deduction": 5
+              },
+              {
+                "severity": "info",
+                "message": "No troubleshooting section documented",
+                "suggestion": "Add '## Troubleshooting' with Error/Cause/Solution patterns",
+                "deduction": 5
+              }
+            ]
+          },
+          "efficiency": {
+            "score": 100.0,
+            "weight": 0.15,
+            "issues_count": 0,
+            "issues": []
+          }
+        },
+        "metrics": {
+          "total_tokens": 3342,
+          "estimated_tokens": 3342,
+          "estimate_method": "characters/4",
+          "recommended_max_tokens": 5000,
+          "frontmatter_tokens": 133,
+          "instructions_tokens": 3207,
+          "script_count": 0,
+          "has_examples": false,
+          "has_error_handling": true,
+          "has_frontmatter": true,
+          "has_instructions": false,
+          "has_scripts": false,
+          "has_lib_module": false
+        }
+      },
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "quality"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "SCRIPT_LINT",
+      "description": "AST-based code quality checks for skill scripts",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 1,
+        "errors": 0,
+        "warnings": 0,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 0,
+        "low_count": 0
+      },
+      "finding_counts": {
+        "raw_occurrences": 0,
+        "distinct_occurrences": 0,
+        "unique_findings": 0,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "info": 0
+        }
+      },
+      "findings": [],
+      "success_details": [
+        {
+          "check": "lint",
+          "message": "No scripts/ or tools/ directory found",
+          "metadata": null
+        }
+      ],
+      "legacy": {
+        "errors": [],
+        "warnings": [],
+        "messages": [
+          "[OK] lint: No scripts/ or tools/ directory found"
+        ]
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "lint"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    },
+    {
+      "validator": "Harness Compatibility",
+      "description": "Advisory: whether each agent harness loads, degrades or drops the skill",
+      "passed": true,
+      "status": "passed",
+      "skipped": false,
+      "skip_reason": null,
+      "incomplete_scans": [],
+      "summary": {
+        "files_scanned": 0,
+        "checks_performed": 0,
+        "errors": 0,
+        "warnings": 14,
+        "critical_count": 0,
+        "high_count": 0,
+        "medium_count": 3,
+        "low_count": 2
+      },
+      "finding_counts": {
+        "raw_occurrences": 14,
+        "distinct_occurrences": 14,
+        "unique_findings": 14,
+        "duplicates_removed": 0,
+        "occurrences_grouped": 0,
+        "raw_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 3,
+          "low": 2,
+          "info": 9
+        },
+        "unique_by_severity": {
+          "critical": 0,
+          "high": 0,
+          "medium": 3,
+          "low": 2,
+          "info": 9
+        }
+      },
+      "findings": [
+        {
+          "finding_id": "SEF-8eb89c9cd7cab031496e",
+          "occurrence_id": "SEO-e465afb47dba7fda5ce9",
+          "category": "HARNESS",
+          "severity": "low",
+          "check_name": "CC-LIST-BUDGET",
+          "message": "claude-code: The 25 skills in this folder have 10,320 description chars; Claude Code's skill list fits 8,000 (1% of the context window at 4 chars per token; 8,000 if the window is unknown), so descriptions get shortened.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Shorten descriptions (trigger first) or install fewer skills here.",
+          "metadata": {
+            "harness": "claude-code",
+            "effect": "degraded",
+            "verified_version": "2.1.316",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-a491fddbd29ee4b6bdf1",
+          "occurrence_id": "SEO-d97643e73f07a78e89ae",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "CC-ALLOWED-TOOLS",
+          "message": "claude-code: allowed-tools only pre-approves tools, never restricts, and applies only when the skill is invoked through the Skill tool (e.g. /name), not when the model reads the file. With --headless, see CC-ALLOWED-TOOLS-HEADLESS.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+          "metadata": {
+            "harness": "claude-code",
+            "effect": "advisory",
+            "verified_version": "2.1.316",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-28414463d8d7c6b8288f",
+          "occurrence_id": "SEO-5fd4ded386c8b1aab332",
+          "category": "HARNESS",
+          "severity": "medium",
+          "check_name": "CX-ROOT",
+          "message": "codex: Codex reads .agents/skills and .codex/skills (project and user).",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Install it under .agents/skills or .codex/skills.",
+          "metadata": {
+            "harness": "codex",
+            "effect": "not_loaded",
+            "verified_version": "0.166.0",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-92dc2f30484b6c339ad8",
+          "occurrence_id": "SEO-7b452c405a0739cff244",
+          "category": "HARNESS",
+          "severity": "low",
+          "check_name": "CX-LIST-BUDGET",
+          "message": "codex: The 25 skills in this folder have 10,320 description chars; Codex's skill list fits about 8,000 (2% of the context window at 4 bytes per token; 8,000 chars if unknown), so descriptions get shortened, then removed, then skills left out.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Shorten descriptions (trigger first) or install fewer skills here.",
+          "metadata": {
+            "harness": "codex",
+            "effect": "degraded",
+            "verified_version": "0.166.0",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-0498456e344a658ba70e",
+          "occurrence_id": "SEO-bd5183356cc69328fdc3",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "CX-ALLOWED-TOOLS",
+          "message": "codex: allowed-tools is ignored by Codex.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+          "metadata": {
+            "harness": "codex",
+            "effect": "advisory",
+            "verified_version": "0.166.0",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-3661379ea9e5c1072875",
+          "occurrence_id": "SEO-39a1f64926c638b614ba",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "CP-RELOAD",
+          "message": "copilot-cli: New skills appear only after `/skills reload` or a restart; edits to existing skills apply at once.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": null,
+          "metadata": {
+            "harness": "copilot-cli",
+            "effect": "advisory",
+            "verified_version": "1.0.105",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-8384ed85e117759caec1",
+          "occurrence_id": "SEO-4a0dec2842da2ac32e82",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "CP-ALLOWED-TOOLS",
+          "message": "copilot-cli: allowed-tools is ignored in -p (headless) mode; interactive behaviour unverified.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+          "metadata": {
+            "harness": "copilot-cli",
+            "effect": "advisory",
+            "verified_version": "1.0.105",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-50a6ef93167f5463b35d",
+          "occurrence_id": "SEO-9bd31e5dda61cfefdb43",
+          "category": "HARNESS",
+          "severity": "medium",
+          "check_name": "HM-ROOT",
+          "message": "hermes: Hermes reads ~/.hermes/skills, and project .hermes/skills or .agents/skills only when trusted.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Install it under ~/.hermes/skills, or .hermes/skills or .agents/skills in a trusted repo.",
+          "metadata": {
+            "harness": "hermes",
+            "effect": "not_loaded",
+            "verified_version": "main @ c419cf7c864a (binary reports 2026.9.24)",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-e0623bdfb91d6bbb829f",
+          "occurrence_id": "SEO-d0b3fe3ad371c11d0358",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "HM-DESC-60",
+          "message": "hermes: The skill list shows only the first ~60 chars of the description (57 + '...' in 0.16, a word boundary near 59 on main), and the trigger isn't in them.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Put the trigger (\"Use when \u2026\") in the first 57 characters.",
+          "metadata": {
+            "harness": "hermes",
+            "effect": "advisory",
+            "verified_version": "main @ c419cf7c864a (binary reports 2026.9.24)",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-5e6a43e243ce82a1f952",
+          "occurrence_id": "SEO-e385ecd33f8eb7586663",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "HM-ALLOWED-TOOLS",
+          "message": "hermes: allowed-tools is ignored by Hermes.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+          "metadata": {
+            "harness": "hermes",
+            "effect": "advisory",
+            "verified_version": "main @ c419cf7c864a (binary reports 2026.9.24)",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-f0a6d5746f0611a645c7",
+          "occurrence_id": "SEO-824bfa0abf7a2436c852",
+          "category": "HARNESS",
+          "severity": "medium",
+          "check_name": "OW-ROOT",
+          "message": "openclaw: OpenClaw reads skills/, .agents/skills, ~/.agents/skills and ~/.openclaw/skills.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Install it under skills/ or .agents/skills in the workspace, or ~/.openclaw/skills.",
+          "metadata": {
+            "harness": "openclaw",
+            "effect": "not_loaded",
+            "verified_version": "2026.10.9",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-8729279b989ad060d385",
+          "occurrence_id": "SEO-3d718103256ca2dabee2",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "OW-ALLOWED-TOOLS",
+          "message": "openclaw: allowed-tools is ignored by OpenClaw.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+          "metadata": {
+            "harness": "openclaw",
+            "effect": "advisory",
+            "verified_version": "2026.10.9",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-03e029934351881ba688",
+          "occurrence_id": "SEO-d2d0947a4568679f22dd",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "OC-RELOAD",
+          "message": "opencode: Skill list and text are cached at startup; edits need a restart.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": null,
+          "metadata": {
+            "harness": "opencode",
+            "effect": "advisory",
+            "verified_version": "1.19.5",
+            "verified_date": "2026-11-01"
+          }
+        },
+        {
+          "finding_id": "SEF-017aa1c770be2947806e",
+          "occurrence_id": "SEO-529f8e60b160e57ddb7a",
+          "category": "HARNESS",
+          "severity": "info",
+          "check_name": "OC-ALLOWED-TOOLS",
+          "message": "opencode: allowed-tools is ignored by OpenCode.",
+          "file_path": "/workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "line_number": null,
+          "line_content": null,
+          "suggestion": "Don't rely on allowed-tools to restrict tools; use the harness's permission settings.",
+          "metadata": {
+            "harness": "opencode",
+            "effect": "advisory",
+            "verified_version": "1.19.5",
+            "verified_date": "2026-11-01"
+          }
+        }
+      ],
+      "success_details": [],
+      "legacy": {
+        "errors": [],
+        "warnings": [
+          "[HARNESS-LOW] claude-code: The 25 skills in this folder have 10,320 description chars; Claude Code's skill list fits 8,000 (1% of the context window at 4 chars per token; 8,000 if the window is unknown), so descriptions get shortened. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] claude-code: allowed-tools only pre-approves tools, never restricts, and applies only when the skill is invoked through the Skill tool (e.g. /name), not when the model reads the file. With --headless, see CC-ALLOWED-TOOLS-HEADLESS. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-MEDIUM] codex: Codex reads .agents/skills and .codex/skills (project and user). in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-LOW] codex: The 25 skills in this folder have 10,320 description chars; Codex's skill list fits about 8,000 (2% of the context window at 4 bytes per token; 8,000 chars if unknown), so descriptions get shortened, then removed, then skills left out. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] codex: allowed-tools is ignored by Codex. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] copilot-cli: New skills appear only after `/skills reload` or a restart; edits to existing skills apply at once. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] copilot-cli: allowed-tools is ignored in -p (headless) mode; interactive behaviour unverified. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-MEDIUM] hermes: Hermes reads ~/.hermes/skills, and project .hermes/skills or .agents/skills only when trusted. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] hermes: The skill list shows only the first ~60 chars of the description (57 + '...' in 0.16, a word boundary near 59 on main), and the trigger isn't in them. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] hermes: allowed-tools is ignored by Hermes. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-MEDIUM] openclaw: OpenClaw reads skills/, .agents/skills, ~/.agents/skills and ~/.openclaw/skills. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] openclaw: allowed-tools is ignored by OpenClaw. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] opencode: Skill list and text are cached at startup; edits need a restart. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md",
+          "[HARNESS-INFO] opencode: allowed-tools is ignored by OpenCode. in /workspace/sdcorejs-agent/.claude/skills/sdcorejs-test/SKILL.md"
+        ],
+        "messages": []
+      },
+      "tier1_required_checks": [
+        "code-integrity",
+        "license",
+        "lint",
+        "pii",
+        "quality",
+        "schema",
+        "security",
+        "unicode",
+        "version"
+      ],
+      "tier1_unscanned_paths": [],
+      "gating": {
+        "tier": 1,
+        "blocking": true
+      },
+      "publication_target": {
+        "skill_name": "sdcorejs-test",
+        "skill_digest": "sha256:24e6d476477c02dde3701e8e02ab4556250174a62a7398294231e6535d3314ce",
+        "skill_digest_algorithm": "skill-evaluator-source-tree/2"
+      },
+      "publication_evidence": {
+        "schema_version": 1,
+        "producer": "skillevaluator.tier1",
+        "tier": 1,
+        "check_id": "harness"
+      },
+      "workflow": {
+        "tier": 1,
+        "stages": {
+          "validation": {
+            "status": "passed"
+          },
+          "llm": {
+            "status": "skipped",
+            "reason": "LLM checks disabled by --no-llm."
+          }
+        }
+      }
+    }
+  ],
+  "benchmark_policy": {
+    "tier2_required": true,
+    "tier3_required": true
+  },
+  "publication_status": "incomplete",
+  "publication": {
+    "status": "incomplete",
+    "eligible": false,
+    "reasons": [
+      "Required recognized built-in Tier 2 evidence is missing.",
+      "Tier 3 lacks publication-complete execution evidence."
+    ],
+    "tier3": {
+      "status": "not_run",
+      "evidence_complete": false,
+      "execution_status": "not_run",
+      "verdict": "not_run",
+      "reason": "Tier 3 lacks publication-complete execution evidence."
+    }
+  },
+  "policy": {
+    "profile": "default",
+    "audience": "all",
+    "digest": "sha256:64a069b8853f7123049a675d6853ef8d8b424792bb9a2a5157a73ec312f38ed4",
+    "author_email_regex": null,
+    "severity_overrides": {
+      "SCHEMA.author_missing": "low",
+      "SCHEMA.author_without_email": "info",
+      "SCHEMA.author_format": "high",
+      "WORKFLOWS.author_format": "high",
+      "LICENSE.*": "critical"
+    },
+    "metadata_id_requirement": "ignore",
+    "source": "/home/agent/.local/share/uv/tools/skillevaluator/lib/python3.12/site-packages/skillevaluator/config/profiles/default.yaml"
+  },
+  "quality_config": {
+    "source": "packaged",
+    "file": null,
+    "digest": "sha256:298ff2bf62132c8154217b7aa59fc1fd04f28cf75372f55620a2cbcd951d6549",
+    "min_score": 70
+  },
+  "evaluated_source": null,
+  "gating": {
+    "tiers": {
+      "1": {
+        "blocking": true,
+        "validators": [
+          "Schema & Repository Governance",
+          "Semantic Version Validation",
+          "Security Scan",
+          "PII Scan",
+          "License Compliance",
+          "Code Risk Analysis",
+          "Secrets Detection",
+          "Code Integrity & Hygiene",
+          "Dependency Vulnerability Audit",
+          "Unicode Smuggling Detection",
+          "QUALITY",
+          "SCRIPT_LINT",
+          "Harness Compatibility"
+        ],
+        "validator_policies": [
+          {
+            "validator": "Schema & Repository Governance",
+            "blocking": true
+          },
+          {
+            "validator": "Semantic Version Validation",
+            "blocking": true
+          },
+          {
+            "validator": "Security Scan",
+            "blocking": true
+          },
+          {
+            "validator": "PII Scan",
+            "blocking": true
+          },
+          {
+            "validator": "License Compliance",
+            "blocking": true
+          },
+          {
+            "validator": "Code Risk Analysis",
+            "blocking": true
+          },
+          {
+            "validator": "Secrets Detection",
+            "blocking": true
+          },
+          {
+            "validator": "Code Integrity & Hygiene",
+            "blocking": true
+          },
+          {
+            "validator": "Dependency Vulnerability Audit",
+            "blocking": true
+          },
+          {
+            "validator": "Unicode Smuggling Detection",
+            "blocking": true
+          },
+          {
+            "validator": "QUALITY",
+            "blocking": true
+          },
+          {
+            "validator": "SCRIPT_LINT",
+            "blocking": true
+          },
+          {
+            "validator": "Harness Compatibility",
+            "blocking": true
+          }
+        ]
+      }
+    }
+  },
+  "workflow": {
+    "tier": 1,
+    "stages": {
+      "validation": {
+        "status": "passed"
+      },
+      "llm": {
+        "status": "skipped",
+        "reason": "LLM checks disabled by --no-llm."
+      }
+    }
+  },
+  "quality_summary": [
+    {
+      "overall_score": 86.8,
+      "grade": "B",
+      "skill_type": "guide-only",
+      "skill_name": "sdcorejs-test",
+      "dimensions": {
+        "correctness": {
+          "score": 80.0,
+          "weight": 0.35,
+          "issues_count": 4,
+          "issues": [
+            {
+              "severity": "info",
+              "message": "No examples provided",
+              "suggestion": "Add example usage with code blocks",
+              "deduction": 5
+            },
+            {
+              "severity": "warning",
+              "message": "SKILL_SPEC recommended field missing: 'version'",
+              "suggestion": "Add 'version' to frontmatter \u2014 Semantic version (e.g., \"1.0.0\")",
+              "deduction": 5
+            },
+            {
+              "severity": "warning",
+              "message": "SKILL_SPEC recommended field missing: 'metadata.author'",
+              "suggestion": "Add 'author' under metadata: \u2014 Author name or team (under metadata:)",
+              "deduction": 5
+            },
+            {
+              "severity": "warning",
+              "message": "SKILL_SPEC recommended field missing: 'metadata.tags'",
+              "suggestion": "Add 'tags' under metadata: \u2014 Categorization tags (under metadata:, list of 1-5 items)",
+              "deduction": 5
+            }
+          ]
+        },
+        "discoverability": {
+          "score": 90.0,
+          "weight": 0.25,
+          "issues_count": 2,
+          "issues": [
+            {
+              "severity": "info",
+              "message": "Description very long (420 chars, recommend 50-150)",
+              "suggestion": "Keep descriptions concise for progressive disclosure",
+              "deduction": 5
+            },
+            {
+              "severity": "info",
+              "message": "Broad description without negative triggers may cause over-triggering",
+              "suggestion": "Add boundary phrases like 'Do NOT use for...'",
+              "deduction": 5
+            }
+          ]
+        },
+        "reliability": {
+          "score": 85.0,
+          "weight": 0.25,
+          "issues_count": 3,
+          "issues": [
+            {
+              "severity": "info",
+              "message": "No prerequisites/requirements documented",
+              "suggestion": "Document dependencies, API keys, or setup needed",
+              "deduction": 5
+            },
+            {
+              "severity": "info",
+              "message": "No limitations documented",
+              "suggestion": "Add '## Limitations' section with known issues/constraints",
+              "deduction": 5
+            },
+            {
+              "severity": "info",
+              "message": "No troubleshooting section documented",
+              "suggestion": "Add '## Troubleshooting' with Error/Cause/Solution patterns",
+              "deduction": 5
+            }
+          ]
+        },
+        "efficiency": {
+          "score": 100.0,
+          "weight": 0.15,
+          "issues_count": 0,
+          "issues": []
+        }
+      },
+      "metrics": {
+        "total_tokens": 3342,
+        "estimated_tokens": 3342,
+        "estimate_method": "characters/4",
+        "recommended_max_tokens": 5000,
+        "frontmatter_tokens": 133,
+        "instructions_tokens": 3207,
+        "script_count": 0,
+        "has_examples": false,
+        "has_error_handling": true,
+        "has_frontmatter": true,
+        "has_instructions": false,
+        "has_scripts": false,
+        "has_lib_module": false
+      }
+    }
+  ],
+  "generated_at": "2026-11-14T09:01:22.921348+00:00"
+}

@@ -23,7 +23,7 @@ unsupported or unknown.
 ```yaml
 explore_context:
   source: sdcorejs-explore
-  action: summary-read | summary-refresh | code-map-readonly | code-map-write-approved | trace-flow-readonly | env-setup-readonly | env-setup-write-approved | recovery-readonly | persona-read | persona-write-approved | memories-read | memories-write-approved | conventions-read | conventions-sync-write-approved | documentation-harvest-readonly
+  action: summary-read | summary-refresh | code-map-readonly | code-map-write-approved | trace-flow-readonly | env-setup-readonly | env-setup-write-approved | runtime-check-readonly | runtime-start-authorized | recovery-readonly | persona-read | persona-write-approved | memories-read | memories-write-approved | conventions-read | conventions-sync-write-approved | documentation-harvest-readonly | project-blueprint-read | project-blueprint-write-approved
   target_root: <path>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
   tracks:
@@ -95,6 +95,8 @@ explore_context:
     skill: <sdcorejs-* | none>
     reason: <why>
   cleanup_signals: [] # bounded significant observations; see _refs/cleanup/workflow.md
+  instruction_resolution: {} # effective paths/scopes, selectors, conflicts; see existing-project-onboarding.md
+  runtime_context: {} # runtime-check-readonly/runtime-start-authorized; see explore-env-setup-actions.md
 ```
 
 Rules:

@@ -1,0 +1,1 @@
+Capture check: response and trace valid; all declared artifacts exist; all 11 target files unchanged.

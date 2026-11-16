@@ -1,0 +1,210 @@
+{
+  "source_hashes": {
+    "src/category.mjs": "4e41ec60fed4a96c10258f43697ab3c42fc32615fc2da4abc07f8f05dc4fdfc5",
+    "test/category.test.mjs": "40b9abba12eb6f8f0768ff1f5cb6f488aab5c44e7c7456e9787e259490b86537",
+    "package.json": "31db0624d4ac006c5ea80512d76cf583d683075aa3d040a1ac60b88163e11cf2",
+    "inputs/fix.diff": "6911ce52d4f19fb307f3bbadd89ed6093083547533725f18399fcf94c4837ec9",
+    ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md": "24ec1361b6672ebbf1adb4b02d4c7eb625f86f96faa8f2345c19a4d7de6580a7"
+  },
+  "scope": {
+    "tracks": [
+      "node"
+    ],
+    "boundaries": [
+      "category-normalization"
+    ],
+    "paths": [
+      "src/category.mjs"
+    ],
+    "keywords": [
+      "normalization"
+    ]
+  },
+  "positive": {
+    "selected": [
+      {
+        "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+        "concept_id": "normalization.nullish-category"
+      }
+    ],
+    "excluded": [],
+    "advisory_only": true,
+    "current_source_precedence": true
+  },
+  "controls": {
+    "source_drift": {
+      "alternate_bytes": "pre-fix-category-control.mjs",
+      "alternate_sha256": "f56e9a35d8c6f4d505cfaf6523d995076cd9e21c7fa5d1b2fcd4c2f35af8e102",
+      "result": {
+        "selected": [],
+        "excluded": [
+          {
+            "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+            "reason": "stale",
+            "details": [
+              "src/category.mjs"
+            ]
+          }
+        ],
+        "advisory_only": true,
+        "current_source_precedence": true
+      }
+    },
+    "test_drift": {
+      "alternate_bytes": "changed-test-control.txt",
+      "alternate_sha256": "8238361cfc3ba98f5ed20f31ee85149a015277fc1c8af9509ec43a87ff862de4",
+      "result": {
+        "selected": [],
+        "excluded": [
+          {
+            "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+            "reason": "stale",
+            "details": [
+              "test/category.test.mjs"
+            ]
+          }
+        ],
+        "advisory_only": true,
+        "current_source_precedence": true
+      }
+    },
+    "proof_drift": {
+      "alternate_bytes": "changed-proof-control.txt",
+      "alternate_sha256": "3d2eb1b3fba6863e626b80d7c98d756d6ea3288fba6a9c29dbeca1d54fec055a",
+      "result": {
+        "selected": [],
+        "excluded": [
+          {
+            "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+            "reason": "stale",
+            "details": [
+              ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md"
+            ]
+          }
+        ],
+        "advisory_only": true,
+        "current_source_precedence": true
+      }
+    },
+    "missing_proof": {
+      "selected": [],
+      "excluded": [
+        {
+          "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+          "reason": "unknown",
+          "details": [
+            ".sdcorejs/docs/general/2026-11-14-normalize-category-verification.md"
+          ]
+        }
+      ],
+      "advisory_only": true,
+      "current_source_precedence": true
+    },
+    "semantic_conflict": {
+      "selected": [],
+      "excluded": [
+        {
+          "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+          "reason": "conflicting",
+          "details": [
+            "src/category.mjs"
+          ]
+        }
+      ],
+      "advisory_only": true,
+      "current_source_precedence": true
+    },
+    "unrelated_task": {
+      "selected": [],
+      "excluded": [
+        {
+          "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+          "reason": "unrelated"
+        }
+      ],
+      "advisory_only": true,
+      "current_source_precedence": true
+    },
+    "empty_scope": {
+      "selected": [],
+      "excluded": [
+        {
+          "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+          "reason": "unrelated"
+        }
+      ],
+      "advisory_only": true,
+      "current_source_precedence": true
+    },
+    "wrong_repository": {
+      "selected": [],
+      "excluded": [
+        {
+          "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da",
+          "reason": "unrelated"
+        }
+      ],
+      "advisory_only": true,
+      "current_source_precedence": true
+    },
+    "legacy_memory": {
+      "path": ".sdcorejs/memories/workflow/old-payment-advice.md",
+      "body_loaded": false,
+      "bytes_unchanged": true,
+      "reason": "No verified-lesson schema, repository/applicability or proof fingerprints; unrelated payment scope.",
+      "result": {
+        "selected": [],
+        "excluded": [
+          {
+            "lesson_id": null,
+            "reason": "invalid",
+            "details": [
+              "verified lessons use schema_version 1 and artifact_kind memory",
+              "owner must be sdcorejs-explore",
+              "owner_repository_id must be a stable repository identity",
+              "track must be a safe path segment",
+              "concept_id must be a stable lowercase dotted or kebab-case identifier",
+              "problem is required",
+              "root_cause is required",
+              "resolution is required",
+              "source_revision is required",
+              "redaction_applied must be true",
+              "lesson_id must match semantic identity",
+              "artifact_id must match lesson_id",
+              "applicability must be a mapping",
+              "applicability.tracks must be an array of non-empty strings",
+              "applicability.modules must be an array of non-empty strings",
+              "applicability.boundaries must be an array of non-empty strings",
+              "applicability.paths must be an array of non-empty strings",
+              "applicability.keywords must be an array of non-empty strings",
+              "applicability needs at least one explicit scope",
+              "regression_protection requires a description and repository-relative test/check paths",
+              "source_fingerprints must contain relevant current sources",
+              "verification must have result PASSED",
+              "verification requires the actual command and repository-relative cwd",
+              "verification requires a sanitized proof path and sha256"
+            ]
+          }
+        ],
+        "advisory_only": true,
+        "current_source_precedence": true
+      }
+    }
+  },
+  "idempotency": {
+    "status": "unchanged",
+    "reasons": [],
+    "lesson_id": "lesson-cdde84b34db031f0134fc96d2babf9ccb4f40290bc883b17bad0f164117827da"
+  },
+  "validation": {
+    "ok": true,
+    "errors": []
+  },
+  "freshness": {
+    "status": "fresh",
+    "reasons": []
+  },
+  "no_application_edits": true,
+  "no_conventions_promoted": true,
+  "pointer_decision": "AGENTS.md unchanged: canonical lesson JSON is discoverable by Explore metadata selection; no new policy or pointer was required."
+}

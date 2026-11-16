@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "patterns": [
+    {
+      "id": "op-list",
+      "name": "Record list",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "browse-records"
+      ],
+      "data_shapes": [
+        "flat",
+        "filterable"
+      ],
+      "source_refs": [
+        "core-list",
+        "portal-pages"
+      ],
+      "path": "patterns/op-list.json"
+    },
+    {
+      "id": "op-tree",
+      "name": "Hierarchical list",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "browse-hierarchy"
+      ],
+      "data_shapes": [
+        "hierarchical"
+      ],
+      "source_refs": [
+        "core-patterns",
+        "portal-tree",
+        "portal-pages"
+      ],
+      "path": "patterns/op-tree.json"
+    },
+    {
+      "id": "op-split",
+      "name": "Work queue",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "process-queue",
+        "inspect-record"
+      ],
+      "data_shapes": [
+        "sequential"
+      ],
+      "source_refs": [
+        "core-split",
+        "portal-split"
+      ],
+      "path": "patterns/op-split.json"
+    },
+    {
+      "id": "op-detail",
+      "name": "Record detail",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "inspect-record"
+      ],
+      "data_shapes": [
+        "flat",
+        "relational"
+      ],
+      "source_refs": [
+        "core-patterns",
+        "portal-detail",
+        "portal-pages"
+      ],
+      "path": "patterns/op-detail.json"
+    },
+    {
+      "id": "op-form",
+      "name": "Record form",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "edit-record"
+      ],
+      "data_shapes": [
+        "flat",
+        "sectioned",
+        "parent-lines"
+      ],
+      "source_refs": [
+        "core-patterns",
+        "portal-form",
+        "portal-pages"
+      ],
+      "path": "patterns/op-form.json"
+    },
+    {
+      "id": "op-wizard",
+      "name": "Guided process",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "complete-steps",
+        "edit-record"
+      ],
+      "data_shapes": [
+        "dependent-steps"
+      ],
+      "source_refs": [
+        "core-flow",
+        "core-wizard-source",
+        "portal-compositions"
+      ],
+      "path": "patterns/op-wizard.json"
+    },
+    {
+      "id": "op-drawer",
+      "name": "Contextual drawer",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "inspect-record",
+        "browse-records"
+      ],
+      "data_shapes": [
+        "flat",
+        "sectioned"
+      ],
+      "source_refs": [
+        "core-patterns",
+        "portal-drawer",
+        "portal-pages"
+      ],
+      "path": "patterns/op-drawer.json"
+    },
+    {
+      "id": "op-hierarchy",
+      "name": "Hierarchy selection",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "select-hierarchy"
+      ],
+      "data_shapes": [
+        "hierarchical",
+        "permission-matrix"
+      ],
+      "source_refs": [
+        "portal-hierarchy",
+        "portal-pages"
+      ],
+      "path": "patterns/op-hierarchy.json"
+    },
+    {
+      "id": "web-product",
+      "name": "Product landing",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "promote-product"
+      ],
+      "data_shapes": [
+        "content"
+      ],
+      "source_refs": [
+        "uipro-landing",
+        "uipro-styles"
+      ],
+      "path": "patterns/web-product.json"
+    },
+    {
+      "id": "web-service",
+      "name": "Service landing",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "promote-service"
+      ],
+      "data_shapes": [
+        "content"
+      ],
+      "source_refs": [
+        "uipro-landing",
+        "uipro-styles"
+      ],
+      "path": "patterns/web-service.json"
+    },
+    {
+      "id": "web-pricing",
+      "name": "Plan comparison",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "compare-plans"
+      ],
+      "data_shapes": [
+        "comparison"
+      ],
+      "source_refs": [
+        "uipro-landing",
+        "uipro-styles"
+      ],
+      "path": "patterns/web-pricing.json"
+    },
+    {
+      "id": "web-editorial",
+      "name": "Editorial portfolio",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "present-work"
+      ],
+      "data_shapes": [
+        "content"
+      ],
+      "source_refs": [
+        "uipro-landing",
+        "uipro-styles"
+      ],
+      "path": "patterns/web-editorial.json"
+    }
+  ],
+  "themes": [
+    {
+      "id": "modern-minimalist",
+      "name": "Modern Minimalist",
+      "path": "themes/modern-minimalist.json"
+    },
+    {
+      "id": "ocean-depths",
+      "name": "Ocean Depths",
+      "path": "themes/ocean-depths.json"
+    },
+    {
+      "id": "arctic-frost",
+      "name": "Arctic Frost",
+      "path": "themes/arctic-frost.json"
+    },
+    {
+      "id": "forest-canopy",
+      "name": "Forest Canopy",
+      "path": "themes/forest-canopy.json"
+    },
+    {
+      "id": "golden-hour",
+      "name": "Golden Hour",
+      "path": "themes/golden-hour.json"
+    },
+    {
+      "id": "midnight-galaxy",
+      "name": "Midnight Galaxy",
+      "path": "themes/midnight-galaxy.json"
+    }
+  ],
+  "shared_blocks": [
+    "page-header-actions",
+    "entity-relations",
+    "tabs-and-steps",
+    "data-states"
+  ],
+  "shell_source_refs": [
+    "portal-shell",
+    "portal-tokens"
+  ]
+}

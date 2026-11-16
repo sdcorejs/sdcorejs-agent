@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "id": "web-pricing",
+  "name": "Plan comparison",
+  "surfaces": [
+    "public-website",
+    "landing-page",
+    "mobile-web"
+  ],
+  "jobs": [
+    "compare-plans"
+  ],
+  "data_shapes": [
+    "comparison"
+  ],
+  "applicability": "Compare real offers with known terms.",
+  "avoid_when": "Missing prices and claims remain explicit sample placeholders.",
+  "variants": [
+    {
+      "id": "cards",
+      "layout": "pricing"
+    },
+    {
+      "id": "comparison",
+      "layout": "pricing"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "uipro-landing",
+    "uipro-styles"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Inspect exact installed component exports and pattern source before implementation."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original HTML composition derived from the cited source structure; domain fixtures are illustrative, not requirements.",
+  "source_locators": [
+    {
+      "source_ref": "uipro-landing",
+      "key": "Pattern ID",
+      "values": [
+        "pricing-page-cta",
+        "comparison-table-cta"
+      ]
+    },
+    {
+      "source_ref": "uipro-styles",
+      "key": "Style ID",
+      "values": [
+        "minimalism-and-swiss-style"
+      ]
+    }
+  ]
+}

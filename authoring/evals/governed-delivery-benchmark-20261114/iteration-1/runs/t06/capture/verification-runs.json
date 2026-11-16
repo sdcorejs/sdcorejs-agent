@@ -1,0 +1,161 @@
+[
+  {
+    "name": "runtime",
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "runtime.stdout.txt",
+    "stderr": "runtime.stderr.txt"
+  },
+  {
+    "name": "documentation-plan",
+    "argv": [
+      "node",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/prepare-docs.mjs"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 1,
+    "stdout": "documentation-plan.stdout.txt",
+    "stderr": "documentation-plan.stderr.txt"
+  },
+  {
+    "name": "runtime.r2",
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "runtime.r2.stdout.txt",
+    "stderr": "runtime.r2.stderr.txt"
+  },
+  {
+    "name": "documentation-plan.r2",
+    "argv": [
+      "node",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/prepare-docs.mjs"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "documentation-plan.r2.stdout.txt",
+    "stderr": "documentation-plan.r2.stderr.txt"
+  },
+  {
+    "name": "unit.r2",
+    "argv": [
+      "npm",
+      "test"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "unit.r2.stdout.txt",
+    "stderr": "unit.r2.stderr.txt"
+  },
+  {
+    "name": "integration.r2",
+    "argv": [
+      "npm",
+      "run",
+      "test:integration"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "integration.r2.stdout.txt",
+    "stderr": "integration.r2.stderr.txt"
+  },
+  {
+    "name": "role-state-matrix.r2",
+    "argv": [
+      "node",
+      "--input-type=module",
+      "-e",
+      "import assert from 'node:assert/strict'; import {canCancel} from './src/order.mjs'; const roles=['operator','administrator','viewer','',undefined,null]; const states=['draft','submitted','cancelled','',undefined,null]; let count=0; for(const role of roles) for(const state of states){const expected=role==='operator' && state==='draft';const actual=canCancel(role,state);assert.equal(actual,expected);console.log(JSON.stringify({role:String(role),state:String(state),actual}));count++;} console.log('Passed '+count+' predicate checks; no state transition or HTTP action tested.');"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "role-state-matrix.r2.stdout.txt",
+    "stderr": "role-state-matrix.r2.stderr.txt"
+  },
+  {
+    "name": "documentation-final",
+    "argv": [
+      "python3",
+      "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/capture/verify-docs.py"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "documentation-final.stdout.txt",
+    "stderr": "documentation-final.stderr.txt"
+  },
+  {
+    "name": "diff-check",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "diff-check.stdout.txt",
+    "stderr": "diff-check.stderr.txt"
+  },
+  {
+    "name": "technical-whitespace",
+    "argv": [
+      "git",
+      "diff",
+      "--no-index",
+      "--check",
+      "/dev/null",
+      ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 1,
+    "stdout": "technical-whitespace.stdout.txt",
+    "stderr": "technical-whitespace.stderr.txt"
+  },
+  {
+    "name": "final-status",
+    "argv": [
+      "git",
+      "status",
+      "--short"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "final-status.stdout.txt",
+    "stderr": "final-status.stderr.txt"
+  },
+  {
+    "name": "final-diff",
+    "argv": [
+      "git",
+      "diff",
+      "--",
+      "docs/operator-guide.md"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 0,
+    "stdout": "final-diff.stdout.txt",
+    "stderr": "final-diff.stderr.txt"
+  },
+  {
+    "name": "technical-whitespace.r2",
+    "argv": [
+      "git",
+      "diff",
+      "--no-index",
+      "--check",
+      "/dev/null",
+      ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t06/target",
+    "exit_code": 1,
+    "stdout": "technical-whitespace.r2.stdout.txt",
+    "stderr": "technical-whitespace.r2.stderr.txt",
+    "result": "No whitespace diagnostics; --no-index implies difference exit status 1 for the new file. The earlier wrapper incorrectly required 0."
+  }
+]

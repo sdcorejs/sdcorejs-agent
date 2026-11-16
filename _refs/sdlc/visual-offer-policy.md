@@ -1,5 +1,11 @@
 # Visual Offer Policy
 
+For concrete screen examples after visual intent is established, use
+`_refs/design/visual-library/README.md`: select task-based candidates, adapt the
+same brief and existing tokens, then deliver HTML or an explicit text fallback.
+The library supplies the recipe; the offer, decline, consent and approval rules
+below remain authoritative. Direct preview requests need no second invitation.
+
 Canonical recognition and invitation policy for every decision owner. Load just
 before presenting or settling an open choice, including direct Design entry.
 Do not load the companion lifecycle for simple work or merely to detect a choice.

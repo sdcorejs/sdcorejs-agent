@@ -1,5 +1,11 @@
 # Visual Companion
 
+For business or website screen previews, follow `_refs/design/visual-library/README.md`
+after visual intent is established. Schema-v2 `pattern` previews share static
+rendering and fixed local controls. They do not start a server, open a browser,
+save business data or grant approval. Live events retain session/revision checks;
+bind confirmed feedback to the current screen digest before Design handoff.
+
 The visual companion is an optional decision aid for spatial or visual choices.
 It does not replace the main conversation, an approval gate, or the approved
 spec and plan.

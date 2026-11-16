@@ -1,0 +1,135 @@
+[
+  {
+    "command": "git rev-parse --show-toplevel",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-root.log",
+    "output_sha256": "4511b6446c3827612962e3f4df4b009985b0e4ec346e332eec6893a9b8efd920"
+  },
+  {
+    "command": "git rev-parse HEAD",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-head.log",
+    "output_sha256": "f0d8fabfb75e2d56549951f1a9950c9051f610fb9408c99f2a868e3e9cd9c2aa"
+  },
+  {
+    "command": "git status --short",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-status-before.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": "git diff --no-ext-diff",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-diff-before.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": "git diff --cached --no-ext-diff",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-index-before.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": "git ls-files",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/git-files.log",
+    "output_sha256": "28677da6abd3dff98693affd1410df268eb6994b3e3cbebbf135f0235c5a2638"
+  },
+  {
+    "command": "git config --get remote.origin.url",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/repository-origin.log",
+    "output_sha256": "5df908c3121cf7d185bfce90988cc7ebc0dcda10d21a112d39723e214ea3c729"
+  },
+  {
+    "command": "node --version",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/node-version.log",
+    "output_sha256": "249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81"
+  },
+  {
+    "command": "npm --version",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/npm-version.log",
+    "output_sha256": "d9f29f5aab43c8c1a8d6acc856e258b89735f541aa5e1f07b39a62f28bfa8d06"
+  },
+  {
+    "command": "npm test",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/unit.log",
+    "output_sha256": "adfb2b4e511c9425ad3de8c91ce32af67fb527f9734c7e157dadfc36be8ce415"
+  },
+  {
+    "command": "npm run test:integration",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/integration.log",
+    "output_sha256": "236301c721afc8be288256c505de835434e3e897ee491d1ea0cbc35248fb160b"
+  },
+  {
+    "command": "npm run test:e2e",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/e2e.log",
+    "output_sha256": "34e29d158c736fad2d0115de61504dc15811c75827b607589dbf596690c558fd"
+  },
+  {
+    "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/build-blueprint.py",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/build-candidate.log",
+    "output_sha256": "cf1c2c0ad7311517f854dd28df491be2308f2be46265f4c8f4fb533a739165e6"
+  },
+  {
+    "command": "node /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-blueprint.mjs candidate",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-candidate.log",
+    "output_sha256": "be46c3f6f601cfda3a1f6755c0cd107ae56a989034178dcee6f718c7ec1ac481"
+  },
+  {
+    "command": "node /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-blueprint.mjs final",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/validate-persisted.log",
+    "output_sha256": "28deed25a08d48db29bcfe5f7c96bfbb94c1fd79aa342cb650849d345a9ee954"
+  },
+  {
+    "command": "git diff --check",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/diff-check.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": "git status --short --untracked-files=all",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/status-after.log",
+    "output_sha256": "4acd3948e8aef909597c88b64808a3b0a05d65c58e8c181e0afedc4c735e7139"
+  },
+  {
+    "command": "git diff --no-ext-diff -- AGENTS.md",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/agents-diff.log",
+    "output_sha256": "721e9d516ed7d7a6c1be7a310d63147f2495e2aff6956b4a038ea5f9da64266c"
+  },
+  {
+    "command": "git diff --exit-code -- README.md package.json src test",
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/target",
+    "exit_code": 0,
+    "output_path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t02/capture/protected-diff.log",
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

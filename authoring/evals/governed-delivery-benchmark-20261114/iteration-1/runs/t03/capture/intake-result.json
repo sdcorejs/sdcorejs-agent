@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "change_ref": "quantity-limits",
+  "source_exports": [
+    {
+      "path": "inputs/ticket-v1.json",
+      "sha256": "06d7686ca99e44b66783d876a54a7e337f9b851d5b6ae53a1c41977cf0468d06",
+      "revision": "rev-1",
+      "updated_at": "2026-11-14T08:00:00Z"
+    },
+    {
+      "path": "inputs/ticket-v2.json",
+      "sha256": "f55cc2a3b7c62972ae24b9d66b3d971f8f3d8fb5ab6cbf7077f92983232fb21a",
+      "revision": "rev-2",
+      "updated_at": "2026-11-14T09:00:00Z"
+    }
+  ],
+  "normalizations": [
+    {
+      "revision": "rev-1",
+      "id": "image-1",
+      "source_path": "inputs/quantity.png",
+      "source_locator": "https://example.invalid/quantity.png",
+      "persisted_url": null,
+      "reason": "Synthetic .invalid URL is not accepted by the public-HTTPS validator. No fetch attempted; the authorized local bytes supply this attachment. Query removed completely."
+    },
+    {
+      "revision": "rev-2",
+      "id": "image-1",
+      "source_path": "inputs/quantity.png",
+      "source_locator": "https://example.invalid/quantity.png",
+      "persisted_url": null,
+      "reason": "Synthetic .invalid URL is not accepted by the public-HTTPS validator. No fetch attempted; the authorized local bytes supply this attachment. Query removed completely."
+    }
+  ],
+  "delta": {
+    "status": "changed",
+    "revision_changed": true,
+    "content_changed": true,
+    "requires_spec_review": true,
+    "approved_behavior_changed": false
+  },
+  "snapshots": [
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+      "revision": "rev-1",
+      "content_hash": "3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7",
+      "source_hash": "314f8c2afd1769fe19c40dbe2b962d4819a433479e720afe529825052289c566",
+      "captured_at": "2026-11-14T09:08:31.934Z"
+    },
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json",
+      "revision": "rev-2",
+      "content_hash": "eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f",
+      "source_hash": "b4ef17b8b4217fb974258a3001f53d8277d312328c14c3dbdc672ebac5d91ae7",
+      "captured_at": "2026-11-14T09:08:31.963Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+      "kind": "ticket-asset",
+      "sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+      "bytes": 68
+    },
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+      "kind": "ticket-snapshot",
+      "sha256": "3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7",
+      "bytes": 3131
+    },
+    {
+      "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json",
+      "kind": "ticket-snapshot",
+      "sha256": "eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f",
+      "bytes": 3859
+    },
+    {
+      "path": ".sdcorejs/product/decisions/quantity-limits.md",
+      "kind": "product-doc",
+      "sha256": "7bb987593e6fa9c611de9391bd977341ac6e3e8f2463f6966f10796315c024c3",
+      "bytes": 10845
+    }
+  ],
+  "artifact_context": {
+    "schema_version": 1,
+    "change_ref": "quantity-limits",
+    "source_spec": "approved-requirements.md",
+    "source_plan": "none",
+    "required_with_change": [
+      {
+        "path": ".sdcorejs/product/decisions/quantity-limits.md",
+        "kind": "product-doc",
+        "reason": "product decisions written for this change"
+      },
+      {
+        "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/assets/reference/6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec.png",
+        "kind": "ticket-asset",
+        "reason": "User-authorized immutable local ticket intake"
+      },
+      {
+        "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/3f09c80f63a3aaf890e4033c13efc6364d41a11e2073cd806ae7d925b8715ef7.json",
+        "kind": "ticket-snapshot",
+        "reason": "User-authorized immutable local ticket intake"
+      },
+      {
+        "path": ".sdcorejs/tickets/17ae12479a2cc2f40fed5f54b5d9b95dc164fadfb6497b47f8c2bbc85710aab2/snapshots/eb092cb9122b4af48badf11523c2ef6d3d96bc3a8ffe59b3d1c3a52e8e0b2c3f.json",
+        "kind": "ticket-snapshot",
+        "reason": "User-authorized immutable local ticket intake"
+      }
+    ],
+    "shared_owned": [],
+    "conditional": [],
+    "local_only": [],
+    "unrelated_observed": []
+  },
+  "report_path": ".sdcorejs/product/decisions/quantity-limits.md"
+}

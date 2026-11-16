@@ -1,0 +1,114 @@
+[
+  {
+    "name": "head",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+    "started_at": "2026-11-14T09:15:37.358733+00:00",
+    "finished_at": "2026-11-14T09:15:37.362270+00:00",
+    "exit_code": 0,
+    "stdout": "head.stdout.txt",
+    "stderr": "head.stderr.txt",
+    "stdout_sha256": "ba97490277e3765f5ded033e374344b61f884d5db6ee163845c3a8456d15af3e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "status-before",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+    "started_at": "2026-11-14T09:15:37.362445+00:00",
+    "finished_at": "2026-11-14T09:15:37.368499+00:00",
+    "exit_code": 0,
+    "stdout": "status-before.stdout.txt",
+    "stderr": "status-before.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "node-version",
+    "argv": [
+      "node",
+      "--version"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+    "started_at": "2026-11-14T09:15:37.368837+00:00",
+    "finished_at": "2026-11-14T09:15:37.375914+00:00",
+    "exit_code": 0,
+    "stdout": "node-version.stdout.txt",
+    "stderr": "node-version.stderr.txt",
+    "stdout_sha256": "249baf635bb43877fcb9422efa1a4904b702d0ddf14d3949b7cd0950d5229c81",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "unit",
+    "argv": [
+      "node",
+      "--test",
+      "test/unit.test.mjs"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+    "started_at": "2026-11-14T09:15:37.376209+00:00",
+    "finished_at": "2026-11-14T09:15:37.635683+00:00",
+    "exit_code": 0,
+    "stdout": "unit.stdout.txt",
+    "stderr": "unit.stderr.txt",
+    "stdout_sha256": "3f74817b81cf7931534f49b3b70f144b64abd259e6d22b07cd7b1e78cf4345de",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "integration",
+    "argv": [
+      "node",
+      "--test",
+      "test/integration.test.mjs"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+    "started_at": "2026-11-14T09:15:37.635988+00:00",
+    "finished_at": "2026-11-14T09:15:37.806761+00:00",
+    "exit_code": 0,
+    "stdout": "integration.stdout.txt",
+    "stderr": "integration.stderr.txt",
+    "stdout_sha256": "2450f7f0bf8691487f0b9a63c45709da54de99700f0ed5dd0629e5ba39031cd1",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "quantity-probe",
+    "argv": [
+      "node",
+      "--input-type=module",
+      "-e",
+      "import { quantity } from './src/order.mjs';\nlet failures = 0;\nfor (const value of [0, 1, 2, 100, 101, 200]) {\n  try { console.log(JSON.stringify({value, expected:'accept per snapshot rev-2', actual:'accepted', result:quantity(value)})); }\n  catch (error) { failures++; console.log(JSON.stringify({value, expected:'accept per snapshot rev-2', actual:'rejected', error:error.message})); }\n}\nconsole.log(JSON.stringify({comparison:'snapshot description, not approved AC', rejected_expected_valid_values:failures, evidence_class:'UNIT', api_execution:false}));\nprocess.exitCode = failures ? 1 : 0;\n"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+    "started_at": "2026-11-14T09:15:37.807125+00:00",
+    "finished_at": "2026-11-14T09:15:37.849278+00:00",
+    "exit_code": 1,
+    "stdout": "quantity-probe.stdout.txt",
+    "stderr": "quantity-probe.stderr.txt",
+    "stdout_sha256": "53698b4e480f8a06b25d2d3d7a36750956b29d398a186157eda0ece66a3d78a9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "status-after",
+    "argv": [
+      "git",
+      "status",
+      "--porcelain=v1"
+    ],
+    "cwd": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t11/target",
+    "started_at": "2026-11-14T09:15:37.849595+00:00",
+    "finished_at": "2026-11-14T09:15:37.853518+00:00",
+    "exit_code": 0,
+    "stdout": "status-after.stdout.txt",
+    "stderr": "status-after.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

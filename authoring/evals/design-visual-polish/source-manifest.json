@@ -1,0 +1,137 @@
+{
+  "head": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "changed": [
+    {
+      "path": "_refs/design/visual-library/compose-preview.mjs",
+      "before_sha256": "228617fa6d18473e530c8b273d05edec23cff76517a220f4fd3d389184ee1d7e",
+      "sha256": "524c18a589540e750000ab3f4e962e36bd231ce0ed552318e899ec04c4daa77c"
+    },
+    {
+      "path": "_refs/design/visual-library/library.mjs",
+      "before_sha256": "a3ba5055a4b2025dad70d33ecbfbb3529769f4d7aed696db12ceea6cc86686fb",
+      "sha256": "3a29a0416625d7ee6fc7bf476a15897365bc6619f6c40e594e5cbd501428ee70"
+    },
+    {
+      "path": "_refs/design/visual-library/render-pattern.mjs",
+      "before_sha256": "c5c7d951804084fb34e28f27c005b3e94048f0d6f4f82c3f8df466625cf9df70",
+      "sha256": "50b94d1904c27e07c39e9fcdb04fe4e18c896c8855449d50ce833ce2e6d7018f"
+    },
+    {
+      "path": "_refs/design/visual-library/styles.mjs",
+      "before_sha256": "c274ab09dd00838a3d1d2626d9b5d52f7d3bb918af4ed877fcb9238cfaa18b60",
+      "sha256": "bab935737cea02827c52df39e61be5d1756f21239cbf348ed508d71349b0e6e8"
+    },
+    {
+      "path": "_refs/design/visual-library/README.md",
+      "before_sha256": "ab4cd1423db8c390b0728b4d18254416a4a674919769e6e40d0dd7fc5d3b4462",
+      "sha256": "72da29529dea6555352bd235254f636ae9d793373ff78542c2c54a1de6b3926d"
+    },
+    {
+      "path": "_refs/design/visual-library/examples/record-context.json",
+      "before_sha256": "04d507bc4f0920601053e01660073c265797e020438c6a754ce658b676e620aa",
+      "sha256": "f8eb01895bdb9e17a57be5c713c453a7b70233bf8e73b52d2deb7d503f222886"
+    },
+    {
+      "path": "_refs/design/visual-library/examples/record-groups.json",
+      "before_sha256": "6669c3b41cfc0786f4f92282f1b3e976a5d29fa933d53c04f446d9eceda31798",
+      "sha256": "01e7a5fe7332600fd1e0c9865c0b0a89d757dc46589d79a15a1a57124869c55c"
+    },
+    {
+      "path": "_refs/design/visual-library/examples/queue-context.json",
+      "before_sha256": "dbc3de46bacc6518e396c8a487d355bdd236424d3412a22af6320421fa86c335",
+      "sha256": "eb264db5b55ec884abc4a30bf0c4b88d2f536836450794582611c818bc2b06d3"
+    },
+    {
+      "path": "_refs/design/visual-library/examples/product-direction.json",
+      "before_sha256": "86cd7640673b7fcd54d634eaa6f74b1c6b426088d6cd2d7f9465fa4ce53def05",
+      "sha256": "947b451678f5b6c35b609aeeb2f592ab17d6c5e3ee54121e3285908429d351ed"
+    },
+    {
+      "path": "_refs/design/visual-library/examples/form-flow.json",
+      "before_sha256": "fed59f63d59bc405be4cc06d625c848dc84c6c4e420d3a3256edf555f0275506",
+      "sha256": "11c0437b7716bbe38644e98487f10a212fee4eb01c378d705593ae7e6e0b6c6d"
+    },
+    {
+      "path": "_refs/design/visual-library/examples/hierarchy-presentation.json",
+      "before_sha256": "0037abff51bc9f2c89c3ab84778f89c596f011cca746e8e1cdd04c5a3e5cf085",
+      "sha256": "048d670d620fe1c7e0cec79d42a92368b9a04f76b29ac221c55a25932b086eba"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion/renderer.mjs",
+      "before_sha256": "47a1155ec1f77034dbf9c11208594252112b7644e3e4de236081f0f2d426f9d8",
+      "sha256": "f0eaaf5f27fbbf0e575988096558cb0c5419c81b1f7c6febe7da86c0fcbc369b"
+    },
+    {
+      "path": "_refs/sdlc/static-visual-composer.mjs",
+      "before_sha256": "084f5672078d9b63b4e95a53fc3b8595cf62bd668efc94dd562f0c3473809da1",
+      "sha256": "9422be8c5dbf93b247be89955fe7463014f90a592bf02f46b7347e45baa3140c"
+    },
+    {
+      "path": "test/e2e/design-visual-browser.mjs",
+      "before_sha256": "adb31c6e69a8d2815adf45f435ef27b64057e9e8fd1a5e726d9a82c726cb7604",
+      "sha256": "c4d882a0bf2836e7d46804876a253cd31d01b7a806545502ba2ca4785e366052"
+    }
+  ],
+  "files": {
+    "AGENTS.md": "23d42f646765f8e24d63ab3d761d89670cde76717947f9e1464ef74eddaace09",
+    "_refs/design/visual-library/README.md": "72da29529dea6555352bd235254f636ae9d793373ff78542c2c54a1de6b3926d",
+    "_refs/design/visual-library/catalog.json": "5058d88acb45f4f320212cb886b53abf184f58c4b94972092a126ce2677d40ad",
+    "_refs/design/visual-library/compose-preview.mjs": "524c18a589540e750000ab3f4e962e36bd231ce0ed552318e899ec04c4daa77c",
+    "_refs/design/visual-library/examples/form-flow.json": "11c0437b7716bbe38644e98487f10a212fee4eb01c378d705593ae7e6e0b6c6d",
+    "_refs/design/visual-library/examples/hierarchy-presentation.json": "048d670d620fe1c7e0cec79d42a92368b9a04f76b29ac221c55a25932b086eba",
+    "_refs/design/visual-library/examples/product-direction.json": "947b451678f5b6c35b609aeeb2f592ab17d6c5e3ee54121e3285908429d351ed",
+    "_refs/design/visual-library/examples/queue-context.json": "eb264db5b55ec884abc4a30bf0c4b88d2f536836450794582611c818bc2b06d3",
+    "_refs/design/visual-library/examples/record-context.json": "f8eb01895bdb9e17a57be5c713c453a7b70233bf8e73b52d2deb7d503f222886",
+    "_refs/design/visual-library/examples/record-groups.json": "01e7a5fe7332600fd1e0c9865c0b0a89d757dc46589d79a15a1a57124869c55c",
+    "_refs/design/visual-library/interaction.mjs": "791bbd782f319b182c242cbe5b1890c775c97dd639dcf5b4a9d04cdfc38b3e02",
+    "_refs/design/visual-library/library.mjs": "3a29a0416625d7ee6fc7bf476a15897365bc6619f6c40e594e5cbd501428ee70",
+    "_refs/design/visual-library/licenses/anthropic.txt": "bc6b3af2f331cbc7fb0da1344efb2cbe5877a31498b4d70dbc7000f3405a1362",
+    "_refs/design/visual-library/licenses/core.txt": "062ef605c9d5e70dced3281c95425de1e5069de502cf7b8d49a2940de39ccae4",
+    "_refs/design/visual-library/licenses/portal.txt": "062ef605c9d5e70dced3281c95425de1e5069de502cf7b8d49a2940de39ccae4",
+    "_refs/design/visual-library/licenses/uipro.txt": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014",
+    "_refs/design/visual-library/pattern.schema.json": "b52c5d3c5ff8785d4ffbd4dcb3b5567459731715f42ee3c25f991e3ccacb00ff",
+    "_refs/design/visual-library/patterns/op-detail.json": "49a8a8c020821b063ff425235b56cc9b3022fa4eefff17714b92bfb91982ddcb",
+    "_refs/design/visual-library/patterns/op-drawer.json": "a3369eeed52fecd119759d0e26a72490a84de4e2af8af2321398fbe63b6f4f2f",
+    "_refs/design/visual-library/patterns/op-form.json": "26e04b308c5d22f4d652ca773001cf622f4620cdbdb19d56820eff99fd6b0692",
+    "_refs/design/visual-library/patterns/op-hierarchy.json": "a00c149dbd613dc8417782302e3e36357c4efbfa7d14c68a955e6a5aa5d1458a",
+    "_refs/design/visual-library/patterns/op-list.json": "cd82d80f1e8cdcd8e449aef945591fe525ef79d4fea9cd70f9d056182d5e32f2",
+    "_refs/design/visual-library/patterns/op-split.json": "bc7af6a3ac2a2c7ca4cdaaf303f76ded12519f24b24137fd62f6d59c6ee53896",
+    "_refs/design/visual-library/patterns/op-tree.json": "85d730f5ab27224fcf03313eb95fac2836bc0ca7fd48ef8e15cd75a43a922274",
+    "_refs/design/visual-library/patterns/op-wizard.json": "17a845a3cb571ca5c06a419329daac569bd7be4ec33e9c10ef41c69e440bea7d",
+    "_refs/design/visual-library/patterns/web-editorial.json": "a0288595fe75f982815c43b11cbcbe83861b35364c9bb135303a0bbee06a9cd1",
+    "_refs/design/visual-library/patterns/web-pricing.json": "6c5d3012ad6633db1aa4c72a15a5f3d4eefea56a5d3a974fe490e2ce1fb3e3b9",
+    "_refs/design/visual-library/patterns/web-product.json": "8511bbc2c08cb8fe5de6fb11b55bd7a74cea967eb343568ff1144cf5000c39c2",
+    "_refs/design/visual-library/patterns/web-service.json": "cca1297fce5c44add9a0a5c23822825c98ec9eec2366fc5d2ed5e5f325c5ed0d",
+    "_refs/design/visual-library/preview.schema.json": "388dcbdbbdabc18adb755c4480447ce29bba8b38452c1b3533f28949245b139f",
+    "_refs/design/visual-library/render-pattern.mjs": "50b94d1904c27e07c39e9fcdb04fe4e18c896c8855449d50ce833ce2e6d7018f",
+    "_refs/design/visual-library/select-patterns.mjs": "246654075b6bbfa28ebbc19626226779f3eee73b450d44cea16714e60e69009f",
+    "_refs/design/visual-library/selection.mjs": "8bc84aed7c175400723fbc2097dd7cf9ffd7f59c75b6c2bfbbb0731f4470270c",
+    "_refs/design/visual-library/sources.json": "90a33eecff77cb567db2dc2ba0aba179b33ff64e9e1608d4861d16b550e59c78",
+    "_refs/design/visual-library/styles.mjs": "bab935737cea02827c52df39e61be5d1756f21239cbf348ed508d71349b0e6e8",
+    "_refs/design/visual-library/themes/arctic-frost.json": "66f0700b08744b4030b8776d3b8ccc1a7c26fc646d31e945260f3823777d07b3",
+    "_refs/design/visual-library/themes/forest-canopy.json": "341c7066bbf416a5b17d1f08192410eeb926006f9b616a61ba0b9829ec1728d1",
+    "_refs/design/visual-library/themes/golden-hour.json": "d0f6782cc164bd1c83aae548b5f33ba651fe0933249988d7efa29ea2c6650506",
+    "_refs/design/visual-library/themes/midnight-galaxy.json": "e9a4a648e5161b7e14e51a7d069fa7c9a9115ee7318413526614c67599b0fb60",
+    "_refs/design/visual-library/themes/modern-minimalist.json": "85e7a6d26cd87ba12cd9d468c7ffbe43517ad43f16f1a567c6147ee0bc0dec53",
+    "_refs/design/visual-library/themes/ocean-depths.json": "6bc2b377fb52a8c66dc659874676866759d3b030495529ab1f03bc3341b8730b",
+    "_refs/sdlc/static-visual-composer.mjs": "9422be8c5dbf93b247be89955fe7463014f90a592bf02f46b7347e45baa3140c",
+    "_refs/sdlc/visual-companion/README.md": "dbce4e575fba0d15445fbe51bd49a4b67f548853586de029d8021fd895e63d43",
+    "_refs/sdlc/visual-companion/cli.mjs": "3ea0136b9f524c2f55942bc9005d263ab879af68a5bb5fb96f60eaba1146963a",
+    "_refs/sdlc/visual-companion/client-script.mjs": "cf906ceb4fb946f1e4254c809d69706e8a710490690540b6d837e0ceae2f0c08",
+    "_refs/sdlc/visual-companion/launcher.mjs": "0dca0ce37b0b45241c0bfc70c1b372741815024e724374660ade762f0ef2c7f3",
+    "_refs/sdlc/visual-companion/live-document.mjs": "d99fecb5be10260f3765301f8f34682d507defc025554e5302bf93244bbe9bf4",
+    "_refs/sdlc/visual-companion/paths.mjs": "1a281fbc9831a6aa38b69b27a003afbfd960ed1faa9de6c1c5e09954cd468e06",
+    "_refs/sdlc/visual-companion/protocol.mjs": "612034861ae8a20070ae4cc06eb3413ab83d88c486c02ebb69897b9d4134eb68",
+    "_refs/sdlc/visual-companion/renderer.mjs": "f0eaaf5f27fbbf0e575988096558cb0c5419c81b1f7c6febe7da86c0fcbc369b",
+    "_refs/sdlc/visual-companion/screen.mjs": "749fd221c0d45d4461e629de1fe171381265f82887eeefcc47d7695f41be9e08",
+    "_refs/sdlc/visual-companion/server.mjs": "9f10baa2ff1fc7cae661062b7d27feb2948e426c9869ebc8f2f26dd6d3e61c87",
+    "_refs/sdlc/visual-screen.schema.json": "ba7e76f0a62f3a452783f03a896337e89089994df20b432000bea4a3705a6f7c",
+    "authoring/prerequisites.md": "888382d4f6318a2159a4760743030a531aced7a2828a3c0fdc0ca8d004012a0b",
+    "skills/shared/sdlc/01-brainstorming.md": "c9afcf3a03a3a489ab935a0c30f04708bed0818c8b851e76b1e135c882981632",
+    "skills/tracks/design/sdcorejs-design.md": "4fc23988178ad424b68711bd89f02baeb7151a17f04c4d6a7335e37d23100bcf",
+    "test/e2e/design-handoff-contract.test.mjs": "a47efc8a4256b09bfe93e760d3a9fed65a1508911f3da6bb4eef0d35bc0a1288",
+    "test/e2e/design-visual-browser.mjs": "c4d882a0bf2836e7d46804876a253cd31d01b7a806545502ba2ca4785e366052",
+    "test/e2e/design-visual-library.test.mjs": "f923c3e81d1aeca3fb4f99d9b7ec2b4c63421459d23474865fa1a8f096a7ca43",
+    "test/e2e/static-visual-composer.test.mjs": "9d2fdcf7ccd5a4e5d0e7b2bcd1b7dd1057e617004b8332a3d5c2c7634e6e62ba"
+  }
+}

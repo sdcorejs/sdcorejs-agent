@@ -74,14 +74,12 @@ brief or project-owner approval.
 
 ## Task-focused UI/UX knowledge
 
-Read `../../_refs/design/uiux/index.md` and select only references for the affected
-surface, task and topics. For existing UI improvements, begin with the observed
-problem and preserve business behavior, route/permission logic, tokens and icon
-family. For new screens, reuse the surrounding design before proposing missing
-roles. A small spacing/focus improvement may use the bounded path from
-`sdcorejs-using-skills`; it does not require a full design system or a new durable
-handoff. If a durable handoff is requested, its existing approval, resolver and
-lifecycle gates still apply. Independent review belongs to `sdcorejs-review`; critique here improves the author's own design.
+Read `../../_refs/design/uiux/index.md` for affected surface/task topics only. Preserve
+business behavior, routes/permissions, tokens and icons; reuse surrounding design
+before proposing missing roles. Small spacing/focus fixes may use the bounded
+`sdcorejs-using-skills` path without a new design system or durable handoff.
+Requested durable handoffs retain approval, resolver and lifecycle gates.
+Independent review belongs to `sdcorejs-review`; author critique is separate.
 
 Before presenting or settling an open layout/flow decision, including direct
 Design entry, apply `../../_refs/sdlc/visual-offer-policy.md`: actively assess and
@@ -91,6 +89,8 @@ and forward portable `state_delta.visual_companion`. A direct
 preview request proceeds to a supported surface without another invitation;
 fixed or approved designs stay settled. Load the detailed companion lifecycle
 only when preparing that surface or its required consent.
+
+For requested/accepted previews, follow `../../_refs/design/visual-library/README.md` for task-based HTML, project tokens, valid alternatives, content-bound feedback and verified Core mappings.
 
 ## Inputs
 

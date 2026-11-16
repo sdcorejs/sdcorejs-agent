@@ -1,0 +1,11 @@
+Input JSON parsing: success
+Source: inputs/ticket-v1.json
+Identity: benchmark-sdcorejs/order-desk#42
+Revision: rev-1
+Acceptance criteria: 1
+Criterion IDs: source-ac-1
+Comments: 0
+Attachment metadata entries: 1
+Attachment contents: not opened (outside requested scope)
+Application tests: not run (explicitly prohibited)
+Project and tracker writes: none issued

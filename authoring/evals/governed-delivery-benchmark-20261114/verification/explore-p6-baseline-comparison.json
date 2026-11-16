@@ -1,0 +1,17 @@
+{
+  "file": ".claude/skills/sdcorejs-explore/SKILL.md",
+  "baseline_head": "a71251fc03890326af14afd496d5955cc30ccc20",
+  "baseline_hits": [
+    [
+      73,
+      "| `env-setup-readonly` | Explain local setup, prerequisites, scripts, env keys, or first-run steps | Read README/config/examples and output instructions. No env/config writes. |"
+    ]
+  ],
+  "current_hits": [
+    [
+      75,
+      "| `env-setup-readonly` | Explain local setup, prerequisites, scripts, env keys, or first-run steps | Read README/config/examples and output instructions. No env/config writes. |"
+    ]
+  ],
+  "wording_unchanged": true
+}

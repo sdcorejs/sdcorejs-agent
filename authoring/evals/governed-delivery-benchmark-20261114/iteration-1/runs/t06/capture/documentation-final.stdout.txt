@@ -1,0 +1,22 @@
+PASS: all original guide bytes preserved, including both human notes and the placeholder.
+PASS: source, tests, dependencies, inputs, README and AGENTS unchanged.
+PASS: UTF-8, whitespace, scoped metadata and local Markdown links. No screenshots claimed.
+PASS: operator steps state the implementation limit and exclude technical internals.
+PASS: exactly two scoped documentation artifacts changed; no staging or code changes.
+{
+  "links": [
+    {
+      "source": "docs/operator-guide.md",
+      "target": ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md"
+    }
+  ],
+  "tracked_changes": [
+    "docs/operator-guide.md"
+  ],
+  "new_files": [
+    ".sdcorejs/documentation/technical-docs/order-cancellation/order-cancellation.md"
+  ],
+  "formal_coverage": "gap; null totals",
+  "ui": "not applicable; no UI",
+  "cancellation_e2e": "not available; no cancellation action"
+}

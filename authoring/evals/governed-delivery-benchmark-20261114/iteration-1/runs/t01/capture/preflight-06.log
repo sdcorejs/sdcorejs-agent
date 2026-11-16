@@ -1,0 +1,4 @@
+$ git config --get remote.origin.url
+https://github.com/benchmark-sdcorejs/order-desk.git
+
+exit_code=0

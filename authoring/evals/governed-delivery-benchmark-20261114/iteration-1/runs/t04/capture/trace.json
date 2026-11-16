@@ -1,0 +1,454 @@
+{
+  "schema_version": 1,
+  "task": "Ingest local revision 1, then refresh revision 2 of issue 42; preserve source history and reviewed image bytes; report conflicts and proposals without code or tracker writes.",
+  "isolation": {
+    "skill_pack": "/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17",
+    "target": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target",
+    "capture": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture",
+    "network_used": false,
+    "external_services_used": false,
+    "subagents_used": false,
+    "package_installs": false,
+    "sibling_trials_or_rubric_or_real_repository_read": false
+  },
+  "skill_selection": [
+    {
+      "path": "skills/tracks/product/sdcorejs-product.md",
+      "frontmatter_selected_initially": true,
+      "body_read": true,
+      "disposition": "Considered for AC/traceability intent; routed existing issue requirement record to Documentation per explicit owner rule. No Product bundle or task-breakdown workflow used."
+    },
+    {
+      "path": "skills/orchestration/documentation.md",
+      "frontmatter_selected": true,
+      "body_read": true,
+      "mode": "write-requirement",
+      "disposition": "Primary task owner. Existing issue 42 and explicit local persistence authorization."
+    },
+    {
+      "path": "skills/shared/workflow/ship.md",
+      "frontmatter_selected": true,
+      "body_read": true,
+      "disposition": "Consulted readiness/verification mode boundaries. Documentation integrity only; no branch-ready, feature-acceptance or release-ready claim."
+    }
+  ],
+  "frontmatter_discovery": {
+    "root": "skills",
+    "method": "Read YAML frontmatter only from every skill Markdown file to dispatch; only selected bodies were subsequently read."
+  },
+  "references_loaded": [
+    "AGENTS.md",
+    "_refs/shared/runtime-protocols.md",
+    "_refs/shared/project-context.md",
+    "_refs/shared/tasklist.md",
+    "_refs/harness/communication-economy.md",
+    "_refs/shared/artifact-lifecycle.md",
+    "_refs/shared/session-authority.md",
+    "_refs/shared/system-registry.json",
+    "_refs/shared/repository-contract.mjs",
+    "_refs/documentation/write-requirement.md",
+    "_refs/shared/documentation-layout.md",
+    "_refs/shared/documentation-layout.mjs",
+    "_refs/harness/runtime-policy.mjs",
+    "_refs/shared/approved-artifact.mjs",
+    "_refs/orchestration/tail/verify-before-done.md"
+  ],
+  "reference_loading_notes": [
+    "Paths are relative to the supplied pack unless absolute. approved-artifact.mjs was searched for exported identity helpers only; no approved artifact was created.",
+    "Documentation-layout helpers were imported read-only to resolve canonical entry, legacy probe and unit-owned attachment paths. Helper dependencies remained within the supplied pack.",
+    "Repository owner was resolved as standalone from explicit target assignment and matching export owner identity. The module/portal-only ownership helper was not used to invent a module topology.",
+    "Some combined reads were output-truncated; relevant write-requirement, documentation-layout and artifact-lifecycle sections were reread in bounded chunks."
+  ],
+  "target_inputs_read": [
+    "AGENTS.md",
+    "README.md",
+    "package.json",
+    "approved-requirements.md",
+    "inputs/ticket-v1.json",
+    "inputs/ticket-v2.json",
+    "inputs/quantity.png",
+    "src/order.mjs",
+    "src/server.mjs",
+    "test/unit.test.mjs",
+    "test/integration.test.mjs",
+    "test/e2e.test.mjs"
+  ],
+  "authority": {
+    "instruction_source": "prompt.txt user task",
+    "authorized": [
+      "Persist both sanitized source snapshots",
+      "Refresh one draft implementation rewrite",
+      "Preserve old history",
+      "Persist exact hash-reviewed image bytes",
+      "Record source changes and contradictions",
+      "Propose missing AC without approving them",
+      "Read-only local verification and captures"
+    ],
+    "excluded": [
+      "Application code/test implementation",
+      "Approved requirement amendment",
+      "External tracker contact or writes",
+      "Issue closure",
+      "Network/package installation",
+      "Git commit/push"
+    ]
+  },
+  "source_identity": {
+    "provider": "github",
+    "instance": "https://github.com",
+    "repository": "benchmark-sdcorejs/order-desk",
+    "id": "42",
+    "owner_repository_id": "github.com/benchmark-sdcorejs/order-desk",
+    "change_ref": "quantity-limits",
+    "revisions": [
+      "rev-1",
+      "rev-2"
+    ]
+  },
+  "commands": [
+    {
+      "sequence": 1,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/prompt.txt",
+      "exit_code": 0,
+      "observed_result": "Read isolated task instructions."
+    },
+    {
+      "sequence": 2,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/AGENTS.md",
+      "exit_code": 0,
+      "observed_result": "Read supplied pack policy."
+    },
+    {
+      "sequence": 3,
+      "command": "rg --files /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture",
+      "exit_code": 0,
+      "observed_result": "Enumerated allowed paths; broad listing truncated. No other pack/trial/repository inspected."
+    },
+    {
+      "sequence": 4,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17')\nfor f in sorted((p/'skills').rglob('*.md')):\n s=f.read_text()\n if s.startswith('---'):\n  print(str(f)+'\\n'+s.split('---',2)[1])\nPY",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 4377
+    },
+    {
+      "sequence": 5,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/AGENTS.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/runtime-protocols.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/project-context.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 3731
+    },
+    {
+      "sequence": 6,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/tracks/product/sdcorejs-product.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/tasklist.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/communication-economy.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 8507
+    },
+    {
+      "sequence": 7,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/README.md /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/approved-requirements.md /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/package.json",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 190
+    },
+    {
+      "sequence": 8,
+      "command": "rg --files --hidden /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target -g '!inputs/**' -g '!**/.git/**'",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 273
+    },
+    {
+      "sequence": 9,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/orchestration/documentation.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-requirement.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 5014
+    },
+    {
+      "sequence": 10,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/session-authority.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 5642
+    },
+    {
+      "sequence": 11,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,re\np=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/inputs')\nfor n in ['ticket-v1.json','ticket-v2.json']:\n s=(p/n).read_text()\n s=re.sub(r'([?&](?:token|key|secret|signature|access_token)=)[^&\\s\"<>]+',r'\\1[REDACTED]',s,flags=re.I)\n print(n+'\\n'+s)\nPY",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 651
+    },
+    {
+      "sequence": 12,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/documentation/write-requirement.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 5879
+    },
+    {
+      "sequence": 13,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/repository-contract.mjs",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 5857
+    },
+    {
+      "sequence": 14,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/src/order.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/src/server.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/test/unit.test.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/test/integration.test.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target/test/e2e.test.mjs",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 468
+    },
+    {
+      "sequence": 15,
+      "command": "sed -n '1,90p' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/artifact-lifecycle.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 1328
+    },
+    {
+      "sequence": 16,
+      "command": "sed -n '235,370p' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 1554
+    },
+    {
+      "sequence": 17,
+      "command": "rg -n -A 70 'export function (buildCanonicalEntryPath|buildUnitAssetPath|resolveDocumentationWriteTarget)' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.mjs",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 1494
+    },
+    {
+      "sequence": 18,
+      "command": "rg -n 'export function|classifyTask|assessChangeBaseline' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/approved-artifact.mjs",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 1033
+    },
+    {
+      "sequence": 19,
+      "command": "cat /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/skills/shared/workflow/ship.md /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/orchestration/tail/verify-before-done.md",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 9706
+    },
+    {
+      "sequence": 20,
+      "command": "sed -n '180,288p' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/harness/runtime-policy.mjs",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 1353
+    },
+    {
+      "sequence": 21,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib\nroot=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target')\nprint(json.dumps({'git_directory':(root/'.git').is_dir(),'git_file':(root/'.git').is_file(),'summary_exists':(root/'.sdcorejs/summary.md').exists(),'canonical_requirement_exists':(root/'.sdcorejs/documentation/requirements/42/42.md').exists(),'legacy_requirement_exists':(root/'.sdcorejs/documentation/requirements/42.md').exists()},indent=2))\nfiles={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(root.rglob('*')) if f.is_file() and '.git' not in f.relative_to(root).parts}\nPath('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/baseline.json').write_text(json.dumps(files,indent=2)+'\\n')\nprint('Captured baseline hashes for '+str(len(files))+' target files; contents omitted.')\nPY",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 55
+    },
+    {
+      "sequence": 22,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess,json,datetime,hashlib\nroot=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target')\ncap=Path('/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture')\ncommands=[['git','rev-parse','HEAD'],['git','status','--short'],['git','diff','--stat'],['git','diff','--cached','--stat'],['node','--version']]\nrecords=[]\nfor i,args in enumerate(commands,1):\n start=datetime.datetime.now(datetime.timezone.utc).isoformat()\n r=subprocess.run(args,cwd=root,text=True,capture_output=True)\n output=r.stdout+r.stderr\n name=f'preflight-{i:02d}.log'\n (cap/name).write_text(output)\n records.append({'argv':args,'cwd':str(root),'exit_code':r.returncode,'started_at':start,'output':name,'output_sha256':hashlib.sha256(output.encode()).hexdigest()})\n print(json.dumps({'command':args,'exit':r.returncode,'output':output}))\n(cap/'preflight-commands.json').write_text(json.dumps(records,indent=2)+'\\n')\nPY",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 97
+    },
+    {
+      "sequence": 23,
+      "command": "node --input-type=module - <<'JS'\nimport fs from 'node:fs';\nimport {buildCanonicalEntryPath,buildUnitAssetPath,buildLegacyEntryPath} from '/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/documentation-layout.mjs';\nimport {stableRepositoryId,assertOwnerWriteTarget} from '/workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/repository-contract.mjs';\nconst root='/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/target';\nconst cap='/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture';\nconst identity=stableRepositoryId({remote_url:'https://github.com/benchmark-sdcorejs/order-desk'});\nconst paths={entry:buildCanonicalEntryPath('requirements','42'),legacy:buildLegacyEntryPath('requirements','42'),rev1:buildUnitAssetPath('requirements','42','attachments','source-rev-1.json'),rev2:buildUnitAssetPath('requirements','42','attachments','source-rev-2.json'),history:buildUnitAssetPath('requirements','42','attachments','record-rev-1.md'),image:buildUnitAssetPath('requirements','42','images','quantity.png'),image_review:buildUnitAssetPath('requirements','42','attachments','image-review.json')};\nfor(const p of Object.values(paths)){assertOwnerWriteTarget({owner_repository_id:identity,current_repository_id:identity,repository_relative_path:p});if(fs.existsSync(root+'/'+p))throw Error('Existing destination requires review: '+p);}\nconst result={repository_id:identity,repository_role:'standalone',module_id:null,identity_basis:'explicit target assignment and matching export owner identity; no portal/module topology is present',paths};\nfs.writeFileSync(cap+'/resolved-paths.json',JSON.stringify(result,null,2)+'\\n');\nconsole.log(JSON.stringify(result,null,2));\nJS",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 203
+    },
+    {
+      "sequence": 24,
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/run_capture.py ingest-rev1 -- python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py 1",
+      "exit_code": 1,
+      "observed_result": "Command returned exit 1; see associated capture when verification.",
+      "output_token_count": 128
+    },
+    {
+      "sequence": 25,
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/run_capture.py ingest-rev1-retry -- python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py 1",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 200
+    },
+    {
+      "sequence": 26,
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/run_capture.py refresh-rev2 -- python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/ingest.py 2",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 111
+    },
+    {
+      "sequence": 27,
+      "command": "sed -n '1,145p' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 931
+    },
+    {
+      "sequence": 28,
+      "command": "sed -n '140,205p' /workspace/work/sdcorejs-benchmark-20261114/experiment/packs/p17/_refs/shared/system-registry.json",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 474
+    },
+    {
+      "sequence": 29,
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/run_capture.py git-diff-check -- git diff --check",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 13
+    },
+    {
+      "sequence": 30,
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/run_capture.py final-status -- git status --short --untracked-files=all",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 113
+    },
+    {
+      "sequence": 31,
+      "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/run_capture.py document-integrity -- python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/verify.py",
+      "exit_code": 0,
+      "observed_result": "Completed successfully; output inspected.",
+      "output_token_count": 1537
+    }
+  ],
+  "verification_evidence_files": [
+    "preflight-commands.json",
+    "executed-commands.json",
+    "ingest-rev1.log",
+    "ingest-rev1-retry.log",
+    "refresh-rev2.log",
+    "git-diff-check.log",
+    "final-status.log",
+    "document-integrity.log",
+    "baseline.json",
+    "rev1-state.json",
+    "artifact-manifest.json"
+  ],
+  "verification_results": {
+    "baseline": {
+      "head": "293818d59757bbc60db87119b026d49b41fa8d77",
+      "worktree": "clean",
+      "index": "clean",
+      "node": "v24.22.1"
+    },
+    "initial_ingestion": {
+      "exit": 1,
+      "reason": "PNG IDAT CRC assertion failed before target writes."
+    },
+    "adjustment": "Retain exact user-authorized privacy-reviewed bytes; record CRC defect instead of asserting rendering validity. No byte repair or false validation.",
+    "revision1_retry": {
+      "exit": 0,
+      "result": "Source snapshot, initial draft, image bytes and hash-review provenance persisted."
+    },
+    "revision2_refresh": {
+      "exit": 0,
+      "result": "Current entry refreshed; source-v1, image/provenance and old rewrite preserved byte-for-byte."
+    },
+    "git_diff_check": {
+      "exit": 0,
+      "result": "No tracked whitespace errors; untracked files separately checked by verify.py."
+    },
+    "document_integrity": {
+      "exit": 0,
+      "result": "Source projections and hashes, ingest order, preserved history, all original file hashes, six-file write scope, explicit draft/proposal status, local links, text hygiene and private-value scan passed."
+    },
+    "application_tests": {
+      "result": "NOT RUN",
+      "reason": "Documentation-only work. No feature acceptance claimed; HTTP listener execution excluded by offline no-network constraint."
+    }
+  },
+  "artifact_context": {
+    "schema_version": 1,
+    "change_ref": "quantity-limits",
+    "source_spec": "approved-requirements.md",
+    "source_plan": "none",
+    "required_with_change": [
+      {
+        "path": ".sdcorejs/documentation/requirements/42/42.md",
+        "kind": "documentation-asset",
+        "reason": "Explicitly authorized issue-42 record/source history/attachment"
+      },
+      {
+        "path": ".sdcorejs/documentation/requirements/42/attachments/source-rev-1.json",
+        "kind": "documentation-asset",
+        "reason": "Explicitly authorized issue-42 record/source history/attachment"
+      },
+      {
+        "path": ".sdcorejs/documentation/requirements/42/attachments/source-rev-2.json",
+        "kind": "documentation-asset",
+        "reason": "Explicitly authorized issue-42 record/source history/attachment"
+      },
+      {
+        "path": ".sdcorejs/documentation/requirements/42/attachments/record-rev-1.md",
+        "kind": "documentation-asset",
+        "reason": "Explicitly authorized issue-42 record/source history/attachment"
+      },
+      {
+        "path": ".sdcorejs/documentation/requirements/42/attachments/image-review.json",
+        "kind": "documentation-asset",
+        "reason": "Explicitly authorized issue-42 record/source history/attachment"
+      },
+      {
+        "path": ".sdcorejs/documentation/requirements/42/images/quantity.png",
+        "kind": "documentation-asset",
+        "reason": "Explicitly authorized issue-42 record/source history/attachment"
+      }
+    ],
+    "shared_owned": [],
+    "conditional": [],
+    "local_only": [
+      {
+        "path": "/workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture",
+        "kind": "diagnostic",
+        "reason": "Requested benchmark response, trace and actual command-output captures; not repository artifacts."
+      }
+    ],
+    "unrelated_observed": []
+  },
+  "artifacts_changed_manifest": "artifact-manifest.json",
+  "mutation_tools": {
+    "tool": "apply_patch",
+    "scope": "capture-only Python orchestration/verification scripts and draft templates; application code unchanged",
+    "execution": "ingest.py writes six authorized files under target/.sdcorejs/documentation/requirements/42 only"
+  },
+  "limitations": [
+    "Revision 2 requests 0–200 and saved empty drafts; approved AC-Q1 remains integer 1–100. Product-owner approval for amendment is absent.",
+    "Proposed criteria 42-PAC-001 through 42-PAC-005 remain unapproved. Draft persistence, response/error contract, permission/state behavior and duplicate-request behavior need decisions.",
+    "Existing unit and HTTP test sources cover only a narrow quantity slice; cancellation integration tests are not quantity evidence. No application test run or feature acceptance asserted.",
+    "Image is 68 bytes, 1x1, hash matches supplied privacy review, zlib stream decodes, IDAT CRC is invalid. Exact bytes retained; rendering validity and real-UI provenance not claimed.",
+    "No live tracker freshness beyond the two supplied exports can be established.",
+    "No formal branch-ready/convergence/release gate was completed and no Git or tracker delivery occurred.",
+    "Historical rewrite preserves its original entry-path metadata and unit-relative references, explicitly documented as history rather than a competing editable entry."
+  ],
+  "readiness": {
+    "documentation": "Integrity verified; reviewable draft with disclosed image defect",
+    "revision2_implementation": "BLOCKED pending approved requirement change and AC decisions",
+    "feature_acceptance": "NOT VERIFIED",
+    "tracker_closure": "NOT AUTHORIZED",
+    "next_steps": [
+      "Project owner selects approved quantity range and draft semantics",
+      "Review proposed AC explicitly",
+      "Authorize scoped implementation/test work only after decisions",
+      "Obtain current boundary and HTTP evidence in an authorized environment",
+      "Obtain corrected hash-reviewed image only if renderable illustration needed"
+    ]
+  },
+  "final_capture_verification": {
+    "command": "python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/run_capture.py final-capture-integrity -- python3 /workspace/work/sdcorejs-benchmark-20261114/experiment/trials/t04/capture/verify.py",
+    "exit_code": 0,
+    "output": "final-capture-integrity.log",
+    "result": "All documentation integrity checks and private-value screening passed, including response.md and trace.json."
+  },
+  "capture_edit_note": "An attempted replacement patch for trace.json was rejected because it used duplicate operations for one path; no files changed. This targeted metadata update records the completed final verification.",
+  "scoring_performed": false
+}

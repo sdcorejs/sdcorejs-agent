@@ -8,6 +8,7 @@
  */
 
 import { createHash } from 'node:crypto';
+import { PATTERN_SCRIPT } from '../../design/visual-library/interaction.mjs';
 
 export const CLIENT_SCRIPT = `(function () {
   "use strict";
@@ -191,7 +192,7 @@ export const CLIENT_SCRIPT = `(function () {
   });
 
   document.addEventListener("keydown", function (event) {
-    if (event.target === feedback) return;
+    if (event.target.closest("input,textarea,select,[contenteditable],[data-pattern-id]")) return;
     var index = Number(event.key) - 1;
     if (index >= 0 && index < options.length) {
       event.preventDefault();
@@ -216,6 +217,6 @@ export const CLIENT_SCRIPT = `(function () {
 
   connect();
 })();
-`;
+` + PATTERN_SCRIPT;
 
 export const CLIENT_SCRIPT_HASH = createHash('sha256').update(CLIENT_SCRIPT).digest('base64');

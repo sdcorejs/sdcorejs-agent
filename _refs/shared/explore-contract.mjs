@@ -9,10 +9,12 @@ import { normalizeCleanupSignal } from '../cleanup/offer-policy.mjs';
 
 const execFileAsync = promisify(execFile);
 const READ_ONLY_ACTIONS = new Set([
+  'project-blueprint-read',
   'summary-read',
   'code-map-readonly',
   'trace-flow-readonly',
   'env-setup-readonly',
+  'runtime-check-readonly',
   'recovery-readonly',
   'persona-read',
   'memories-read',
@@ -20,6 +22,7 @@ const READ_ONLY_ACTIONS = new Set([
   'conventions-read',
 ]);
 const AUTHORIZED_WRITE_ACTIONS = new Set([
+  'project-blueprint-write-approved',
   'summary-refresh',
   'code-map-write-approved',
   'env-setup-write-approved',
@@ -82,6 +85,9 @@ export function resolveExploreWriteAuthority({
       reason: 'read-only explore action',
     };
   }
+  if (action === 'runtime-start-authorized') {
+    return { write_allowed: false, reason: 'runtime process authority does not grant durable writes' };
+  }
   if (!AUTHORIZED_WRITE_ACTIONS.has(action)) {
     return {
       write_allowed: false,
@@ -97,6 +103,7 @@ export function resolveExploreWriteAuthority({
     action === 'conventions-sync-write-approved' && conventionCaptureMode === 'after-review';
   const assigned =
     explicitAuthority === true ||
+    (action === 'project-blueprint-write-approved' && approvedInitialization === true) ||
     (action === 'summary-refresh' && (approvedInitialization === true || integrationOwnerAssigned === true)) ||
     policyAuthorized;
   // Allowlist, not a denylist: an unrecognized or misspelled role must not fall
