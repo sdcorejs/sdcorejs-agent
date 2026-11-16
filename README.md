@@ -70,6 +70,23 @@ Inspect the destination first. Preserve unrelated skills and shared-reference
 files; if paths collide, review the conflict or use an isolated installation.
 Do not copy `authoring/`, evaluation runtimes or credentials into the skill root.
 
+### Versioned npm and Plugin Archives
+
+The tag release workflow builds an npm package and separate OpenAI/Claude plugin
+ZIPs. Once a version has been published, install the exact reviewed package:
+
+```bash
+npm install --save-dev --save-exact @sdcorejs/agent@1.0.0
+```
+
+This downloads assets; it does not activate a skill or modify agent settings.
+Use the `skills/` directory in `node_modules/@sdcorejs/agent` as the source for the
+native installation above, keeping `_refs/` alongside all skill directories.
+Release ZIPs and checksums are attached to the corresponding GitHub Release.
+Availability begins only after that release succeeds. A generated OpenAI ZIP
+still requires publisher verification, scans and OpenAI review before a public
+ChatGPT/Codex directory listing.
+
 ### Attached Repo / Submodule
 
 For project-scoped adoption, add a pinned checkout alongside your project:
@@ -188,8 +205,9 @@ incomplete evidence is never presented as a pass.
 ## Contributing
 
 The root repository tooling manifest defines a **private Node workspace**;
-this project is **not distributed through npm**. GitHub/plugin installation,
-project checkouts and native mirrors are the distribution paths.
+release tags produce a **separately assembled npm** package and versioned plugin
+archives. The private workspace itself is never published. See the
+[tag release process](docs/RELEASE_PROCESS.md) for setup and verification.
 
 Root tooling requires Node.js `^22.22.3 || ^24.15.0 || >=26.0.0` and npm.
 The showcase site requires Node.js `>=22.23.4`. Before changing the skill pack,

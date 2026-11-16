@@ -1,8 +1,22 @@
 # Release Process
 
-Use this checklist when cutting an adopted `sdcorejs-agent` release. The root
-Node workspace is private and is not distributed through npm. Git tags and
-GitHub releases are the distribution anchors.
+The Git tag is the release version: pushing `1.0.0` releases artifact version
+`1.0.0`. No manual version bumps or release commits are needed. Bare SemVer tags
+are supported; legacy `v` tags and build metadata are not release triggers.
+Prereleases such as `1.1.0-rc.1` publish under npm's `next` channel and produce a
+GitHub prerelease. Stable versions use `latest`.
+
+The private root workspace remains development tooling. Its `0.8.0` metadata,
+the site and checked-in Claude manifests are source snapshots, not the version
+of a generated release. Only staged artifact manifests receive the tag version.
+A source checkout's Claude marketplace therefore retains its snapshot version;
+use the versioned Claude ZIP when exact release metadata is required.
+
+The release workflow validates that the tag resolves to the checked-out commit,
+the tree is clean and the commit is already on `origin/main`. It reuses all CI
+jobs, builds isolated artifacts, checks their SHA-256 sums, publishes the exact
+npm tarball through OIDC, then creates the GitHub Release. Ordinary pushes and
+PRs run verification only. Failed or skipped required jobs do not publish.
 
 ## 1. Preflight
 
@@ -75,65 +89,169 @@ approval/evidence completeness, and sanitized transcript reference. Record
 missing credentials, isolation, or comparable usage telemetry as `skipped`;
 never substitute an estimate or a marketing reduction claim.
 
-## 4. Changelog And Version
+## 4. One-time publisher setup
 
-- Move relevant `CHANGELOG.md` items from `Unreleased` into the release heading.
-- Keep the root, site, marketplace, and plugin versions as synchronized
-  repository/plugin release metadata. Bump them together only when the adopted
-  release decision requires a new version.
-- Re-run mirror sync after any source skill, ref, or entrypoint change.
+1. Confirm publish access to the npm scope `@sdcorejs` and package
+   `@sdcorejs/agent`. GitHub organization access does not establish npm scope
+   access. A registry 404 is not proof of ownership or future availability.
+   The staged manifest sets public access, and the workflow publishes with
+   `--access public` so the scoped package is publicly installable.
+2. If the package does not exist, use npm's authenticated first-package/staged
+   publishing process to establish ownership before configuring OIDC. Staging
+   a new package creates a public placeholder; it is a separate external action,
+   not performed by the local build. Do not approve an unreviewed preview as a
+   release. See [npm staged publishing](https://docs.npmjs.com/staged-publishing/).
+3. In `@sdcorejs/agent` npm package settings, add a GitHub Actions trusted publisher: owner
+   `sdcorejs`, repository `sdcorejs-agent`, workflow **`release.yml`**, environment
+   **`npm`**, with direct publish allowed. New configurations must make their
+   first successful publication within npm's current expiry window (currently
+   two days). See [trusted publishing](https://docs.npmjs.com/trusted-publishers/).
+4. Create the GitHub `npm` environment, allow the release tags, and configure
+   any desired maintainer review rules. The workflow requests `id-token: write`
+   only in the publishing job; no stored registry token is needed. It pins
+   Node 24.15.0 and npm 11.15.0 to support OIDC.
+5. Protect `main` and release tags with repository rules. Review workflow changes
+   before merging. The workflow must be present in the commit being tagged.
 
-## 5. Tag
+### Bootstrap a new package from a feature branch
 
-```bash
-git tag -a v<version> -m "v<version>"
-git push origin v<version>
-```
+For the first package only, use a reviewed feature-branch checkout and a separate
+prerelease version such as `0.0.0-bootstrap.1`. Staged and published versions
+share the same unique version index: staging `1.0.0` would prevent the tag
+workflow from directly publishing `1.0.0` while that stage exists. See the
+[npm stage command](https://docs.npmjs.com/cli/v11/commands/npm-stage/).
 
-Use a patch release for hygiene-only fixes, for example `v0.5.1`.
-
-## 6. Repository Metadata
-
-Confirm GitHub metadata uses the project positioning:
-
-```bash
-gh repo edit sdcorejs/sdcorejs-agent --description "Portable SDLC skill pack for AI coding agents, with generated mirrors for Claude Code, Codex, Cursor, and Copilot."
-```
-
-This requires a maintainer token. If the command is not available, update the
-repository description through GitHub Settings before publishing the release.
-
-## 7. GitHub Release Notes
-
-Include:
-
-- Summary of user-visible workflow, validation, security, or packaging changes.
-- Validation commands and their result.
-- Link to the latest successful CI run.
-- Link to the latest successful Full E2E run, or a clear limitation if missing.
-- Real-agent transcript evidence summary.
-- Harness/model/source-commit/scenario/outcome metadata for every optional live
-  eval, or an explicit not-run reason.
-- Communication Economy Policy profile, handoff mode, required-field parity,
-  and deterministic-versus-live measurement label.
-- Upgrade notes for plugin/native skill users.
-- Known limitations.
-
-Create the release from the pushed tag:
+Use Linux, macOS or WSL with Git, supported Node, npm 11.15.0+ and Python 3.
+Start from a clean clone of the reviewed commit, preserve other checkouts and
+create a fresh output directory outside the repository. For example, with an
+existing `/tmp` parent:
 
 ```bash
-gh release create v<version> --title "v<version>" --notes-file <release-notes-file>
+npm ci
+npm run test:e2e:release
+node scripts/release.mjs build --tag 0.0.0-bootstrap.1 --preview --out /tmp/sdcorejs-bootstrap-preview
+npm stage publish /tmp/sdcorejs-bootstrap-preview/sdcorejs-agent-0.0.0-bootstrap.1.tgz --access public --tag next --ignore-scripts --dry-run
 ```
 
-## 8. Post-Release Smoke
+Verify `SHA256SUMS`, inspect the tarball and confirm its name is
+`@sdcorejs/agent`, version is `0.0.0-bootstrap.1`, public access is configured,
+all 25 skills and shared refs are included, and no lifecycle scripts are present.
+This preview is intentionally not a main/tag-certified release. Do not stage
+from the private repository root without specifying the tarball.
 
-After publishing the GitHub Release:
+When the maintainer has authorized the first-package bootstrap and authenticated
+with `npm login`, use the same checked tarball:
 
-- Install from the tagged release using each supported distribution path that is
-  claimed in the notes.
-- Confirm mirrors are present: `.claude/skills`, `plugin/skills`,
-  `codex/skills`, and `.cursor/rules`.
-- Confirm each adapter `sdcorejs-harness.json` has the current canonical source
-  hash and 25-skill mapping.
-- Confirm `docs/ADOPTION.md` and `docs/TROUBLESHOOTING.md` still match the
-  release instructions.
+```bash
+npm whoami
+npm stage publish /tmp/sdcorejs-bootstrap-preview/sdcorejs-agent-0.0.0-bootstrap.1.tgz --access public --tag next --ignore-scripts
+npm stage list @sdcorejs/agent
+npm stage view <stage-id>
+```
+
+Only the staging command above uploads the candidate. For a new package npm
+also creates a publicly visible `0.0.0-stage` placeholder. Keep the bootstrap
+candidate staged; do not approve it, directly publish it, or create/push a Git
+release tag. Record the stage ID, checksum, source commit and command results,
+then configure the package's trusted publisher as described above. If the
+bootstrap version already exists, inspect its status rather than overwriting
+or rejecting it automatically. npm login/2FA stays with the maintainer; never
+copy registry credentials into a prompt, report or Git.
+
+## 5. Inspect archives before tagging
+
+Use a fresh output directory whose parent exists, outside the repository:
+
+```bash
+npm run test:e2e:release
+node scripts/release.mjs build --tag 1.0.0 --preview --out /tmp/sdcorejs-1.0.0-preview
+cd /tmp/sdcorejs-1.0.0-preview
+sha256sum --check SHA256SUMS
+```
+
+Preview mode allows uncommitted changes and does not require a real tag. It
+records `preview: true` and input hashes, creates no tag, contacts no registry
+for publication, and never certifies the candidate as a release. A production
+build requires a clean tagged checkout and never uses `--preview`.
+The builder needs Git, Node/npm and Python 3. Output directories are never
+reused or overwritten. Public inputs come from tracked skill mirrors;
+new canonical skills/refs must be committed and mirrors checked before release.
+
+Artifacts:
+
+| File | Purpose |
+|---|---|
+| `sdcorejs-agent-<version>.tgz` | npm package `@sdcorejs/agent`: 25 native skills, shared refs, licenses and portable manifest; no installation hooks. |
+| `sdcorejs-agent-openai-<version>.zip` | Skills-only OpenAI plugin with root `plugin.json`, icons and refs; no Claude lifecycle hooks. |
+| `sdcorejs-agent-claude-<version>.zip` | Standalone Claude plugin, including its existing session hook, with tag-derived manifest version. |
+| `release-manifest.json` | Commit, exact input file hashes, artifact SHA-256 hashes, npm integrity and version/channel. |
+| `SHA256SUMS` | Verification of the archives and manifest. |
+
+Extract and inspect the archives. npm installation downloads assets only; copy
+reviewed native skills and `_refs` together into the host's supported directory,
+reviewing collisions first. It does not automatically activate skills, replace
+AGENTS.md or overwrite another installed pack. For local Claude testing,
+extract its ZIP into a dedicated directory and use Claude Code's `--plugin-dir`
+option. Git-based marketplace adoption continues to use the source snapshot.
+
+## 6. Release from main
+
+After merging and reviewing all release evidence, update the changelog as needed
+and use the exact reviewed main commit:
+
+```bash
+git switch main
+git pull --ff-only
+git tag -a 1.0.0 -m "Release 1.0.0"
+git push origin 1.0.0
+```
+
+The tag is the publication action once publisher setup is complete. Do not push
+it for a dry run. Watch `.github/workflows/release.yml`; success requires the
+reused Skills/E2E, Site, Windows mirror and Node 18 standalone CI jobs, artifact
+checks, npm publication and GitHub Release creation. Automatic release notes
+identify the CI run and distinguish deterministic checks from unrun Full E2E
+and live-host evidence. Add the evidence from sections 2–3 to the final notes.
+
+Push one release tag at a time and wait for completion, using increasing versions.
+Never move a released tag or overwrite a registry version. Concurrency is scoped
+to each tag so unrelated releases are not cancelled. Concurrent tags have no
+channel ordering guarantee; an older unused stable version can change npm's
+`latest` if published later.
+
+## 7. Failure and recovery
+
+- A tag validation or CI failure stops publication. Fix on a new main commit
+  and select a new version; do not retarget an already published tag.
+- Artifacts are uploaded to the Actions run before npm publication, so a missing
+  publisher configuration leaves inspectable outputs and a failed run. After
+  correcting configuration, rerun only if that version is still unpublished.
+- npm name/version pairs are immutable. Re-running after a successful npm
+  publish fails closed instead of silently treating an existing version as a
+  pass. If GitHub Release creation alone failed, inspect registry integrity
+  against `npmIntegrity` in the saved manifest, then create the release from
+  the **same saved archives** and tag. Do not rebuild with different tools or
+  republish a different payload under that version.
+- OpenAI submission failure is independent of npm/GitHub publication; report
+  it explicitly. A successful tag workflow does not mean directory approval.
+
+## 8. OpenAI submission and post-release smoke
+
+Upload the OpenAI ZIP through the official plugin submission portal under the
+actual verified publisher identity. Required scans and OpenAI review remain
+mandatory. The portable manifest provides truthful project metadata; complete
+any remaining listing fields in the portal. No automatic portal upload or
+approval is implemented. A skills-only plugin currently cannot add MCP after
+publication; revisit the package shape before submitting if MCP is required.
+
+Official references, checked 2026-11-16:
+- [Plugin package layout](https://developers.openai.com/plugins/build/plugins)
+- [Submission requirements](https://developers.openai.com/plugins/deploy/submission)
+
+After each actual publication, install the released artifact in an isolated
+host, confirm all 25 skills and shared refs are available, and run the read-only
+activation prompt from README. Record host/version, source/version and outcome.
+Host tools, shell access and model capabilities are supplied by the host; they
+are not added by the skill package. Keep skipped or unavailable hosts separate
+from successful checks. Preserve old evaluation evidence without claiming it
+certifies new artifact versions.

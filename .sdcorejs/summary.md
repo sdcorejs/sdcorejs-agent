@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-11-16T04:42:27.638Z
+generated_at: 2026-11-16T05:36:40.645Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:381d0bba7627ede754546ae08a77752894941ede618529dca4f4782723887b62
+  dependency_manifests: sha256:470e45302b9e95f26bf35594c2065c480641f1bc2bdddda0b10b81be38dd90cc
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -72,7 +72,11 @@ Cleanup mutation has one canonical policy and platform adapters: pinned Windows 
 
 The private root workspace distributes the same canonical behavior through
 repository/plugin adapters for Codex, Claude Code, Cursor, and GitHub Copilot;
-it is not published to npm and has no standalone CLI.
+the private workspace itself is not published and has no consumer CLI.
+Bare SemVer Git tags drive separately staged npm assets and OpenAI/Claude
+plugin ZIPs through `scripts/release.mjs` and `.github/workflows/release.yml`.
+Release artifacts use the tag version; source manifests retain snapshot metadata.
+The release guide owns npm OIDC setup and the separate OpenAI review boundary.
 Source instructions stay English-only; consuming agents localize responses and
 generated project artifacts at runtime.
 
@@ -123,6 +127,7 @@ Dependency evidence:
 | Architecture gate | `skills/shared/sdlc/architecture.md`, `_refs/sdlc/architecture.md` | Conditional architecture significance, ownership, approval lineage, and conformance | `skills/shared/sdlc/architecture.md` | spec and plan gates |
 | AI-agent track | `skills/tracks/ai-agent/`, `_refs/ai-agent/` | Approved engine/capability composition, security contracts, offline fixtures, and executor evidence | `skills/tracks/ai-agent/sdcorejs-ai-agent.md` | SDLC gates, downstream skills |
 | Internal skill authoring | `authoring/` | RED/GREEN/REFACTOR records, deterministic pressure scenarios, distribution-leak checks, and explicit live-evidence boundary | `authoring/skills/sdcorejs-skill-authoring/SKILL.md` | canonical contracts; never the sync pipeline |
+| Release packaging | `scripts/release.mjs`, `.github/workflows/release.yml` | Clean tagged main commits, reused CI, versioned public artifacts and checksums | `docs/RELEASE_PROCESS.md` | generated mirrors and Python 3 |
 | Sync pipeline | `scripts/` | Validate and generate adapter mirrors | `scripts/sync-skills.mjs` | `skills/`, `_refs/` |
 | Harness contracts | `_refs/harness/` | Portable actions, capabilities, role/model policy, and bounded delegation envelopes | `_refs/harness/runtime-policy.mjs` | canonical skills, adapters, sentinels |
 | Static visual companion | `_refs/sdlc/static-visual-composer.mjs` | Validate typed screens and render safe standalone HTML plus Markdown fallback | `_refs/sdlc/visual-screen.schema.json` | interaction protocol |

@@ -50,7 +50,7 @@ const REQUIRED_DEVELOPMENT_SCRIPTS = [
 const REGISTRY_MUTATION_PATTERN =
   /(?:\bnpm\s+(?:(?:--?[\w-]+(?:=\S+)?)\s+)*(?:publish|unpublish|deprecate|pack|owner|access|token|dist-tag)\b|['"]npm['"]\s*,\s*\[\s*['"](?:publish|unpublish|deprecate|pack|owner|access|token|dist-tag)['"])/i;
 const ROOT_DEPENDENCY_INSTALL_PATTERN =
-  /\bnpm\s+(?:install|i|add)\b[^\r\n]*?\bsdcorejs-agent(?:@[\w.-]+)?\b/i;
+  /\bnpm\s+(?:install|i|add)\b[^\r\n]*?(?:\bsdcorejs-agent|@sdcorejs\/agent)(?:@[\w.-]+)?\b/i;
 const PUBLICATION_AUTH_PATTERN =
   /\b(?:NPM_TOKEN|NODE_AUTH_TOKEN|NPM_CONFIG_PROVENANCE)\b|registry-url|\/\/registry\.npmjs\.org\/:_authToken|--provenance\b|\bprovenance\s*:|\bnpm\s+attest\b|\bnpm\b[^\r\n]*?\bconfig\s+(?:set|delete)\s+registry\b|actions\/attest(?:-build)?-provenance/i;
 
@@ -60,6 +60,8 @@ test('npm publication: detection patterns cover common publication bypass spelli
     'npm install -D sdcorejs-agent',
     'npm i -g sdcorejs-agent@0.6.0',
     'npm add --save-dev sdcorejs-agent',
+    'npm install --save-dev --save-exact @sdcorejs/agent@1.0.0',
+    'npm i @sdcorejs/agent',
   ];
   const registryMutationCommands = [
     'npm publish',
@@ -194,15 +196,17 @@ test('npm publication: scripts retain development behavior without publish comma
   }
 });
 
-test('npm publication: workflows and repository configuration cannot publish to npm', async () => {
+test('npm publication: registry writes are limited to the tag release workflow', async () => {
   const workflowFiles = await listFiles('.github/workflows', file => /\.ya?ml$/i.test(file));
   assert.ok(workflowFiles.length > 0, 'repository workflows are present');
 
   for (const file of workflowFiles) {
     const source = await readFile(file, 'utf8');
     const label = relative(ROOT, file);
-    assert.doesNotMatch(source, REGISTRY_MUTATION_PATTERN, label);
-    assert.doesNotMatch(source, PUBLICATION_AUTH_PATTERN, label);
+    if (label.replaceAll('\\', '/') !== '.github/workflows/release.yml') {
+      assert.doesNotMatch(source, REGISTRY_MUTATION_PATTERN, label);
+      assert.doesNotMatch(source, PUBLICATION_AUTH_PATTERN, label);
+    }
   }
 
   const repositoryFiles = await listFiles('.', () => true, {
@@ -229,7 +233,7 @@ test('npm publication: workflows and repository configuration cannot publish to 
     }
     const source = await readFile(file, 'utf8');
     assert.doesNotMatch(source, /\/\/registry\.npmjs\.org\/:_authToken/i, name);
-    if (isActiveRootPublicationSurface(name)) {
+    if (isActiveRootPublicationSurface(name) && name !== '.github/workflows/release.yml' && name !== 'scripts/release.mjs') {
       assert.doesNotMatch(source, REGISTRY_MUTATION_PATTERN, name);
       assert.doesNotMatch(source, PUBLICATION_AUTH_PATTERN, name);
     }
@@ -251,8 +255,10 @@ test('npm publication: active documentation uses repository release and installa
   for (const file of documentation) {
     const source = await readFile(file, 'utf8');
     const label = relative(ROOT, file);
-    assert.doesNotMatch(source, ROOT_DEPENDENCY_INSTALL_PATTERN, label);
-    assert.doesNotMatch(source, REGISTRY_MUTATION_PATTERN, label);
+    if (!['README.md', 'docs/ADOPTION.md', 'docs/RELEASE_PROCESS.md'].includes(label.replaceAll('\\', '/'))) {
+      assert.doesNotMatch(source, ROOT_DEPENDENCY_INSTALL_PATTERN, label);
+      assert.doesNotMatch(source, REGISTRY_MUTATION_PATTERN, label);
+    }
     assert.doesNotMatch(source, /\broot npm package\b/i, label);
   }
 
@@ -261,9 +267,11 @@ test('npm publication: active documentation uses repository release and installa
   const changelog = await readText('CHANGELOG.md');
 
   assert.match(readme, /root repository tooling manifest/i);
-  assert.match(readme, /not distributed through npm/i);
-  assert.match(release, /synchronized\s+repository\/plugin release metadata/i);
-  assert.match(release, /Git tags and\s+GitHub releases are the distribution anchors/i);
+  assert.match(readme, /separately assembled npm/i);
+  assert.match(release, /tag is the release version/i);
+  assert.match(release, /1\.0\.0/);
+  assert.match(release, /trusted publish/i);
+  assert.match(release, /OpenAI.*review/i);
   assert.doesNotMatch(release, /source package version/i);
   assert.match(changelog, /^## Unreleased$/m);
   assert.match(changelog, /npm publication[\s\S]*remain retired/i);
