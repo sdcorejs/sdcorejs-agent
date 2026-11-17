@@ -1,4 +1,5 @@
 /** Shared preview design: restrained work surfaces, distinct website compositions. */
+import { EXPANDED_STYLES, THUMBNAIL_STYLES } from './styles-expanded.mjs';
 export const PATTERN_STYLES = `
 .pp {
   --pp-bg:#f3f5f8; --pp-surface:#fff; --pp-text:#17283b;
@@ -59,7 +60,7 @@ export const PATTERN_STYLES = `
 .pp-main{padding:32px;min-width:0}
 .pp-heading{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:30px}
 .pp-heading p{margin-top:8px;max-width:55ch;font-size:0.75rem}
-.pp-heading button{flex-shrink:0}
+.pp-heading button{flex-shrink:0;max-width:100%;min-width:0}
 .pp-card{background:var(--pp-surface);border:1px solid var(--pp-line);border-radius:10px;padding:20px;min-width:0}
 .pp-stack{display:grid;gap:16px}
 .pp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
@@ -244,4 +245,4 @@ main:has(.pp) pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:0.6875re
   .pp-standalone{padding:12px}.pp-controls{gap:10px;padding:10px 12px}.pp-controls small{width:100%;margin:0}
 }
 @media(prefers-reduced-motion:reduce){.pp *{animation:none!important;transition:none!important}}
-`;
+` + EXPANDED_STYLES + THUMBNAIL_STYLES;

@@ -4,6 +4,9 @@ Use this library after a visual comparison is useful and requested or accepted.
 It supplies original, editable HTML compositions adapted from pinned references,
 not production Angular components or copied application behavior. Load
 `catalog.json` first, then only selected records, not every upstream source.
+For thumbnail galleries and native in-chat image delivery, follow
+[thumbnails.md](thumbnails.md). The shipped images cover every default variant;
+custom project content requires an exact matching capture or full HTML fallback.
 
 ## From brief to preview
 
@@ -14,7 +17,10 @@ not production Angular components or copied application behavior. Load
    `inspect-record`; editing → `edit-record`; dependent steps → `complete-steps`;
    hierarchy browsing → `browse-hierarchy`; explicitly requested hierarchy
    selection → `select-hierarchy`. Website jobs are `promote-product`,
-   `promote-service`, `compare-plans`, and `present-work`.
+   `promote-service`, `compare-plans`, and `present-work`. Expanded operational
+   jobs are `monitor-overview`, `track-work`, `configure-preferences`,
+   `browse-files`, `read-conversation` and `review-content`. Additional website
+   jobs are `read-documentation`, `browse-catalog`, `contact-team` and `find-answers`.
 3. Run `selectPatterns` with surface, job and known data shape. An unknown job
    returns `no-match`; do not force it into a template. Read applicability and
    avoid conditions. A wizard needs confirmed sequencing; a permission matrix
@@ -53,7 +59,9 @@ node _refs/design/visual-library/compose-preview.mjs --input preview-input.json
 `--input` accepts a complete v2 screen or `createPatternPreview` input; the latter
 renders one editable preview. The example CLI emits English teaching fixtures.
 For localized comparisons use `renderStaticVisualScreen(screen, {locale, messages})`.
-Six paired recipes live in `examples/`; their labels are examples, not runtime copy.
+Twelve paired recipes live in `examples/`; their labels are examples, not runtime copy.
+Use `dashboard-direction`, `settings-layout`, `file-presentation`, `review-layout`,
+`docs-structure` or `catalog-presentation` to compare the expanded layouts.
 
 ```js
 import { createPatternPreview } from './library.mjs';
@@ -89,11 +97,29 @@ columns. Cycles, missing parents, duplicate identities and depth beyond six fail
 validation. Supply explicit domain relationships; the renderer never derives a
 tree by repeating flat rows under every group.
 
+Board previews require explicit `content.groups`: at most six named groups,
+each with at most 24 `{title, body}` items. Empty groups are allowed. The renderer
+does not infer status from row order and does not implement drag-to-change state.
+Non-English boards require localized groups as well as the normal content and
+label bundles. Old non-board payloads may omit groups.
+
+`sample-content.json` provides fictional teaching content for the new families.
+Replace it with the approved project brief. Settings use explicit
+`content.field_groups`: one array of zero-based field indices per section,
+covering each field exactly once. Custom fields or sections require their own
+mapping; the renderer never guesses membership from array order. Contact actions
+only announce a local preview update;
+file previews never read or upload files, and conversation previews never send.
+
 ## Coverage and boundaries
 
-Eight operational families: list, tree, split, detail, form, wizard, drawer and
-explicit hierarchy selection. Four website families: product, service, pricing
-and editorial. Shared blocks cover headers/actions, related records, tabs/steps
+There are 22 families, 42 spatial variants, six optional themes and 12 paired
+comparisons. Themes and recommendation records are not additional templates.
+
+Fourteen operational families: list, tree, split, detail, form, wizard, drawer,
+hierarchy selection, dashboard, board, settings, files, messages and review.
+Eight website families: product, service, pricing, editorial, docs, catalog,
+contact and FAQ. Shared blocks cover headers/actions, related records, tabs/steps
 and states. The Portal shell is a wrapper, not another family. Previews expose
 desktop/tablet/mobile widths and data/loading/empty/no-results/error/unavailable
 states. Local interactions do not implement business records, navigation,
@@ -111,7 +137,11 @@ against the final consuming interface.
 
 `sources.json` pins repository, commit, path, SHA-256, license and adaptation
 notice; `licenses/` retains full upstream notices. Core and Portal are primary
-business-pattern sources. UI UX Pro Max supplies recommendation data rather
+business-pattern sources. Meta Astryx supplies additional page-structure
+references under MIT. Its React/StyleX components are not dependencies, and its
+`isReady: false` messaging/review templates are explicitly marked in `sources.json`;
+their spatial ideas do not establish production readiness or Angular compatibility.
+UI UX Pro Max supplies recommendation data rather
 than complete HTML templates; Theme Factory supplies adapted palettes. Rendered
 compositions are newly authored. No font/image binaries ship. Recheck cached
 source bytes with authoring-only `authoring/tools/prepare-design-sources.mjs

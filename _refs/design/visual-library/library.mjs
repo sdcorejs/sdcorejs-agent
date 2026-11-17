@@ -5,6 +5,7 @@ const root = new URL('./', import.meta.url);
 const json = (path) => JSON.parse(readFileSync(new URL(path, root), 'utf8'));
 export const catalog = json('catalog.json');
 const provenance = json('sources.json');
+const samples = json('sample-content.json');
 const object = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 const text = (v) => typeof v === 'string' && v.trim().length > 0 && v.length <= 1000;
 const only = (v, keys) => Object.keys(v).every(k => keys.includes(k));
@@ -44,6 +45,9 @@ export function libraryRevision() {
   const hash = createHash('sha256');
   function visit(url, prefix='') {
     for (const name of readdirSync(url).sort()) {
+      // Derived PNGs/index bind their source revision separately; including the
+      // capture index here would make its own revision self-referential.
+      if(prefix===''&&name==='thumbnails')continue;
       const file = new URL(name, url); const relative = prefix + name;
       if (statSync(file).isDirectory()) visit(new URL(name+'/', url), relative+'/');
       else if (/\.(?:json|mjs|css|txt)$/.test(name)) hash.update(relative+'\0').update(readFileSync(file)).update('\0');
@@ -97,7 +101,18 @@ export function validatePatternPreview(preview) {
   if (!/^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$/.test(preview.locale??'')) errors.push('Invalid locale');
   if (!object(preview.labels) || !only(preview.labels,Object.keys(PREVIEW_LABELS)) || Object.keys(PREVIEW_LABELS).some(k=>!text(preview.labels[k]))) errors.push('Complete preview labels required');
   const c=preview.content;
-  if (!object(c) || !only(c,Object.keys(DEFAULT_CONTENT))) return [...errors,'Invalid preview content'];
+  if (!object(c) || !only(c,[...Object.keys(DEFAULT_CONTENT),'groups','field_groups'])) return [...errors,'Invalid preview content'];
+  if (c.groups !== undefined || preview.pattern_id === 'op-board') {
+    if (!Array.isArray(c.groups) || c.groups.length > 6 || (preview.pattern_id === 'op-board' && !c.groups.length) || c.groups.some(group=>
+      !object(group) || !only(group,['title','items']) || !text(group.title) || !Array.isArray(group.items) || group.items.length > 24 || group.items.some(item=>
+        !object(item) || !only(item,['title','body']) || !text(item.title) || !text(item.body)))) errors.push('Invalid content groups');
+  }
+  if (c.field_groups !== undefined || preview.pattern_id === 'op-settings') {
+    const groups=c.field_groups;
+    if (!Array.isArray(c.fields) || !Array.isArray(c.sections) || !Array.isArray(groups) || groups.length!==c.sections.length ||
+      groups.some(group=>!Array.isArray(group) || group.some(index=>!Number.isInteger(index) || index<0 || index>=c.fields.length)) ||
+      groups.flat().length!==c.fields.length || new Set(groups.flat()).size!==c.fields.length) errors.push('Invalid content field_groups');
+  }
   errors.push(...validateHierarchy(c.hierarchy));
   for (const key of ['brand','title','subtitle','primary_action']) if (!text(c[key])) errors.push(`Invalid content ${key}`);
   for (const key of ['navigation','columns','fields','tabs','steps']) if (!Array.isArray(c[key]) || c[key].length<1 || c[key].length>8 || !c[key].every(text)) errors.push(`Invalid content ${key}`);
@@ -113,8 +128,10 @@ export function validatePatternPreview(preview) {
 export function createPatternPreview(input) {
   if (!object(input) || !only(input,['pattern_id','variant','theme_id','tokens','token_refs','content','state','viewport','shell','locale','labels','caption'])) throw new TypeError('Invalid pattern input');
   const pattern=loadPattern(input.pattern_id); const locale=input.locale??'en';
+  if (pattern.id==='op-settings' && (input.content?.fields!==undefined || input.content?.sections!==undefined) && input.content?.field_groups===undefined) throw new TypeError('Custom settings fields or sections require explicit field_groups');
   if (!/^en(?:-|$)/i.test(locale) && (!input.labels || !object(input.content) || Object.keys(DEFAULT_CONTENT).some(key=>!(key in input.content)))) throw new TypeError('Localized preview requires a complete labels bundle and localized content');
-  const defaults={...structuredClone(DEFAULT_CONTENT),...(pattern.id.startsWith('web-')?structuredClone(DEFAULT_WEBSITE_CONTENT):{})};
+  if (!/^en(?:-|$)/i.test(locale) && pattern.id==='op-board' && !input.content.groups) throw new TypeError('Localized board requires explicit localized groups');
+  const defaults={...structuredClone(DEFAULT_CONTENT),...(pattern.id.startsWith('web-')?structuredClone(DEFAULT_WEBSITE_CONTENT):{}),...structuredClone(samples[pattern.id]??{})};
   const preview={kind:'pattern',pattern_id:pattern.id,variant:input.variant??pattern.variants[0].id,theme_id:input.theme_id??'project',tokens:input.tokens??{},token_refs:input.token_refs??[],content:{...defaults,...input.content},state:input.state??'data',viewport:input.viewport??'desktop',shell:input.shell??pattern.id.startsWith('op-'),locale,labels:input.labels??{...PREVIEW_LABELS},library_revision:libraryRevision(),...(input.caption===undefined?{}:{caption:input.caption})};
   const errors=validatePatternPreview(preview); if(errors.length)throw new TypeError(errors.join('; '));
   return preview;

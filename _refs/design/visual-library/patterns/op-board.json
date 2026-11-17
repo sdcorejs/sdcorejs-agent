@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "op-board",
+  "name": "Work board",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "track-work"
+  ],
+  "data_shapes": [
+    "explicit-groups"
+  ],
+  "applicability": "Scan a small, explicitly grouped work set.",
+  "avoid_when": "Do not infer workflow states or add drag-to-change status without approved behavior.",
+  "variants": [
+    {
+      "id": "columns",
+      "layout": "board"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "astryx-kanban-board"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Framework-neutral HTML only. Inspect the exact installed framework/component API before implementation; Astryx React/StyleX references do not establish Angular or Core compatibility."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original dependency-free HTML composition informed by the cited layout description. Production actions and upstream assets are not copied; fixture content is illustrative."
+}

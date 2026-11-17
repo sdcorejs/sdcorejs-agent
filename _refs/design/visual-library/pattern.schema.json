@@ -95,7 +95,17 @@
               "product",
               "service",
               "pricing",
-              "editorial"
+              "editorial",
+              "dashboard",
+              "board",
+              "settings",
+              "files",
+              "messages",
+              "review",
+              "docs",
+              "catalog",
+              "contact",
+              "faq"
             ]
           }
         }

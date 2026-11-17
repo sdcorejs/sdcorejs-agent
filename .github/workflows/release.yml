@@ -1,0 +1,104 @@
+name: Release tagged skills
+
+on:
+  push:
+    tags: ['[0-9]*.[0-9]*.[0-9]*']
+
+permissions:
+  contents: read
+
+# Prevent duplicate runs for a tag from publishing concurrently. A global group
+# would silently cancel pending releases when another tag arrives.
+concurrency:
+  group: sdcorejs-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.repository == 'sdcorejs/sdcorejs-agent' && github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    outputs:
+      dist-tag: ${{ steps.version.outputs.dist-tag }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.15.0
+      - name: Verify tag identity and main ancestry
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main
+          node scripts/release.mjs verify --tag "$RELEASE_TAG" > "$RUNNER_TEMP/release-identity.json"
+          node --input-type=module <<'NODE'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          const identity = JSON.parse(readFileSync(`${process.env.RUNNER_TEMP}/release-identity.json`));
+          appendFileSync(process.env.GITHUB_OUTPUT, `dist-tag=${identity.distTag}\nprerelease=${identity.prerelease}\n`);
+          NODE
+
+  ci:
+    needs: validate
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: [validate, ci]
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_DIR: ${{ runner.temp }}/sdcorejs-release
+      DIST_TAG: ${{ needs.validate.outputs.dist-tag }}
+      PRERELEASE: ${{ needs.validate.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.15.0
+      - name: Install OIDC-capable npm
+        run: npm install --global npm@11.15.0 --ignore-scripts
+      - name: Build exact tagged artifacts
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main
+          node scripts/release.mjs build --tag "$RELEASE_TAG" --out "$RELEASE_DIR"
+          cd "$RELEASE_DIR"
+          sha256sum --check SHA256SUMS
+      # Keep inspected bytes available even if registry setup/publication fails.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdcorejs-agent-${{ github.ref_name }}
+          path: |
+            ${{ env.RELEASE_DIR }}/*.tgz
+            ${{ env.RELEASE_DIR }}/*.zip
+            ${{ env.RELEASE_DIR }}/release-manifest.json
+            ${{ env.RELEASE_DIR }}/SHA256SUMS
+            ${{ env.RELEASE_DIR }}/release-notes.md
+          if-no-files-found: error
+      - name: Publish npm artifact with trusted publishing
+        # OIDC: configure @sdcorejs/agent's trusted publisher for release.yml / npm.
+        # npm packs this scoped name as sdcorejs-agent-<version>.tgz.
+        # Fail closed on existing versions or missing authentication. Never force.
+        run: npm publish "$RELEASE_DIR/sdcorejs-agent-$RELEASE_TAG.tgz" --access public --tag "$DIST_TAG" --ignore-scripts
+      - name: Attach artifacts to GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release_flags=()
+          if [ "$PRERELEASE" = true ]; then release_flags+=(--prerelease); fi
+          gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" \
+            --notes-file "$RELEASE_DIR/release-notes.md" "${release_flags[@]}" \
+            "$RELEASE_DIR/sdcorejs-agent-$RELEASE_TAG.tgz" \
+            "$RELEASE_DIR/sdcorejs-agent-openai-$RELEASE_TAG.zip" \
+            "$RELEASE_DIR/sdcorejs-agent-claude-$RELEASE_TAG.zip" \
+            "$RELEASE_DIR/release-manifest.json" "$RELEASE_DIR/SHA256SUMS"

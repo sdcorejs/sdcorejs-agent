@@ -1,0 +1,27 @@
+{
+  "id": "docs-structure",
+  "question": "How should the guide be read?",
+  "patterns": [
+    {
+      "pattern_id": "web-docs",
+      "variant": "sidebar",
+      "label": "Section reader",
+      "summary": "Readers jump to a known section.",
+      "best_when": "Readers jump to a known section",
+      "tradeoff": "Only the selected section is shown"
+    },
+    {
+      "pattern_id": "web-docs",
+      "variant": "stacked",
+      "label": "Continuous guide",
+      "summary": "Readers follow the guide in sequence.",
+      "best_when": "Readers follow the guide in sequence",
+      "tradeoff": "The full guide takes more scrolling"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the brief before offering.",
+  "criteria": [
+    "Preserve the whole guide",
+    "Make section names clear"
+  ]
+}

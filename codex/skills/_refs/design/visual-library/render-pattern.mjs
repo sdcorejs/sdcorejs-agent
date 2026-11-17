@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { escapeText as e, loadTheme, DEFAULT_TOKENS, validatePatternPreview } from './library.mjs';
 import { PATTERN_STYLES } from './styles.mjs';
 import { PATTERN_SCRIPT } from './interaction.mjs';
+import { renderExpandedOperational, renderExpandedWebsite } from './render-expanded.mjs';
 
 const button=(label,attrs='',primary=false)=>`<button type="button" ${primary?'class="pp-primary" ':''}${attrs}>${e(label)}</button>`;
 const fonts={sans:'system-ui,sans-serif',serif:'Georgia,serif',mono:'ui-monospace,monospace'};
@@ -35,6 +36,8 @@ function form(c,l,variant){
 }
 function wizard(c,l,variant){return `<div class="pp-wizard ${variant}"><ol class="pp-steps">${c.steps.map((s,i)=>`<li>${button(`${i+1}. ${s}`,`data-preview-step="${i}" ${i===0?'aria-current="step"':''}`)}</li>`).join('')}</ol><div class="pp-form">${c.steps.map((s,i)=>`<section class="pp-card pp-stack" data-step-panel="${i}" ${i?'hidden':''}><h3>${e(s)}</h3>${i===0?fields(c,l)+sections(c):details(c,l)}</section>`).join('')}<footer>${button(l.back,'data-step-back disabled')}${button(l.next,'data-step-next',true)}${button(c.primary_action,'data-preview-action')}</footer></div></div>`;}
 function operational(p){const {content:c,labels:l,variant:v,pattern_id:id}=p;
+  const expanded=renderExpandedOperational(p,{button,metrics,sections,table,search,fields});
+  if(expanded!==null)return expanded;
   if(id==='op-list')return `${v==='summary'?metrics(c):''}${search(l)}<section class="pp-card">${table(c,l)}</section>`;
   if(id==='op-tree')return tree(c,l,false);
   if(id==='op-split')return `${search(l)}<div class="pp-split"><section class="pp-card">${table(c,l,{select:true})}</section><section class="pp-card">${details(c,l)}</section></div>`;
@@ -47,6 +50,8 @@ function operational(p){const {content:c,labels:l,variant:v,pattern_id:id}=p;
 }
 function website(p){const {content:c,labels:l,variant:v,pattern_id:id}=p;
   const nav=`<header class="pp-web-nav"><strong class="pp-brand">${e(c.brand)}</strong><span>${c.navigation.map(e).join(' · ')}</span>${button(c.primary_action,'data-preview-action')}</header>`;
+  const expanded=renderExpandedWebsite(p,{button,sections,fields});
+  if(expanded!==null)return nav+expanded;
   if(id==='web-editorial')return `${nav}<section class="pp-editorial ${v}"><p>${e(c.brand)}</p><h2>${e(c.title)}</h2><p>${e(c.subtitle)}</p><div class="pp-grid">${c.sections.map(s=>`<article class="pp-card pp-stack"><div class="pp-art" aria-hidden="true"></div><h3>${e(s.title)}</h3><p>${e(s.body)}</p>${button(l.choose,'data-preview-action')}</article>`).join('')}</div></section>`;
   if(id==='web-pricing')return `${nav}<section class="pp-pricing"><h2>${e(c.title)}</h2><p>${e(c.subtitle)}</p>${v==='cards'?`<div class="pp-grid">${c.sections.map(s=>`<article class="pp-card"><h3>${e(s.title)}</h3><p>${e(s.body)}</p><strong class="pp-price">${e(l.sample_price)}</strong><small>${e(l.sample_term)}</small>${button(c.primary_action,'data-preview-action',true)}</article>`).join('')}</div>`:table(c,l)}</section>`;
   return `${nav}<section class="pp-hero"><div><small>${e(c.brand)}</small><h2>${e(c.title)}</h2><p>${e(c.subtitle)}</p>${button(c.primary_action,'data-preview-action',true)}</div><div class="pp-hero-visual"><div class="pp-window-bar" aria-hidden="true"><i></i><i></i><i></i><span>${e(c.brand)}</span></div>${id==='web-service'?`<div class="pp-stack">${c.steps.map((s,i)=>`<article class="pp-card"><small>${e(l.sample_step)} ${i+1}</small><h3>${e(s)}</h3></article>`).join('')}</div>`:`${metrics(c)}<div class="pp-card">${table(c,l)}</div>`}</div></section><section class="pp-web-sections"><div class="pp-grid">${sections(c)}</div></section>`;

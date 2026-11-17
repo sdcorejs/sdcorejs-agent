@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "change_ref": "design-expansion-20261116",
+  "base_revision": "9af8f5842d0a142b301eec4e05ca99efbf56201c",
+  "recorded_at": "2026-11-16T10:19:52.260994+00:00",
+  "source_manifest_sha256": "9fa5a3f5cb58650888a194a76dc041141d1313aace71df973b6c73b5659dc0c1",
+  "library_revision": "sha256:403997fa82f0a801f1fe639c82e3cf4cf14eaba6a781770ef54fb25fcf553170",
+  "counts": {
+    "families": 22,
+    "business_families": 14,
+    "website_families": 8,
+    "variants": 42,
+    "themes": 6,
+    "paired_examples": 12,
+    "public_skills": 25
+  },
+  "commands": [
+    {
+      "id": "baseline-library",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:design-library"
+      ],
+      "exit_code": 0,
+      "log_sha256": "a324ff70e809e7ffcc0dd6e5aaf0e0e9a9174db7da7c890d3de27a798c3c1897",
+      "source_scope": "historical baseline or pre-repair candidate"
+    },
+    {
+      "id": "red-library",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:design-library"
+      ],
+      "exit_code": 1,
+      "log_sha256": "306902ca214e93ce0bffe504dbb90c465c2751aaafdcf30d15371e08a34ea724",
+      "source_scope": "historical baseline or pre-repair candidate"
+    },
+    {
+      "id": "green-library",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:design-library"
+      ],
+      "exit_code": 0,
+      "log_sha256": "45d5a70a52bbeb2cf6946d457302e92ac7dbf4c67c43d8328b4661c330c933ce",
+      "source_scope": "historical baseline or pre-repair candidate"
+    },
+    {
+      "id": "repair-red-library",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:design-library"
+      ],
+      "exit_code": 1,
+      "log_sha256": "7fac2931b55fe91484b0f299f94fc9693a63131195532bb2d8eb57ef527e1025",
+      "source_scope": "historical baseline or pre-repair candidate"
+    },
+    {
+      "id": "repair-red-browser",
+      "argv": [
+        "env",
+        "SDCOREJS_PLAYWRIGHT_MODULE=/opt/codex/cua_node/lib/node_modules/playwright/index.mjs",
+        "SDCOREJS_CHROMIUM_PATH=/usr/bin/chromium",
+        "node",
+        "test/e2e/design-visual-browser.mjs",
+        "/workspace/work/design-expansion-20261116/browser-repair-red"
+      ],
+      "exit_code": 1,
+      "log_sha256": "94481f8f4ed09be0bf93e6ce4deb2fb6d24803f028c7caa29433d84c2545b7ed",
+      "source_scope": "historical baseline or pre-repair candidate"
+    },
+    {
+      "id": "repair-green-library",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:design-library"
+      ],
+      "exit_code": 0,
+      "log_sha256": "a8a5a366341c047372bf91df2330fff008873b28d9eb5d0aec2b9f6c9c2e94ce",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "repair-green-browser",
+      "argv": [
+        "env",
+        "SDCOREJS_PLAYWRIGHT_MODULE=/opt/codex/cua_node/lib/node_modules/playwright/index.mjs",
+        "SDCOREJS_CHROMIUM_PATH=/usr/bin/chromium",
+        "node",
+        "test/e2e/design-visual-browser.mjs",
+        "/workspace/work/design-expansion-20261116/browser-repair-green"
+      ],
+      "exit_code": 0,
+      "log_sha256": "c67872c931f0a9ab8102b195b3f39678217c26995d093ab726c58e28a0123bec",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "schema-reproducible",
+      "argv": [
+        "/workspace/work/sdcorejs-nvidia-remaining-20261114/runtime/venv/bin/python",
+        "/workspace/work/design-expansion-20261116/check-schema.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "339148606e761c9a2f2dd78df56db9c4d2d69a0fd3a19460753e2163bda9050e",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "sources",
+      "argv": [
+        "node",
+        "authoring/tools/prepare-design-sources.mjs",
+        "--cache-dir",
+        "/workspace/work/design-expansion-20261116/source-cache"
+      ],
+      "exit_code": 0,
+      "log_sha256": "f4e41edfa47073a3a85b9e93c30b6cd9b03a1e3c1b52290ca58ac87c0031f3f6",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "uiux",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:uiux"
+      ],
+      "exit_code": 0,
+      "log_sha256": "bbdd3d8f45989ade3ed8e1ca630bfa905ba8ddeb7f3c7b276efbde6061733b9f",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "authoring",
+      "argv": [
+        "npm",
+        "run",
+        "test:e2e:skill-authoring"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b669e0666d806e1122952c2d38142b3f4eb157fb6e8d1a8110b9f2d6363f903e",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "references-complete",
+      "argv": [
+        "env",
+        "SDCOREJS_CLEANUP_PYTHON=/usr/bin/python3",
+        "npm",
+        "run",
+        "check:executable-references"
+      ],
+      "exit_code": 0,
+      "log_sha256": "58ca802701b7ba54371a4f91ea38cc4b8f8991da72e5563ae80a6617d5364559",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "mirrors-repair",
+      "argv": [
+        "npm",
+        "run",
+        "check:skills"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b9b8a89457d5633010831c4f44b407758c0c8f9f2eb264941c19aa5ef44a4a09",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    },
+    {
+      "id": "hygiene-repair",
+      "argv": [
+        "npm",
+        "run",
+        "check:text-hygiene"
+      ],
+      "exit_code": 0,
+      "log_sha256": "f0095e0fe26e11bfac562bb917e3a3161700f2a53336d172ac0af735e0fd48ce",
+      "source_scope": "current affected inputs; UIUX/authoring inputs unchanged by repairs"
+    }
+  ],
+  "deterministic": {
+    "design_library_tests": 21,
+    "browser_assertions": 1001,
+    "schema_valid_variants": 42,
+    "schema_negative_cases": 3,
+    "uiux_tests": 31,
+    "skill_authoring_tests": 6,
+    "remote_http_requests": 0,
+    "browser_script_errors": 0
+  },
+  "independent_review": {
+    "status": "three-findings-resolved-no-new-findings",
+    "input_manifest_sha256": "e01c430eef13b48db0dc3fa2f3a0724134a0cdb13c9ab554e36cd1509d56d90c",
+    "bound_file_count": 124,
+    "report_sha256": "8a48cb9f47fe5ae0de46f21867545b16850834370248ffd7fe3b102e9d530627",
+    "round1_report_sha256": "6eb358254f0c6845dd11e387c10d295d8bc01860b2ed8741dd946a7b32885932",
+    "assertions": 105,
+    "schema_runtime_cases": 54,
+    "enlarged_action_checks": 22,
+    "findings": [
+      {
+        "id": "F1",
+        "severity": "medium",
+        "issue": "Settings assigned fields by index modulo section count.",
+        "resolution": "Explicit field_groups cover each field once; custom fields/sections require a caller-supplied mapping."
+      },
+      {
+        "id": "F2",
+        "severity": "medium",
+        "issue": "Board schema allowed absent or empty groups rejected by runtime.",
+        "resolution": "Conditional schema requires nonempty board groups; settings membership is also required."
+      },
+      {
+        "id": "F3",
+        "severity": "medium",
+        "issue": "Long action labels were clipped inside narrow enlarged-text previews.",
+        "resolution": "Constrained action width and added actual internal-bound checks for all new operational variants."
+      }
+    ]
+  },
+  "nvidia": {
+    "version": "0.9.0",
+    "target": "codex/skills/sdcorejs-design",
+    "skill_sha256": "572c206cbfb9e19f84d1ad5314d872cc912ecc37dc90ddb76bed39073df7b8f5",
+    "target_unchanged_from_baseline": true,
+    "quality_score": 87.5,
+    "quality_grade": "B",
+    "quality_exit_code": 0,
+    "tier1_exit_code": 1,
+    "tier1_status": "FAILED/INCOMPLETE",
+    "publication_status": "incomplete",
+    "limits": [
+      "Baseline metadata.author schema finding remains in the unchanged SKILL.md.",
+      "SkillSpector version probe failed; its coverage is incomplete.",
+      "Selected skill directory has no scripts: NVIDIA did not statically scan the sibling visual renderer.",
+      "Tier 2/3 and live A/B were not run for this expansion."
+    ]
+  },
+  "provider_calls": 0,
+  "provider_model": null,
+  "provider_tokens": null,
+  "provider_cost": null,
+  "limits": [
+    "HTML is illustrative layout evidence, not approved final consumer design.",
+    "No full assistive-technology certification or production/framework integration.",
+    "No full repository/native-host suite or hosted CI claim.",
+    "No commit, push, merge, npm publication or ChatGPT plugin submission in this change.",
+    "Raw logs, screenshots and audit reports remain local; hashes are retained here."
+  ]
+}

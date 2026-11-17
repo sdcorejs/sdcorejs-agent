@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "op-settings",
+  "name": "Workspace preferences",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "configure-preferences"
+  ],
+  "data_shapes": [
+    "sectioned"
+  ],
+  "applicability": "Edit known preference fields grouped by purpose.",
+  "avoid_when": "Do not invent permissions, billing options or available settings.",
+  "variants": [
+    {
+      "id": "sidebar",
+      "layout": "settings"
+    },
+    {
+      "id": "stacked",
+      "layout": "settings"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "astryx-settings-sidebar"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Framework-neutral HTML only. Inspect the exact installed framework/component API before implementation; Astryx React/StyleX references do not establish Angular or Core compatibility."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original dependency-free HTML composition informed by the cited layout description. Production actions and upstream assets are not copied; fixture content is illustrative."
+}

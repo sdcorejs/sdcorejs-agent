@@ -7,6 +7,13 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Publish the npm skill assets as the public scoped package `@sdcorejs/agent`.
+  Derive npm and OpenAI/Claude artifact versions from bare SemVer Git tags:
+  `1.0.0` builds version `1.0.0`; prereleases use npm's `next` channel. Require
+  clean tagged commits on main and full CI before OIDC publication, with
+  isolated archives, source hashes and checksums. Keep the authoring workspace
+  private and OpenAI directory submission subject to its separate review.
+
 - Block ticket snapshot/delivery closure when a required dependency is excluded,
   preserving local-only privacy instead of silently allowing an incomplete push.
   Normalize Windows relative targets for nested instruction discovery, and accept

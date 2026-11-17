@@ -1,0 +1,339 @@
+{
+  "op-dashboard": {
+    "title": "Operations overview",
+    "subtitle": "A calm overview of the work in motion. Sample figures only.",
+    "primary_action": "Review overview",
+    "navigation": [
+      "Overview",
+      "Requests",
+      "Reports"
+    ],
+    "sections": [
+      {
+        "title": "Queue health",
+        "body": "Compare the headline totals with the supporting records before deciding where to focus."
+      },
+      {
+        "title": "Team handoffs",
+        "body": "Keep the next owner clear when a request moves between teams."
+      },
+      {
+        "title": "Review cadence",
+        "body": "Use the same definitions and reporting period for every measure."
+      }
+    ]
+  },
+  "op-board": {
+    "title": "Workspace launch",
+    "subtitle": "A small work set with explicitly supplied groups. Cards do not change status.",
+    "primary_action": "Review work",
+    "groups": [
+      {
+        "title": "Planned",
+        "items": [
+          {
+            "title": "Prepare the brief",
+            "body": "Confirm the audience and required content."
+          },
+          {
+            "title": "Inventory existing screens",
+            "body": "Keep useful patterns and project tokens."
+          }
+        ]
+      },
+      {
+        "title": "In progress",
+        "items": [
+          {
+            "title": "Compare layout directions",
+            "body": "Use the same content in both alternatives."
+          }
+        ]
+      },
+      {
+        "title": "For review",
+        "items": [
+          {
+            "title": "Check narrow screens",
+            "body": "Review reading order and essential actions."
+          }
+        ]
+      }
+    ]
+  },
+  "op-settings": {
+    "title": "Workspace preferences",
+    "subtitle": "Keep familiar settings grouped and easy to find. Changes stay in this preview.",
+    "primary_action": "Preview changes",
+    "fields": [
+      "Workspace name",
+      "Display name",
+      "Default view",
+      "Notification summary"
+    ],
+    "rows": [
+      [
+        "Casework",
+        "Operations team",
+        "Overview",
+        "Weekly"
+      ]
+    ],
+    "sections": [
+      {
+        "title": "Workspace",
+        "body": "Name the workspace so people can recognize it."
+      },
+      {
+        "title": "Appearance",
+        "body": "Use the existing project theme and readable text sizes."
+      },
+      {
+        "title": "Notifications",
+        "body": "Only expose delivery options that the product actually supports."
+      }
+    ],
+    "field_groups": [
+      [
+        0,
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ]
+    ]
+  },
+  "op-files": {
+    "title": "Project library",
+    "subtitle": "Find the reference you need and check its context. Sample resources only.",
+    "primary_action": "Review library",
+    "columns": [
+      "Resource",
+      "Category",
+      "Owner",
+      "Updated"
+    ],
+    "rows": [
+      [
+        "Project brief",
+        "Document",
+        "Product team",
+        "12 Nov"
+      ],
+      [
+        "Screen inventory",
+        "Worksheet",
+        "Design team",
+        "13 Nov"
+      ],
+      [
+        "Decision log",
+        "Document",
+        "Engineering",
+        "14 Nov"
+      ],
+      [
+        "Content guide",
+        "Document",
+        "Content team",
+        "15 Nov"
+      ],
+      [
+        "Release notes",
+        "Document",
+        "Engineering",
+        "16 Nov"
+      ],
+      [
+        "Research summary",
+        "Document",
+        "Research team",
+        "16 Nov"
+      ]
+    ]
+  },
+  "op-messages": {
+    "title": "Workspace conversation",
+    "subtitle": "Read a sample conversation in context. No messages are sent.",
+    "primary_action": "Review context",
+    "sections": [
+      {
+        "title": "Product team",
+        "body": "The revised brief keeps the main task focused on reviewing incoming work."
+      },
+      {
+        "title": "Design team",
+        "body": "Both layout directions use the same content and preserve the current project tokens."
+      },
+      {
+        "title": "Engineering",
+        "body": "The next step is to confirm the selected layout against the installed components."
+      }
+    ],
+    "columns": [
+      "Context",
+      "Value"
+    ],
+    "rows": [
+      [
+        "Topic",
+        "Workspace layout"
+      ],
+      [
+        "Reference",
+        "Design brief"
+      ],
+      [
+        "Next step",
+        "Review alternatives"
+      ]
+    ]
+  },
+  "op-review": {
+    "title": "Review the workspace brief",
+    "subtitle": "Keep the draft and its supporting context together. This does not approve execution.",
+    "primary_action": "Review notes",
+    "sections": [
+      {
+        "title": "Purpose",
+        "body": "Give the team one clear place to review incoming requests."
+      },
+      {
+        "title": "Audience",
+        "body": "Support and operations staff need to understand the request and the next owner."
+      },
+      {
+        "title": "Design constraints",
+        "body": "Reuse the project theme, keep text readable and preserve essential actions on narrow screens."
+      }
+    ],
+    "columns": [
+      "Context",
+      "Value"
+    ],
+    "rows": [
+      [
+        "Document",
+        "Workspace brief"
+      ],
+      [
+        "Revision",
+        "Draft 03"
+      ],
+      [
+        "Focus",
+        "Layout and content"
+      ]
+    ]
+  },
+  "web-docs": {
+    "title": "A clearer way to work.",
+    "subtitle": "Start with the essentials, then find the reference you need.",
+    "primary_action": "Explore the guide",
+    "navigation": [
+      "Guide",
+      "Reference",
+      "Help"
+    ],
+    "sections": [
+      {
+        "title": "Getting started",
+        "body": "Begin with a small workspace and give each request a clear owner. Use the existing team vocabulary."
+      },
+      {
+        "title": "Organizing work",
+        "body": "Group related information by the task people are trying to complete. Keep supporting context close."
+      },
+      {
+        "title": "Working together",
+        "body": "Record decisions with their reasons so the next person can continue without guessing."
+      }
+    ]
+  },
+  "web-catalog": {
+    "title": "Resources for considered work.",
+    "subtitle": "A small collection of practical guides for your next workspace.",
+    "primary_action": "Explore resources",
+    "navigation": [
+      "Resources",
+      "Guides",
+      "About"
+    ],
+    "sections": [
+      {
+        "title": "Workspace handbook",
+        "body": "A practical starting point for organizing requests and responsibilities."
+      },
+      {
+        "title": "Design checklist",
+        "body": "Questions to help compare layouts with the same content and constraints."
+      },
+      {
+        "title": "Team playbook",
+        "body": "A shared reference for keeping context clear across handoffs."
+      }
+    ]
+  },
+  "web-contact": {
+    "title": "Let us understand your next project.",
+    "subtitle": "Start with the context that matters. This sample form does not submit data.",
+    "primary_action": "Preview enquiry",
+    "navigation": [
+      "Work",
+      "Approach",
+      "Contact"
+    ],
+    "fields": [
+      "Name",
+      "Work email",
+      "Project summary"
+    ],
+    "columns": [
+      "Name",
+      "Work email",
+      "Project summary"
+    ],
+    "rows": [],
+    "sections": [
+      {
+        "title": "Start with the goal",
+        "body": "Tell us what people should be able to do and what is getting in their way."
+      },
+      {
+        "title": "Bring existing context",
+        "body": "A brief, current screens and project constraints help focus the conversation."
+      },
+      {
+        "title": "Choose the next step",
+        "body": "Agree on a useful first outcome before expanding the scope."
+      }
+    ]
+  },
+  "web-faq": {
+    "title": "A little clarity goes a long way.",
+    "subtitle": "Find a starting point, then bring the remaining questions to your team.",
+    "primary_action": "Explore support",
+    "navigation": [
+      "Guide",
+      "Questions",
+      "Contact"
+    ],
+    "sections": [
+      {
+        "title": "Where should we start?",
+        "body": "Begin with the main task, the people doing it and the information they need."
+      },
+      {
+        "title": "Can we keep our existing design?",
+        "body": "Use the current project tokens and conventions as the starting point for every preview."
+      },
+      {
+        "title": "Is a preview the final design?",
+        "body": "A preview helps compare structure. Confirm content, interaction and component fit before implementation."
+      }
+    ]
+  }
+}

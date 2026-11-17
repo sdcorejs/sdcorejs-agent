@@ -1,0 +1,34 @@
+{
+  "revision": "e59ff376a41f7ca47b7541ad5c116495cbade3ee",
+  "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+  "counts": {
+    "uipro-app-interface.csv": {
+      "rows": 32,
+      "sha256": "331e7cf2c0b222d80c566c5f255c63cb339f65bfd02e471a720f28e4864a9f08"
+    },
+    "uipro-colors.csv": {
+      "rows": 192,
+      "sha256": "8162429222bce22df62b564085946a30d07cc9722c58d0a3a494bd0d1d00841c"
+    },
+    "uipro-landing.csv": {
+      "rows": 34,
+      "sha256": "9a2edd3bb676c2a58f00ade7a062e285222d4297bfd847c8d5b056f0dbbf52d0"
+    },
+    "uipro-typography.csv": {
+      "rows": 74,
+      "sha256": "321fc446e89024488ebae96dda93efc4d2307bd8bddb240857ad51364f6782c8"
+    },
+    "uipro-ux-guidelines.csv": {
+      "rows": 120,
+      "sha256": "d63dc39439cf615cdccfdf7acd2301e0c3ce5e1e56a89b60617fa190f7511512"
+    },
+    "uipro-charts.csv": {
+      "rows": 25,
+      "sha256": "4115cf1120680f2cedef0676cb648f30c7ef4699e2a947535d4113e71ed3b12a"
+    },
+    "uipro-styles.csv": {
+      "rows": 89,
+      "sha256": "a9b6cadbd1cb9e7cb8398a3b445e0691d01e42ed5e5efa60a5d0c08c99c8100d"
+    }
+  }
+}

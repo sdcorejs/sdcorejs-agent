@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "id": "op-dashboard",
+  "name": "Overview dashboard",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "monitor-overview"
+  ],
+  "data_shapes": [
+    "summary",
+    "tabular"
+  ],
+  "applicability": "Read headline measures beside supporting records.",
+  "avoid_when": "A single record or an unapproved metric definition does not need a dashboard.",
+  "variants": [
+    {
+      "id": "overview",
+      "layout": "dashboard"
+    },
+    {
+      "id": "activity-rail",
+      "layout": "dashboard"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "astryx-dashboard"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Framework-neutral HTML only. Inspect the exact installed framework/component API before implementation; Astryx React/StyleX references do not establish Angular or Core compatibility."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original dependency-free HTML composition informed by the cited layout description. Production actions and upstream assets are not copied; fixture content is illustrative."
+}

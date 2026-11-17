@@ -78,8 +78,7 @@ Read `../../_refs/design/uiux/index.md` for affected surface/task topics only. P
 business behavior, routes/permissions, tokens and icons; reuse surrounding design
 before proposing missing roles. Small spacing/focus fixes may use the bounded
 `sdcorejs-using-skills` path without a new design system or durable handoff.
-Requested durable handoffs retain approval, resolver and lifecycle gates.
-Independent review belongs to `sdcorejs-review`; author critique is separate.
+Requested durable handoffs retain approval, resolver and lifecycle gates. Independent review belongs to `sdcorejs-review`; author critique is separate.
 
 Before presenting or settling an open layout/flow decision, including direct
 Design entry, apply `../../_refs/sdlc/visual-offer-policy.md`: actively assess and
@@ -91,6 +90,7 @@ fixed or approved designs stay settled. Load the detailed companion lifecycle
 only when preparing that surface or its required consent.
 
 For requested/accepted previews, follow `../../_refs/design/visual-library/README.md` for task-based HTML, project tokens, valid alternatives, content-bound feedback and verified Core mappings.
+For accepted UI choices, follow `../../_refs/design/visual-library/thumbnails.md`: show 2–3 relevant images in the gallery and natively in chat when supported, label variants and link full previews. Verify exact-content captures, preserve declines/fixed designs, and disclose HTML/text fallback. Images and choices remain illustrative feedback, never approval.
 
 ## Inputs
 
