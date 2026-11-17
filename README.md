@@ -58,34 +58,27 @@ Run in Claude Code:
 
 The plugin contains its generated skills, shared references and session hook.
 
-### Codex Native Skills
+### Native Skills from npm
 
-From a reviewed checkout, install the `sdcorejs-*` directories in
-[`codex/skills/`](codex/skills/) together with its `_refs/` directory into
-`$CODEX_HOME/skills`, or `~/.codex/skills` when `CODEX_HOME` is unset.
-Restart Codex after installation. Keep the shared references alongside the
-skills so relative links resolve.
+After the 1.0.0 release, run from the target project directory:
 
-Inspect the destination first. Preserve unrelated skills and shared-reference
-files; if paths collide, review the conflict or use an isolated installation.
-Do not copy `authoring/`, evaluation runtimes or credentials into the skill root.
-
-### Versioned npm and Plugin Archives
-
-The tag release workflow builds an npm package and separate OpenAI/Claude plugin
-ZIPs. Once a version has been published, install the exact reviewed package:
-
-```bash
-npm install --save-dev --save-exact @sdcorejs/agent@1.0.0
+```sh
+npx sdcorejs-agent@1.0.0 install --agent codex --scope project --dry-run
+npx sdcorejs-agent@1.0.0 install --agent codex --scope project
 ```
 
-This downloads assets; it does not activate a skill or modify agent settings.
-Use the `skills/` directory in `node_modules/@sdcorejs/agent` as the source for the
-native installation above, keeping `_refs/` alongside all skill directories.
-Release ZIPs and checksums are attached to the corresponding GitHub Release.
-Availability begins only after that release succeeds. A generated OpenAI ZIP
-still requires publisher verification, scans and OpenAI review before a public
-ChatGPT/Codex directory listing.
+Use `--agent claude-code` for Claude Code native skills or `--scope user` for
+all local projects. The command installs 25 skills with their shared references.
+On Windows, use `npx.cmd` in PowerShell or Command Prompt. See the
+[installation guide](docs/INSTALLATION.md) for destinations, removal, collisions,
+and the difference between native skills and plugins.
+
+### Versioned Plugin Archives
+
+GitHub Releases provides separate OpenAI and Claude Code ZIPs, with SHA-256
+checksums. See [local testing and directory submission](docs/PLUGIN_SUBMISSION.md)
+for the OpenAI artifact. The OpenAI directory listing requires a verified
+developer identity and OpenAI review.
 
 ### Attached Repo / Submodule
 

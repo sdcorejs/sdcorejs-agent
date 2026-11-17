@@ -27,6 +27,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24.15.0
+          package-manager-cache: false
       - name: Verify tag identity and main ancestry
         id: version
         env:
@@ -54,7 +55,6 @@ jobs:
       id-token: write
     env:
       RELEASE_TAG: ${{ github.ref_name }}
-      RELEASE_DIR: ${{ runner.temp }}/sdcorejs-release
       DIST_TAG: ${{ needs.validate.outputs.dist-tag }}
       PRERELEASE: ${{ needs.validate.outputs.prerelease }}
     steps:
@@ -64,15 +64,18 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24.15.0
+          package-manager-cache: false
       - name: Install OIDC-capable npm
         run: npm install --global npm@11.15.0 --ignore-scripts
       - name: Build exact tagged artifacts
         run: |
           set -euo pipefail
           git fetch origin main:refs/remotes/origin/main
+          RELEASE_DIR="$RUNNER_TEMP/sdcorejs-release"
           node scripts/release.mjs build --tag "$RELEASE_TAG" --out "$RELEASE_DIR"
           cd "$RELEASE_DIR"
           sha256sum --check SHA256SUMS
+          printf 'RELEASE_DIR=%s\n' "$RELEASE_DIR" >> "$GITHUB_ENV"
       # Keep inspected bytes available even if registry setup/publication fails.
       - uses: actions/upload-artifact@v4
         with:
@@ -84,11 +87,23 @@ jobs:
             ${{ env.RELEASE_DIR }}/SHA256SUMS
             ${{ env.RELEASE_DIR }}/release-notes.md
           if-no-files-found: error
+      - name: Check public npm version availability
+        run: |
+          set -euo pipefail
+          npm view sdcorejs-agent versions --json --registry https://registry.npmjs.org > "$RUNNER_TEMP/npm-versions.json"
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const versions = JSON.parse(readFileSync(`${process.env.RUNNER_TEMP}/npm-versions.json`));
+          const published = typeof versions === 'string' ? [versions] : versions;
+          if (!Array.isArray(published) || !published.length || published.some(version => typeof version !== 'string')) {
+            throw new Error('Unexpected npm version response.');
+          }
+          if (published.includes(process.env.RELEASE_TAG)) throw new Error('The npm version already exists.');
+          NODE
       - name: Publish npm artifact with trusted publishing
-        # OIDC: configure @sdcorejs/agent's trusted publisher for release.yml / npm.
-        # npm packs this scoped name as sdcorejs-agent-<version>.tgz.
+        # OIDC: configure sdcorejs-agent's trusted publisher for release.yml / npm.
         # Fail closed on existing versions or missing authentication. Never force.
-        run: npm publish "$RELEASE_DIR/sdcorejs-agent-$RELEASE_TAG.tgz" --access public --tag "$DIST_TAG" --ignore-scripts
+        run: npm publish "$RELEASE_DIR/sdcorejs-agent-$RELEASE_TAG.tgz" --access public --tag "$DIST_TAG" --ignore-scripts --registry https://registry.npmjs.org
       - name: Attach artifacts to GitHub release
         env:
           GH_TOKEN: ${{ github.token }}

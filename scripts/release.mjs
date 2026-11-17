@@ -13,6 +13,14 @@ const git = (root, ...args) => run('git', args, root);
 const save = (file, value) => writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, { flag: 'wx' });
 const digest = file => createHash('sha256').update(readFileSync(file)).digest('hex');
 
+export function runNpm(args, cwd, options) {
+  if (process.env.npm_execpath) return run(process.execPath, [process.env.npm_execpath, ...args], cwd, options);
+  if (process.platform !== 'win32') return run('npm', args, cwd, options);
+  const npmCommand = run('where.exe', ['npm.cmd'], cwd).split(/\r?\n/)[0];
+  const cli = path.join(path.dirname(npmCommand), 'node_modules/npm/bin/npm-cli.js');
+  return run(process.execPath, [cli, ...args], cwd, options);
+}
+
 export function parseTag(tag) {
   // No v alias or build metadata: one immutable Git tag per registry version.
   const number = '(?:0|[1-9][0-9]*)';
@@ -65,19 +73,20 @@ function copyInputs(root, files, from, dest, modes) {
   }
 }
 
-function zip(source, destination) {
+function zip(source, destination, executablePaths = []) {
   // Fixed timestamps, modes and order make identical inputs reproducible.
-  run('python3', ['-c', `import pathlib,sys,zipfile
+  run('python3', ['-c', `import json,pathlib,sys,zipfile
 root=pathlib.Path(sys.argv[1])
+executables=set(json.loads(sys.argv[3]))
 with zipfile.ZipFile(sys.argv[2], 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
  for file in sorted(root.rglob('*')):
   if file.is_file():
    entry=zipfile.ZipInfo(file.relative_to(root).as_posix(), (1980,1,1,0,0,0))
    entry.create_system=3
-   entry.external_attr=(0o100755 if file.stat().st_mode & 0o111 else 0o100644)<<16
+   entry.external_attr=(0o100755 if entry.filename in executables else 0o100644)<<16
    entry.compress_type=zipfile.ZIP_DEFLATED
    archive.writestr(entry, file.read_bytes(), compresslevel=9)
-`, source, destination], source);
+`, source, destination, JSON.stringify(executablePaths)], source);
 }
 
 export function buildRelease({ root = ROOT, tag, out, preview = false }) {
@@ -98,17 +107,19 @@ export function buildRelease({ root = ROOT, tag, out, preview = false }) {
 
   const skills = trackedFiles(root, 'codex/skills');
   const claudeFiles = trackedFiles(root, 'plugin');
-  const extra = ['LICENSE', 'images/logo.png'].flatMap(file => trackedFiles(root, file));
+  const extra = ['LICENSE', 'images/plugin-icon.png'].flatMap(file => trackedFiles(root, file));
   const skillNames = skills.filter(file => /^codex\/skills\/[^/]+\/SKILL\.md$/.test(file));
   if (skillNames.length !== 25) throw new Error(`Expected 25 public skills, found ${skillNames.length}.`);
   const inputs = [...skills, ...claudeFiles, ...extra, 'scripts/release.mjs',
-    'scripts/release-package-readme.md'].sort();
+    'scripts/release-package-readme.md', 'scripts/release-claude-readme.md',
+    'scripts/install-skills.mjs', 'package.json'].sort();
   const sourceFiles = Object.fromEntries(inputs.map(file => [file, digest(path.join(root, file))]));
   const indexModes = Object.fromEntries(git(root, 'ls-files', '--stage', '-z').split('\0').filter(Boolean).map(record => {
     const tab = record.indexOf('\t');
     return [record.slice(tab + 1), record.slice(0, 6)];
   }));
   const sourceModes = Object.fromEntries(inputs.map(file => [file, indexModes[file] ?? '100644']));
+  sourceModes['scripts/install-skills.mjs'] = '100755';
   const sourceHash = createHash('sha256').update(JSON.stringify({ sourceFiles, sourceModes })).digest('hex');
   const { version, sourceCommit, distTag, prerelease } = identity;
   const source = json(path.join(root, 'plugin/.claude-plugin/plugin.json'));
@@ -126,7 +137,7 @@ export function buildRelease({ root = ROOT, tag, out, preview = false }) {
     copyFileSync(path.join(root, 'LICENSE'), path.join(directory, 'LICENSE'));
   }
   mkdirSync(path.join(portable, 'assets'));
-  copyFileSync(path.join(root, 'images/logo.png'), path.join(portable, 'assets/logo.png'));
+  copyFileSync(path.join(root, 'images/plugin-icon.png'), path.join(portable, 'assets/logo.png'));
   copyFileSync(path.join(root, 'scripts/release-package-readme.md'), path.join(portable, 'README.md'));
   save(path.join(portable, 'plugin.json'), {
     $schema: 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
@@ -135,11 +146,13 @@ export function buildRelease({ root = ROOT, tag, out, preview = false }) {
       displayName: 'SDCoreJS Agent',
       shortDescription: 'Plan, design, implement and review with reusable engineering skills.',
       developerName: 'SDCoreJS', category: 'Productivity',
-      websiteURL: 'https://github.com/sdcorejs/sdcorejs-agent',
+      websiteURL: source.homepage, supportURL: `${source.homepage}/issues`,
       composerIcon: './assets/logo.png', logo: './assets/logo.png',
       defaultPrompt: ['Use sdcorejs-explore to summarize this repository and its verification commands. Stay read-only.'],
     } } },
   });
+  copyFileSync(path.join(root, 'images/plugin-icon.png'), path.join(claude, '.claude-plugin/icon.png'));
+  copyFileSync(path.join(root, 'scripts/release-claude-readme.md'), path.join(claude, 'README.md'));
   // Only staged metadata changes. The source checkout stays untouched.
   writeFileSync(path.join(claude, '.claude-plugin/plugin.json'), `${JSON.stringify({ ...source, version }, null, 2)}\n`);
   const binding = { version, sourceCommit, sourceHash, preview, skillCount: skillNames.length };
@@ -147,28 +160,39 @@ export function buildRelease({ root = ROOT, tag, out, preview = false }) {
   save(path.join(claude, 'release-source.json'), binding);
   const openaiZip = `sdcorejs-agent-openai-${version}.zip`;
   const claudeZip = `sdcorejs-agent-claude-${version}.zip`;
-  zip(portable, path.join(out, openaiZip));
-  zip(claude, path.join(out, claudeZip));
+  zip(portable, path.join(out, openaiZip), skills.filter(file => sourceModes[file] === '100755').map(file => file.slice('codex/'.length)));
+  zip(claude, path.join(out, claudeZip), claudeFiles.filter(file => sourceModes[file] === '100755').map(file => file.slice('plugin/'.length)));
+  mkdirSync(path.join(portable, 'bin'));
+  copyFileSync(path.join(root, 'scripts/install-skills.mjs'), path.join(portable, 'bin/skills.mjs'));
+  chmodSync(path.join(portable, 'bin/skills.mjs'), 0o755);
   save(path.join(portable, 'package.json'), {
-    name: '@sdcorejs/agent', version, description: source.description, license: source.license,
+    name: 'sdcorejs-agent', version, description: source.description, license: source.license,
     publishConfig: { access: 'public' },
     type: 'module', repository: { type: 'git', url: 'git+https://github.com/sdcorejs/sdcorejs-agent.git' },
     homepage: source.homepage, bugs: { url: `${source.homepage}/issues` },
-    files: ['skills/', 'assets/', 'plugin.json', 'release-source.json', 'README.md', 'LICENSE'],
+    bin: { 'sdcorejs-agent': './bin/skills.mjs' },
+    keywords: source.keywords,
+    files: ['bin/', 'skills/', 'assets/', 'plugin.json', 'release-source.json', 'README.md', 'LICENSE'],
     engines: { node: '^22.22.3 || ^24.15.0 || >=26.0.0' },
   });
-  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  const [packed] = JSON.parse(run(npm, ['pack', '--ignore-scripts', '--json', '--pack-destination', out], portable));
-  if (packed.name !== '@sdcorejs/agent' || packed.version !== version || packed.filename !== `sdcorejs-agent-${version}.tgz`) {
+  const [packed] = JSON.parse(runNpm(['pack', '--ignore-scripts', '--json', '--pack-destination', out], portable));
+  if (packed.name !== 'sdcorejs-agent' || packed.version !== version || packed.filename !== `sdcorejs-agent-${version}.tgz`) {
     throw new Error('Unexpected npm archive identity.');
   }
   const artifacts = Object.fromEntries([packed.filename, openaiZip, claudeZip].map(file => [file, digest(path.join(out, file))]));
-  const toolchain = { node: process.version, npm: run(npm, ['--version'], portable), python: run('python3', ['--version'], portable) };
+  const toolchain = { node: process.version, npm: runNpm(['--version'], portable), python: run('python3', ['--version'], portable) };
   const manifest = { ...binding, distTag, prerelease, artifacts, npmIntegrity: packed.integrity, sourceFiles, sourceModes, toolchain };
   save(path.join(out, 'release-manifest.json'), manifest);
-  const checksums = { ...artifacts, 'release-manifest.json': digest(path.join(out, 'release-manifest.json')) };
+  const ciRun = process.env.GITHUB_RUN_ID
+    ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    : 'not run by this local build';
+  writeFileSync(path.join(out, 'release-notes.md'), `SDCoreJS Agent ${version}\n\nSource commit: ${sourceCommit}\n\n25 skills, an explicit npm installer for Codex and Claude Code, and separate OpenAI and Claude Code plugins. All archives use version ${version}.\n\nCI: ${ciRun}\n\nChecksums and source file hashes are in the attached manifests. OpenAI review/publication and live-host activation are separate; they have not been performed by this workflow. Full E2E/live-agent evidence is not implied by CI; see docs/RELEASE_PROCESS.md and CHANGELOG.md at this tag.\n`, { flag: 'wx' });
+  const checksums = {
+    ...artifacts,
+    'release-manifest.json': digest(path.join(out, 'release-manifest.json')),
+    'release-notes.md': digest(path.join(out, 'release-notes.md')),
+  };
   writeFileSync(path.join(out, 'SHA256SUMS'), Object.entries(checksums).map(([file, hash]) => `${hash}  ${file}\n`).join(''), { flag: 'wx' });
-  writeFileSync(path.join(out, 'release-notes.md'), `SDCoreJS Agent ${version}\n\nSource commit: ${sourceCommit}\n\n25 skills; npm artifact and OpenAI/Claude plugin archives use version ${version}.\n\nCI: ${process.env.GITHUB_SERVER_URL || 'https://github.com'}/${process.env.GITHUB_REPOSITORY || 'sdcorejs/sdcorejs-agent'}/actions/runs/${process.env.GITHUB_RUN_ID || 'NOT-RUN-LOCALLY'}\n\nChecksums and source file hashes are in the attached manifests. OpenAI review/publication and live-host activation are separate; they have not been performed by this workflow. Full E2E/live-agent evidence is not implied by CI; see docs/RELEASE_PROCESS.md and CHANGELOG.md at this tag.\n`, { flag: 'wx' });
   return manifest;
 }
 
