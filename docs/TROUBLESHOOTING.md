@@ -3,6 +3,15 @@
 Use this page when installation, mirrors, validation, or entrypoint behavior
 does not match expectations.
 
+## Skill Installation
+
+Run the command from the intended project root and use the same agent and scope
+when reinstalling or uninstalling. If PowerShell blocks an npm script shim,
+call `npx.cmd`. A collision on a skill directory or `_refs` requires reviewing
+and backing up the existing copy before moving it. If the installer reports
+edited files, keep those files and reconcile your changes before removal.
+See [installation and recovery](INSTALLATION.md) for details.
+
 ## Mirror Drift
 
 Symptom:

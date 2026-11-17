@@ -7,7 +7,8 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
-- Publish the npm skill assets as the public scoped package `@sdcorejs/agent`.
+- Publish the npm skill assets as the public package `sdcorejs-agent`.
+  Add an explicit Codex and Claude Code native installer with dry-run and removal.
   Derive npm and OpenAI/Claude artifact versions from bare SemVer Git tags:
   `1.0.0` builds version `1.0.0`; prereleases use npm's `next` channel. Require
   clean tagged commits on main and full CI before OIDC publication, with

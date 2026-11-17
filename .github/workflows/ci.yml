@@ -126,3 +126,44 @@ jobs:
           node-version: 18.20.8
 
       - run: node --test test/e2e/visual-companion-runtime.test.mjs test/e2e/static-visual-composer.test.mjs
+
+  release-preview:
+    name: Release preview (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Enable long paths before checkout
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.15.0
+          package-manager-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: npm ci --ignore-scripts
+      - run: npm run test:e2e:release
+      - name: Build and verify non-publishing preview
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/release.mjs build --tag 1.0.0 --preview --out "$RUNNER_TEMP/sdcorejs-preview" > "$RUNNER_TEMP/preview-build.json"
+          cd "$RUNNER_TEMP/sdcorejs-preview"
+          sha256sum --check SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Linux'
+        with:
+          name: sdcorejs-agent-1.0.0-preview
+          path: |
+            ${{ runner.temp }}/sdcorejs-preview/*.tgz
+            ${{ runner.temp }}/sdcorejs-preview/*.zip
+            ${{ runner.temp }}/sdcorejs-preview/release-manifest.json
+            ${{ runner.temp }}/sdcorejs-preview/SHA256SUMS
+            ${{ runner.temp }}/sdcorejs-preview/release-notes.md
+          if-no-files-found: error

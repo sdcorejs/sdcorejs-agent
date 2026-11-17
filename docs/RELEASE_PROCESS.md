@@ -91,17 +91,14 @@ never substitute an estimate or a marketing reduction claim.
 
 ## 4. One-time publisher setup
 
-1. Confirm publish access to the npm scope `@sdcorejs` and package
-   `@sdcorejs/agent`. GitHub organization access does not establish npm scope
-   access. A registry 404 is not proof of ownership or future availability.
-   The staged manifest sets public access, and the workflow publishes with
-   `--access public` so the scoped package is publicly installable.
+1. Confirm maintainer access to the public npm package `sdcorejs-agent`.
+   GitHub repository access alone does not grant npm publish access.
 2. If the package does not exist, use npm's authenticated first-package/staged
    publishing process to establish ownership before configuring OIDC. Staging
    a new package creates a public placeholder; it is a separate external action,
    not performed by the local build. Do not approve an unreviewed preview as a
    release. See [npm staged publishing](https://docs.npmjs.com/staged-publishing/).
-3. In `@sdcorejs/agent` npm package settings, add a GitHub Actions trusted publisher: owner
+3. In `sdcorejs-agent` npm package settings, add a GitHub Actions trusted publisher: owner
    `sdcorejs`, repository `sdcorejs-agent`, workflow **`release.yml`**, environment
    **`npm`**, with direct publish allowed. New configurations must make their
    first successful publication within npm's current expiry window (currently
@@ -134,7 +131,7 @@ npm stage publish /tmp/sdcorejs-bootstrap-preview/sdcorejs-agent-0.0.0-bootstrap
 ```
 
 Verify `SHA256SUMS`, inspect the tarball and confirm its name is
-`@sdcorejs/agent`, version is `0.0.0-bootstrap.1`, public access is configured,
+`sdcorejs-agent`, version is `0.0.0-bootstrap.1`, public access is configured,
 all 25 skills and shared refs are included, and no lifecycle scripts are present.
 This preview is intentionally not a main/tag-certified release. Do not stage
 from the private repository root without specifying the tarball.
@@ -145,7 +142,7 @@ with `npm login`, use the same checked tarball:
 ```bash
 npm whoami
 npm stage publish /tmp/sdcorejs-bootstrap-preview/sdcorejs-agent-0.0.0-bootstrap.1.tgz --access public --tag next --ignore-scripts
-npm stage list @sdcorejs/agent
+npm stage list sdcorejs-agent
 npm stage view <stage-id>
 ```
 
@@ -181,23 +178,32 @@ Artifacts:
 
 | File | Purpose |
 |---|---|
-| `sdcorejs-agent-<version>.tgz` | npm package `@sdcorejs/agent`: 25 native skills, shared refs, licenses and portable manifest; no installation hooks. |
+| `sdcorejs-agent-<version>.tgz` | npm package `sdcorejs-agent`: CLI, 25 native skills, shared refs, licenses and portable manifest; no installation hooks. |
 | `sdcorejs-agent-openai-<version>.zip` | Skills-only OpenAI plugin with root `plugin.json`, icons and refs; no Claude lifecycle hooks. |
 | `sdcorejs-agent-claude-<version>.zip` | Standalone Claude plugin, including its existing session hook, with tag-derived manifest version. |
 | `release-manifest.json` | Commit, exact input file hashes, artifact SHA-256 hashes, npm integrity and version/channel. |
 | `SHA256SUMS` | Verification of the archives and manifest. |
 
-Extract and inspect the archives. npm installation downloads assets only; copy
-reviewed native skills and `_refs` together into the host's supported directory,
-reviewing collisions first. It does not automatically activate skills, replace
-AGENTS.md or overwrite another installed pack. For local Claude testing,
-extract its ZIP into a dedicated directory and use Claude Code's `--plugin-dir`
-option. Git-based marketplace adoption continues to use the source snapshot.
+Extract and inspect the archives. Use a temporary project for a dry run and a
+real install from the reviewed preview tarball:
+
+```bash
+npm exec --ignore-scripts --package=/tmp/sdcorejs-1.0.0-preview/sdcorejs-agent-1.0.0.tgz -- sdcorejs-agent install --agent codex --scope project --dry-run
+```
+
+Use `npm.cmd` and a Windows path in PowerShell or Command Prompt. See the
+[installation guide](INSTALLATION.md) and [plugin testing guide](PLUGIN_SUBMISSION.md).
 
 ## 6. Release from main
 
-After merging and reviewing all release evidence, update the changelog as needed
-and use the exact reviewed main commit:
+After merging and reviewing all release evidence, update the changelog as needed.
+Run `npm view sdcorejs-agent versions --json` and
+`git ls-remote origin refs/tags/1.0.0` before tagging. Confirm the stable npm
+version and Git tag are unused. Git tag `1.0.0` selects the exact artifact
+version. The npm dist-tag `latest` is a registry alias. The workflow checks the
+registry again and fails if the version already exists.
+
+As the maintainer, use the exact reviewed main commit:
 
 ```bash
 git switch main
@@ -208,10 +214,10 @@ git push origin 1.0.0
 
 The tag is the publication action once publisher setup is complete. Do not push
 it for a dry run. Watch `.github/workflows/release.yml`; success requires the
-reused Skills/E2E, Site, Windows mirror and Node 18 standalone CI jobs, artifact
+reused Skills/E2E, Site, Windows mirror, Node 18 standalone and three-platform preview CI jobs, artifact
 checks, npm publication and GitHub Release creation. Automatic release notes
 identify the CI run and distinguish deterministic checks from unrun Full E2E
-and live-host evidence. Add the evidence from sections 2–3 to the final notes.
+and live-host evidence. Add the evidence from sections 2â€“3 to the final notes.
 
 Push one release tag at a time and wait for completion, using increasing versions.
 Never move a released tag or overwrite a registry version. Concurrency is scoped
@@ -244,7 +250,9 @@ any remaining listing fields in the portal. No automatic portal upload or
 approval is implemented. A skills-only plugin currently cannot add MCP after
 publication; revisit the package shape before submitting if MCP is required.
 
-Official references, checked 2026-11-16:
+See the [plugin testing and submission checklist](PLUGIN_SUBMISSION.md).
+
+Official references:
 - [Plugin package layout](https://developers.openai.com/plugins/build/plugins)
 - [Submission requirements](https://developers.openai.com/plugins/deploy/submission)
 

@@ -50,7 +50,7 @@ const REQUIRED_DEVELOPMENT_SCRIPTS = [
 const REGISTRY_MUTATION_PATTERN =
   /(?:\bnpm\s+(?:(?:--?[\w-]+(?:=\S+)?)\s+)*(?:publish|unpublish|deprecate|pack|owner|access|token|dist-tag)\b|['"]npm['"]\s*,\s*\[\s*['"](?:publish|unpublish|deprecate|pack|owner|access|token|dist-tag)['"])/i;
 const ROOT_DEPENDENCY_INSTALL_PATTERN =
-  /\bnpm\s+(?:install|i|add)\b[^\r\n]*?(?:\bsdcorejs-agent|@sdcorejs\/agent)(?:@[\w.-]+)?\b/i;
+  /\bnpm\s+(?:install|i|add)\b[^\r\n]*?\bsdcorejs-agent(?:@[\w.-]+)?\b/i;
 const PUBLICATION_AUTH_PATTERN =
   /\b(?:NPM_TOKEN|NODE_AUTH_TOKEN|NPM_CONFIG_PROVENANCE)\b|registry-url|\/\/registry\.npmjs\.org\/:_authToken|--provenance\b|\bprovenance\s*:|\bnpm\s+attest\b|\bnpm\b[^\r\n]*?\bconfig\s+(?:set|delete)\s+registry\b|actions\/attest(?:-build)?-provenance/i;
 
@@ -60,8 +60,7 @@ test('npm publication: detection patterns cover common publication bypass spelli
     'npm install -D sdcorejs-agent',
     'npm i -g sdcorejs-agent@0.6.0',
     'npm add --save-dev sdcorejs-agent',
-    'npm install --save-dev --save-exact @sdcorejs/agent@1.0.0',
-    'npm i @sdcorejs/agent',
+    'npm install --save-dev --save-exact sdcorejs-agent@1.0.0',
   ];
   const registryMutationCommands = [
     'npm publish',
