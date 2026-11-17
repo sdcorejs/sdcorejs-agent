@@ -93,13 +93,13 @@ test('real archives carry tag versions, all public skills and refs, without auth
   assert.ok(readFileSync(path.join(work, 'first', 'SHA256SUMS'), 'utf8').includes('  release-notes.md\n'));
   const claude = execFileSync('python3', ['-c', 'import zipfile,sys; z=zipfile.ZipFile(sys.argv[1]); assert {"README.md",".claude-plugin/icon.png"} <= set(z.namelist()); print(z.read(".claude-plugin/plugin.json").decode())', path.join(work, 'first', 'sdcorejs-agent-claude-1.0.0.zip')], { encoding: 'utf8' });
   assert.equal(JSON.parse(claude).version, '1.0.0');
-  // The Claude bootstrap invokes run-hook.cmd directly on POSIX too.
+  // Claude invokes the polyglot wrapper through the platform shell.
   const claudeRoot = path.join(work, 'claude-installed'); mkdirSync(claudeRoot);
   execFileSync('python3', ['-c', 'import zipfile,sys,os; z=zipfile.ZipFile(sys.argv[1]); z.extractall(sys.argv[2]); [(os.chmod(os.path.join(sys.argv[2],i.filename), i.external_attr >> 16)) for i in z.infolist()]', path.join(work, 'first', 'sdcorejs-agent-claude-1.0.0.zip'), claudeRoot]);
   const hookOptions = { cwd: claudeRoot, encoding: 'utf8', env: { ...process.env, CLAUDE_PLUGIN_ROOT: claudeRoot } };
   const bootstrap = process.platform === 'win32'
     ? execFileSync(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'hooks\\run-hook.cmd', 'session-start'], hookOptions)
-    : execFileSync(path.join(claudeRoot, 'hooks/run-hook.cmd'), ['session-start'], hookOptions);
+    : execFileSync('sh', ['hooks/run-hook.cmd', 'session-start'], hookOptions);
   assert.match(bootstrap, /sdcorejs-using-skills/);
   testTarballInstallation(work, path.join(work, 'first', 'sdcorejs-agent-1.0.0.tgz'));
   assert.deepEqual(readFileSync(path.join(root, 'package.json')), before);
@@ -136,6 +136,10 @@ test('release workflow binds publishing to validated tags and complete CI', () =
   assert.match(workflow.jobs.validate.if, /github\.ref_type == 'tag'/);
   assert.match(workflow.jobs.validate.steps.filter(s => s.run).map(s => s.run).join('\n'), /release\.mjs verify --tag "\$RELEASE_TAG"/);
   assert.equal(workflow.jobs.publish.environment, 'npm');
+  assert.doesNotMatch(JSON.stringify(workflow.jobs.publish.env), /runner\./,
+    'runner context is unavailable in job-level env');
+  assert.match(run, /RELEASE_DIR="\$RUNNER_TEMP\/sdcorejs-release"/);
+  assert.match(run, />> "\$GITHUB_ENV"/);
   assert.match(run, /npm@11\.15\.0/);
   assert.doesNotMatch(readFileSync(path.join(root, 'scripts/release.mjs'), 'utf8'), /['"]publish['"]|\bnpm publish\b/, 'builder cannot publish');
   assert.equal(parse(readFileSync(path.join(root, '.github/workflows/ci.yml'), 'utf8')).on.workflow_call, null);

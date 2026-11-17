@@ -55,7 +55,6 @@ jobs:
       id-token: write
     env:
       RELEASE_TAG: ${{ github.ref_name }}
-      RELEASE_DIR: ${{ runner.temp }}/sdcorejs-release
       DIST_TAG: ${{ needs.validate.outputs.dist-tag }}
       PRERELEASE: ${{ needs.validate.outputs.prerelease }}
     steps:
@@ -72,9 +71,11 @@ jobs:
         run: |
           set -euo pipefail
           git fetch origin main:refs/remotes/origin/main
+          RELEASE_DIR="$RUNNER_TEMP/sdcorejs-release"
           node scripts/release.mjs build --tag "$RELEASE_TAG" --out "$RELEASE_DIR"
           cd "$RELEASE_DIR"
           sha256sum --check SHA256SUMS
+          printf 'RELEASE_DIR=%s\n' "$RELEASE_DIR" >> "$GITHUB_ENV"
       # Keep inspected bytes available even if registry setup/publication fails.
       - uses: actions/upload-artifact@v4
         with:

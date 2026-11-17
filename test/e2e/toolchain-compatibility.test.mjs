@@ -210,6 +210,7 @@ function assertCiToolchains(ci, fullE2e, deploySite) {
     '22.23.4',
     '22.22.3',
     '18.20.8',
+    '24.15.0',
   ]);
   assert.deepEqual(setupNodeVersions(fullE2eWorkflow), ['22.22.3']);
   assert.deepEqual(setupNodeVersions(deploySiteWorkflow), ['22.23.4']);
