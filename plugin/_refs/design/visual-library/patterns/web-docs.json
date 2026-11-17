@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "web-docs",
+  "name": "Documentation reader",
+  "surfaces": [
+    "public-website",
+    "landing-page",
+    "mobile-web"
+  ],
+  "jobs": [
+    "read-documentation"
+  ],
+  "data_shapes": [
+    "sectioned-content"
+  ],
+  "applicability": "Read a small reference grouped into named sections.",
+  "avoid_when": "An article layout is not a full-text search engine or a generated API contract.",
+  "variants": [
+    {
+      "id": "sidebar",
+      "layout": "docs"
+    },
+    {
+      "id": "stacked",
+      "layout": "docs"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "astryx-documentation-technical",
+    "uipro-landing-expanded"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Framework-neutral HTML only. Inspect the exact installed framework/component API before implementation; Astryx React/StyleX references do not establish Angular or Core compatibility."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original dependency-free HTML composition informed by the cited layout description. Production actions and upstream assets are not copied; fixture content is illustrative.",
+  "source_locators": [
+    {
+      "source_ref": "uipro-landing-expanded",
+      "key": "Pattern ID",
+      "values": [
+        "faq-documentation-landing"
+      ]
+    }
+  ]
+}

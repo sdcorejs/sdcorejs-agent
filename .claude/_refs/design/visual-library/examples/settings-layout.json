@@ -1,0 +1,27 @@
+{
+  "id": "settings-layout",
+  "question": "How should people move between preference groups?",
+  "patterns": [
+    {
+      "pattern_id": "op-settings",
+      "variant": "sidebar",
+      "label": "Section navigation",
+      "summary": "People revisit a known group.",
+      "best_when": "People revisit a known group",
+      "tradeoff": "Only one section is visible at a time"
+    },
+    {
+      "pattern_id": "op-settings",
+      "variant": "stacked",
+      "label": "Continuous settings",
+      "summary": "People review all settings together.",
+      "best_when": "People review all settings together",
+      "tradeoff": "The page becomes longer"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the brief before offering.",
+  "criteria": [
+    "Keep fields grouped",
+    "Make every setting reachable"
+  ]
+}

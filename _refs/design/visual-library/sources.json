@@ -335,6 +335,143 @@
       "license_path": "licenses/anthropic.txt",
       "treatment": "adapted",
       "modification_notice": "Structure and visual recommendations adapted into framework-neutral, English-source SDCoreJS preview records; original application behavior and assets are not redistributed."
+    },
+    {
+      "id": "astryx-dashboard",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/dashboard/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/dashboard/template.doc.mjs",
+      "sha256": "11d14c3217f0623638e86a7fd426f2d066ac4c524c43da149d22ab9352cf1a57",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": true,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-kanban-board",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/kanban-board/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/kanban-board/template.doc.mjs",
+      "sha256": "10e3d4c98ce8a2dc5201d879a369f5bc270dc12d01d04b883aae0e172762130c",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": true,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-settings-sidebar",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/settings-sidebar/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/settings-sidebar/template.doc.mjs",
+      "sha256": "9f40b560a374c52acfddeb8aa52a2406de22f53bf7f86ad0666ea67637085f8a",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": true,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-file-explorer",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/file-explorer/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/file-explorer/template.doc.mjs",
+      "sha256": "0a546a052d5532ad7662bb16cffade3b94704b36e4250b641c8b585113e6cb3a",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": true,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-messaging-shell",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/messaging-shell/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/messaging-shell/template.doc.mjs",
+      "sha256": "050654f5ec3ab9eb1386c326304487cf5ad8ed846a5b6e38435971f14b8bb6fa",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": false,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-review-workspace",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/review-workspace/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/review-workspace/template.doc.mjs",
+      "sha256": "71dd7047533b18148be5372ca8978557a2d18bb9a2f50191b50387f195042ef1",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": false,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-documentation-technical",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/documentation-technical/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/documentation-technical/template.doc.mjs",
+      "sha256": "a8fdfbbd56fcb15055143ba6fb68c98646cfc0de0fabf6464c42618409465a02",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": true,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-product-gallery",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/product-gallery/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/product-gallery/template.doc.mjs",
+      "sha256": "a734fb0229b2af867ab6a0de4bb0d9ff877e91aa13169a450120513b79c9c482",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": true,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "astryx-contact-form",
+      "repository": "meta/astryx",
+      "revision": "ad1fb5089f6b287f0199e7cb4796a9ec86a6166b",
+      "path": "packages/cli/assets/templates/pages/contact-form/template.doc.mjs",
+      "url": "https://github.com/meta/astryx/blob/ad1fb5089f6b287f0199e7cb4796a9ec86a6166b/packages/cli/assets/templates/pages/contact-form/template.doc.mjs",
+      "sha256": "98e4f636cacda500034130b079dd351087ac26fc0912baaec3203c3cee92b488",
+      "license": "MIT",
+      "license_path": "licenses/astryx.txt",
+      "treatment": "adapted",
+      "upstream_ready": true,
+      "modification_notice": "Spatial description adapted into original framework-neutral HTML; no React/StyleX code, icons, assets, production workflow or runtime dependencies are redistributed."
+    },
+    {
+      "id": "uipro-landing-expanded",
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "revision": "e59ff376a41f7ca47b7541ad5c116495cbade3ee",
+      "path": "src/ui-ux-pro-max/data/landing.csv",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/blob/e59ff376a41f7ca47b7541ad5c116495cbade3ee/src/ui-ux-pro-max/data/landing.csv",
+      "sha256": "9a2edd3bb676c2a58f00ade7a062e285222d4297bfd847c8d5b056f0dbbf52d0",
+      "license": "MIT",
+      "license_path": "licenses/uipro.txt",
+      "treatment": "adapted",
+      "selected_records": {
+        "key": "Pattern ID",
+        "values": [
+          "faq-documentation-landing",
+          "marketplace-directory",
+          "lead-magnet-form"
+        ]
+      },
+      "modification_notice": "Recommendations adapted into original static compositions; external assets, integrations and conversion claims are omitted."
     }
   ],
   "conflicts": [

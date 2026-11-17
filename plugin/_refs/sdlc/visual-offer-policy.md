@@ -5,6 +5,12 @@ For concrete screen examples after visual intent is established, use
 same brief and existing tokens, then deliver HTML or an explicit text fallback.
 The library supplies the recipe; the offer, decline, consent and approval rules
 below remain authoritative. Direct preview requests need no second invitation.
+For an accepted UI-layout choice, use the thumbnail recipes in
+`_refs/design/visual-library/thumbnails.md`: show the relevant layouts in a
+gallery and attach their PNGs in chat when native images are supported. Use
+only exact-content captures for project-specific alternatives. Missing image
+support needs an explicit HTML/text fallback, not a claim that filenames are
+thumbnails. This presentation step never reopens a fixed or declined design.
 
 Canonical recognition and invitation policy for every decision owner. Load just
 before presenting or settling an open choice, including direct Design entry.

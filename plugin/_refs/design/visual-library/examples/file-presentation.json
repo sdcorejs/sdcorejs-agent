@@ -1,0 +1,27 @@
+{
+  "id": "file-presentation",
+  "question": "Which view helps people find the right resource?",
+  "patterns": [
+    {
+      "pattern_id": "op-files",
+      "variant": "grid",
+      "label": "Resource cards",
+      "summary": "Names and individual resources lead scanning.",
+      "best_when": "Names and individual resources lead scanning",
+      "tradeoff": "Cards use more vertical space"
+    },
+    {
+      "pattern_id": "op-files",
+      "variant": "list",
+      "label": "Metadata list",
+      "summary": "People compare metadata across resources.",
+      "best_when": "People compare metadata across resources",
+      "tradeoff": "Wide metadata may require local scrolling"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the brief before offering.",
+  "criteria": [
+    "Preserve every metadata field",
+    "Support narrow screens"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "op-review",
+  "name": "Content review workspace",
+  "surfaces": [
+    "enterprise-portal",
+    "dashboard",
+    "mobile-web"
+  ],
+  "jobs": [
+    "review-content"
+  ],
+  "data_shapes": [
+    "document-and-context"
+  ],
+  "applicability": "Read content with supporting context kept nearby.",
+  "avoid_when": "Do not introduce scoring, approval decisions or record mutations from layout choice.",
+  "variants": [
+    {
+      "id": "side-by-side",
+      "layout": "review"
+    },
+    {
+      "id": "stacked",
+      "layout": "review"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "astryx-review-workspace"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Framework-neutral HTML only. Inspect the exact installed framework/component API before implementation; Astryx React/StyleX references do not establish Angular or Core compatibility."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original dependency-free HTML composition informed by the cited layout description. Production actions and upstream assets are not copied; fixture content is illustrative. Upstream marks this template not ready; only its spatial description is a reference, not a supported production implementation."
+}

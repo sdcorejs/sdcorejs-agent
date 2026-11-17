@@ -1,0 +1,27 @@
+{
+  "id": "dashboard-direction",
+  "question": "Where should supporting context sit?",
+  "patterns": [
+    {
+      "pattern_id": "op-dashboard",
+      "variant": "overview",
+      "label": "Stacked overview",
+      "summary": "A regular top-to-bottom reading order.",
+      "best_when": "A regular top-to-bottom reading order",
+      "tradeoff": "Supporting notes sit below the table"
+    },
+    {
+      "pattern_id": "op-dashboard",
+      "variant": "activity-rail",
+      "label": "Overview with context rail",
+      "summary": "Reference context stays beside the records.",
+      "best_when": "Reference context stays beside the records",
+      "tradeoff": "The table has less horizontal space"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the brief before offering.",
+  "criteria": [
+    "Compare summary and detail",
+    "Keep supporting context reachable"
+  ]
+}

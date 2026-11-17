@@ -254,6 +254,201 @@
         "uipro-styles"
       ],
       "path": "patterns/web-editorial.json"
+    },
+    {
+      "id": "op-dashboard",
+      "name": "Overview dashboard",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "monitor-overview"
+      ],
+      "data_shapes": [
+        "summary",
+        "tabular"
+      ],
+      "source_refs": [
+        "astryx-dashboard"
+      ],
+      "path": "patterns/op-dashboard.json"
+    },
+    {
+      "id": "op-board",
+      "name": "Work board",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "track-work"
+      ],
+      "data_shapes": [
+        "explicit-groups"
+      ],
+      "source_refs": [
+        "astryx-kanban-board"
+      ],
+      "path": "patterns/op-board.json"
+    },
+    {
+      "id": "op-settings",
+      "name": "Workspace preferences",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "configure-preferences"
+      ],
+      "data_shapes": [
+        "sectioned"
+      ],
+      "source_refs": [
+        "astryx-settings-sidebar"
+      ],
+      "path": "patterns/op-settings.json"
+    },
+    {
+      "id": "op-files",
+      "name": "File library",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "browse-files"
+      ],
+      "data_shapes": [
+        "flat",
+        "file-metadata"
+      ],
+      "source_refs": [
+        "astryx-file-explorer"
+      ],
+      "path": "patterns/op-files.json"
+    },
+    {
+      "id": "op-messages",
+      "name": "Conversation workspace",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "read-conversation"
+      ],
+      "data_shapes": [
+        "conversation"
+      ],
+      "source_refs": [
+        "astryx-messaging-shell"
+      ],
+      "path": "patterns/op-messages.json"
+    },
+    {
+      "id": "op-review",
+      "name": "Content review workspace",
+      "surfaces": [
+        "enterprise-portal",
+        "dashboard",
+        "mobile-web"
+      ],
+      "jobs": [
+        "review-content"
+      ],
+      "data_shapes": [
+        "document-and-context"
+      ],
+      "source_refs": [
+        "astryx-review-workspace"
+      ],
+      "path": "patterns/op-review.json"
+    },
+    {
+      "id": "web-docs",
+      "name": "Documentation reader",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "read-documentation"
+      ],
+      "data_shapes": [
+        "sectioned-content"
+      ],
+      "source_refs": [
+        "astryx-documentation-technical",
+        "uipro-landing-expanded"
+      ],
+      "path": "patterns/web-docs.json"
+    },
+    {
+      "id": "web-catalog",
+      "name": "Resource catalog",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "browse-catalog"
+      ],
+      "data_shapes": [
+        "content"
+      ],
+      "source_refs": [
+        "astryx-product-gallery",
+        "uipro-landing-expanded"
+      ],
+      "path": "patterns/web-catalog.json"
+    },
+    {
+      "id": "web-contact",
+      "name": "Contact page",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "contact-team"
+      ],
+      "data_shapes": [
+        "form-content"
+      ],
+      "source_refs": [
+        "astryx-contact-form",
+        "uipro-landing-expanded"
+      ],
+      "path": "patterns/web-contact.json"
+    },
+    {
+      "id": "web-faq",
+      "name": "Help and answers",
+      "surfaces": [
+        "public-website",
+        "landing-page",
+        "mobile-web"
+      ],
+      "jobs": [
+        "find-answers"
+      ],
+      "data_shapes": [
+        "question-answer"
+      ],
+      "source_refs": [
+        "uipro-landing-expanded"
+      ],
+      "path": "patterns/web-faq.json"
     }
   ],
   "themes": [

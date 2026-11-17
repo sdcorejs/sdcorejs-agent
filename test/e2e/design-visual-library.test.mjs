@@ -10,6 +10,71 @@ import * as choices from '../../_refs/design/visual-library/selection.mjs';
 import { validateDesignHandoff } from '../../_refs/shared/design-handoff.mjs';
 import { createExampleScreen, EXAMPLES } from '../../_refs/design/visual-library/compose-preview.mjs';
 import { createHash } from 'node:crypto';
+
+const expandedJobs = {
+  'op-dashboard':'monitor-overview', 'op-board':'track-work', 'op-settings':'configure-preferences',
+  'op-files':'browse-files', 'op-messages':'read-conversation', 'op-review':'review-content',
+  'web-docs':'read-documentation', 'web-catalog':'browse-catalog', 'web-contact':'contact-team', 'web-faq':'find-answers',
+};
+test('expanded tasks select their own family without crossing the business/website boundary', () => {
+  for(const [id,job] of Object.entries(expandedJobs)) {
+    const surface=id.startsWith('op-')?'enterprise-portal':'public-website';
+    assert.equal(selection.selectPatterns({surface,job}).patterns[0]?.id,id);
+    assert.equal(selection.selectPatterns({surface:id.startsWith('op-')?'public-website':'enterprise-portal',job}).status,'no-match');
+    const p=makePreview(id);
+    assert.match(renderer.renderPatternDocument(p),new RegExp('data-pattern-id="'+id+'"'));
+  }
+});
+
+test('board uses explicit bounded groups rather than inferring business status from row order', () => {
+  const groups=[{title:'Waiting',items:[{title:'CASE_ALPHA',body:'BODY_ALPHA'}]},{title:'Complete',items:[]}];
+  const html=renderer.renderPatternDocument(makePreview('op-board',{content:{groups}}));
+  assert.match(html,/Waiting[\s\S]*CASE_ALPHA[\s\S]*BODY_ALPHA[\s\S]*Complete/);
+  assert.doesNotMatch(html,/REQ-104|draggable="true"/);
+  for(const groups of [[{title:'Missing items'}],Array(7).fill({title:'Too many',items:[]}),[{title:'Bad',items:[{title:'Task',body:'Body',script:'bad'}]}]])
+    assert.throws(()=>makePreview('op-board',{content:{groups}}),/groups/i);
+  const hostile=renderer.renderPatternDocument(makePreview('op-board',{content:{groups:[{title:'<script>bad</script>',items:[]}]}}));
+  assert.match(hostile,/&lt;script&gt;bad/);
+});
+
+test('paired expansion examples preserve all sections and records across spatial variants', () => {
+  const ids=['dashboard-direction','settings-layout','file-presentation','review-layout','docs-structure','catalog-presentation'];
+  for(const id of ids){
+    const s=createExampleScreen(id);
+    assert.deepEqual(s.options[0].preview.content,s.options[1].preview.content);
+    for(const {preview:p} of s.options){
+      const html=renderer.renderPatternDocument(p);
+      const values=id==='file-presentation'?p.content.rows.flat():p.content.sections.flatMap(s=>[s.title,s.body]);
+      for(const value of values)assert.ok(html.includes(library.escapeText(value)),id+': missing '+value);
+    }
+  }
+});
+
+test('Astryx sources stay pinned with experimental readiness and no inherited runtime dependencies', async () => {
+  const sources=JSON.parse(await readFile(new URL('../../_refs/design/visual-library/sources.json',import.meta.url)));
+  const astryx=sources.sources.filter(s=>s.repository==='meta/astryx');
+  assert.ok(astryx.length>=8);
+  for(const source of astryx)assert.match(source.sha256,/^[a-f0-9]{64}$/);
+  for(const id of ['astryx-review-workspace','astryx-messaging-shell'])assert.equal(astryx.find(s=>s.id===id)?.upstream_ready,false);
+  for(const id of Object.keys(expandedJobs)){
+    assert.equal(library.loadPattern(id).component_mapping.core_version_evidence,null);
+    assert.doesNotMatch(renderer.renderPatternDocument(makePreview(id)),/<script[^>]+src=|@astryxdesign|react-dom/);
+  }
+});
+
+test('settings require explicit complete field membership and preserve it across variants', () => {
+  const content={fields:['Workspace field','Appearance field','Notification field'],rows:[['Team','Readable','Weekly']],columns:['Workspace','Appearance','Notifications'],sections:[{title:'Workspace group',body:'Workspace description'},{title:'Appearance group',body:'Appearance description'},{title:'Notification group',body:'Notification description'}],field_groups:[[0],[1],[2]]};
+  for(const variant of ['sidebar','stacked']){
+    const html=renderer.renderPatternDocument(makePreview('op-settings',{variant,content}));
+    const panels=html.match(/<section class="pp-card pp-stack"[^>]*>[\s\S]*?<\/section>/g);
+    assert.equal(panels.length,3);
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++)assert.equal(panels[i].includes(content.fields[j]),i===j);
+  }
+  for(const field_groups of [[[0],[0],[2]],[[0],[1],[]],[[0],[1],[3]],[[0],[1]],[[0],[1],[2.5]]])
+    assert.throws(()=>makePreview('op-settings',{content:{...content,field_groups}}),/field.groups/i);
+  const {field_groups,...unmapped}=content;
+  assert.throws(()=>makePreview('op-settings',{content:unmapped}),/field.groups/i);
+});
 const makePreview = (id, extra = {}) => library.createPatternPreview({ pattern_id: id, ...extra });
 const screen = () => ({ schema_version: 2, screen_id: 'support-layout', type: 'comparison', question: 'Choose a support workspace', criteria: ['Keep the queue visible'], recommendation: 'split', fallback_prompt: 'Reply split or drawer.', options: [
   { id: 'split', label: 'Side by side', summary: 'Process consecutive records.', best_when: 'Frequent review', tradeoff: 'Uses width', preview_asset: 'Editable queue', preview: makePreview('op-split') },

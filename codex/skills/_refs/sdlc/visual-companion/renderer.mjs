@@ -201,22 +201,23 @@ export function renderPreview(option, { assetUrl = null, messages = DEFAULT_MESS
   return `<figure class="vc-preview" data-preview-kind="${escapeHtml(preview.kind)}">${body}${caption}</figure>`;
 }
 
-export function renderOption(option, index, screen, { assetUrl = null, messages = DEFAULT_MESSAGES } = {}) {
+export function renderOption(option, index, screen, { assetUrl = null, messages = DEFAULT_MESSAGES, thumbnail = null } = {}) {
   const multiple = isMultiSelect(screen);
   const role = multiple ? 'checkbox' : 'radio';
   const recommended = screen.recommendation === option.id;
   return (
-    '<li role="none"' + (option.preview?.kind === 'pattern' ? ' class="vc-pattern-option"' : '') + '><button type="button" class="vc-option" ' +
+    '<li role="none"' + (option.preview?.kind === 'pattern' ? ` class="vc-pattern-option${thumbnail?' vc-thumbnail-option':''}"` : '') + '><button type="button" class="vc-option" ' +
     `role="${role}" aria-checked="false" ` +
     `aria-label="${escapeHtml(messages.option)} ${index + 1}: ${escapeHtml(option.label)}" ` +
     `data-option-id="${escapeHtml(option.id)}"${recommended ? ' data-recommended="true"' : ''}>` +
     `<span class="vc-number" aria-hidden="true">${index + 1}</span>` +
     `<span class="vc-label">${escapeHtml(option.label)}${recommended && option.preview?.kind === 'pattern' ? `<span class="vc-recommended">${escapeHtml(messages.recommendation)}</span>` : ''}</span>` +
     `<span class="vc-summary">${escapeHtml(option.summary)}</span>` +
+    (thumbnail?`<img class="vc-thumbnail" src="${escapeHtml(thumbnail.data_url)}" alt="${escapeHtml(messages.preview_label+': '+option.label)}" width="${thumbnail.width}" height="${thumbnail.height}" decoding="async">`:'') +
     (option.preview?.kind === 'pattern' ? '' : renderPreview(option, { assetUrl, messages })) +
     `<span class="vc-detail"><strong>${escapeHtml(messages.best_when)}:</strong> ${escapeHtml(option.best_when)}</span>` +
     `<span class="vc-detail"><strong>${escapeHtml(messages.tradeoff)}:</strong> ${escapeHtml(option.tradeoff)}</span>` +
-    '</button>' + (option.preview?.kind === 'pattern' ? renderPreview(option, { assetUrl, messages }) : '') + '</li>'
+    '</button>' + (option.preview?.kind === 'pattern' ? (thumbnail?`<details data-thumbnail-detail><summary>${escapeHtml(messages.preview_label)}: ${escapeHtml(option.label)}</summary>${renderPreview(option,{assetUrl,messages})}</details>`:renderPreview(option, { assetUrl, messages })) : '') + '</li>'
   );
 }
 

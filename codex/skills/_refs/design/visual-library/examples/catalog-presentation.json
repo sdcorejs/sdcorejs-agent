@@ -1,0 +1,27 @@
+{
+  "id": "catalog-presentation",
+  "question": "How should the resource collection be presented?",
+  "patterns": [
+    {
+      "pattern_id": "web-catalog",
+      "variant": "grid",
+      "label": "Equal resource cards",
+      "summary": "Every resource has equal priority.",
+      "best_when": "Every resource has equal priority",
+      "tradeoff": "No single entry leads"
+    },
+    {
+      "pattern_id": "web-catalog",
+      "variant": "featured",
+      "label": "Featured first resource",
+      "summary": "The first resource is a confirmed starting point.",
+      "best_when": "The first resource is a confirmed starting point",
+      "tradeoff": "The first resource receives extra emphasis"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the brief before offering.",
+  "criteria": [
+    "Keep all descriptions",
+    "Make the emphasis deliberate"
+  ]
+}

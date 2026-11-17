@@ -9,6 +9,7 @@
 
 import { PATTERN_STYLES } from '../../design/visual-library/styles.mjs';
 import { visualScreenDigest } from '../../design/visual-library/selection.mjs';
+import { resolveScreenThumbnails } from '../../design/visual-library/thumbnails.mjs';
 import { CLIENT_SCRIPT, CLIENT_SCRIPT_HASH } from './client-script.mjs';
 import { LIMITS, contentSecurityPolicy } from './protocol.mjs';
 import { isMultiSelect } from './screen.mjs';
@@ -87,8 +88,9 @@ function documentShell({ locale, title, body }) {
 }
 
 /** Render the live decision surface for a published screen. */
-export function renderLiveDocument(screen, { locale, messages, sessionId, screenRevision } = {}) {
+export function renderLiveDocument(screen, { locale, messages, sessionId, screenRevision, pattern_view, thumbnail_directory } = {}) {
   const runtime = resolveRuntime({ locale, messages });
+  const thumbnails=resolveScreenThumbnails(screen,{pattern_view,thumbnail_directory});
   const text = runtime.messages;
   const multiple = isMultiSelect(screen);
   const assetUrl = (name) => `/assets/${encodeURIComponent(name)}`;
@@ -96,7 +98,7 @@ export function renderLiveDocument(screen, { locale, messages, sessionId, screen
     ? `<p><strong>${escapeHtml(text.criteria)}:</strong> ${screen.criteria.map(escapeHtml).join('; ')}</p>`
     : '';
   const options = screen.options
-    .map((option, index) => renderOption(option, index, screen, { assetUrl, messages: text }))
+    .map((option, index) => renderOption(option, index, screen, { assetUrl, messages: text,thumbnail:thumbnails?.[index]??null }))
     .join('');
 
   const body =

@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-11-16T05:36:40.645Z
+generated_at: 2026-11-16T11:13:48.798Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:470e45302b9e95f26bf35594c2065c480641f1bc2bdddda0b10b81be38dd90cc
+  dependency_manifests: sha256:2d9b7cf7939fc014097d78fc2773423053a032ceb81530b3b278974f03c62162
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -58,6 +58,8 @@ owner: integration-owner
 # Project Summary
 
 ## Purpose
+
+The visual library provides 22 task-indexed families, 42 illustrative variants and six themes, with pinned source/license references. Offline HTML, a searchable PNG gallery and native-chat image delivery share content-bound feedback; customized images require matching captures. See `_refs/design/visual-library/README.md` and `thumbnails.md`. These surfaces do not approve final designs or implementation.
 
 Existing-project onboarding discovers root/ancestor instructions and host-specific rule candidates with current hashes; the active skill resolves applicability and conflicts. Explore checks local runtime identity/readiness and executes scoped authorized startup, with Execute/Test hooks. See `_refs/shared/existing-project-onboarding.md` and `_refs/shared/explore-env-setup-actions.md`.
 

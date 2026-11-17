@@ -337,6 +337,64 @@
               }
             }
           }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "items"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "items": {
+                "type": "array",
+                "maxItems": 24,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "body"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    "body": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "field_groups": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "type": "array",
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7
+            }
+          }
         }
       }
     },
@@ -591,5 +649,48 @@
       "minLength": 1,
       "maxLength": 1000
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "pattern_id": {
+            "const": "op-board"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "content": {
+            "required": [
+              "groups"
+            ],
+            "properties": {
+              "groups": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "pattern_id": {
+            "const": "op-settings"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "content": {
+            "required": [
+              "field_groups"
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

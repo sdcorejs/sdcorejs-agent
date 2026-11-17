@@ -17,6 +17,7 @@ import { createHash } from 'node:crypto';
 import { PATTERN_STYLES } from '../design/visual-library/styles.mjs';
 import { PATTERN_SCRIPT } from '../design/visual-library/interaction.mjs';
 import { visualScreenDigest } from '../design/visual-library/selection.mjs';
+import { resolveScreenThumbnails } from '../design/visual-library/thumbnails.mjs';
 
 import {
   assertValidScreen,
@@ -80,6 +81,7 @@ export function renderStaticVisualScreen(screen, runtime = {}) {
     );
   }
   const { locale, messages } = resolveRuntime(runtime);
+  const thumbnails=resolveScreenThumbnails(screen,runtime);
   const multiple = screen.type === 'multi_select';
   const criteria = screen.criteria.length
     ? '<p><strong>' + escapeHtml(messages.criteria) + ':</strong> ' + screen.criteria.map(escapeHtml).join('; ') + '</p>'
@@ -87,7 +89,7 @@ export function renderStaticVisualScreen(screen, runtime = {}) {
   // `assetUrl` is null: a standalone file has no asset route, so an image
   // preview degrades to its accessible description instead of a dead link.
   const options = screen.options
-    .map((option, index) => renderOption(option, index, screen, { assetUrl: null, messages }))
+    .map((option, index) => renderOption(option, index, screen, { assetUrl: null, messages,thumbnail:thumbnails?.[index]??null }))
     .join('');
   const markdown = renderScreenMarkdown(screen, runtime);
   const selectionHelp = formatMessage(messages.selection_help, { count: screen.options.length });
@@ -95,7 +97,7 @@ export function renderStaticVisualScreen(screen, runtime = {}) {
   const recommendationLabel = patternScreen ? screen.options.find(option => option.id === screen.recommendation).label : screen.recommendation;
   const fallback = '<section aria-label="' + escapeHtml(messages.markdown_fallback) + '"><h2>' + escapeHtml(messages.markdown_fallback) + '</h2><pre>' + escapeHtml(markdown) + '</pre></section>';
   const fallbackSurface = patternScreen ? '<details class="vc-fallback"><summary>' + escapeHtml(messages.markdown_fallback) + '</summary>' + fallback + '</details>' : fallback;
-  return '<!doctype html><html lang="' + escapeHtml(locale) + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; script-src \'sha256-' + INTERACTION_HASH + '\'; base-uri \'none\'; form-action \'none\'; frame-ancestors \'none\'; connect-src \'none\'; img-src \'none\'"><title>' + escapeHtml(screen.question) + '</title><style>' + STYLES + PATTERN_STYLES + '</style></head><body><main data-static-visual data-mode="' + escapeHtml(screen.type) + '" data-screen-id="' + escapeHtml(screen.screen_id) + '"' + (screen.schema_version === 2 ? ' data-screen-digest="' + visualScreenDigest(screen) + '"' : '') + ' data-message-selection-updated="' + escapeHtml(messages.selection_updated) + '" data-message-copy-unavailable="' + escapeHtml(messages.copy_unavailable) + '" data-message-response-copied="' + escapeHtml(messages.response_copied) + '"><h1>' + escapeHtml(screen.question) + '</h1>' + criteria + '<p>' + escapeHtml(messages.recommendation) + ': <strong>' + escapeHtml(recommendationLabel) + '</strong></p><p id="selection-help">' + escapeHtml(selectionHelp) + '</p><p class="vc-note">' + escapeHtml(messages.supporting_feedback_note) + '</p><ul class="vc-options" role="' + (multiple ? 'group' : 'radiogroup') + '" aria-label="' + escapeHtml(messages.visual_decision_options) + '" aria-describedby="selection-help">' + options + '</ul><label for="feedback">' + escapeHtml(messages.feedback_optional) + '</label><textarea id="feedback" data-feedback maxlength="4000" aria-label="' + escapeHtml(messages.feedback_aria) + '"></textarea><button type="button" data-copy aria-label="' + escapeHtml(messages.copy_response_aria) + '">' + escapeHtml(messages.copy_response) + '</button><p data-status role="status" aria-live="polite"></p><textarea data-copy-output aria-label="' + escapeHtml(messages.selectable_response_aria) + '" readonly hidden></textarea>' + fallbackSurface + '</main>' + INTERACTION_SCRIPT + '</body></html>';
+  return '<!doctype html><html lang="' + escapeHtml(locale) + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; script-src \'sha256-' + INTERACTION_HASH + '\'; base-uri \'none\'; form-action \'none\'; frame-ancestors \'none\'; connect-src \'none\'; img-src data:"><title>' + escapeHtml(screen.question) + '</title><style>' + STYLES + PATTERN_STYLES + '</style></head><body><main data-static-visual data-mode="' + escapeHtml(screen.type) + '" data-screen-id="' + escapeHtml(screen.screen_id) + '"' + (screen.schema_version === 2 ? ' data-screen-digest="' + visualScreenDigest(screen) + '"' : '') + ' data-message-selection-updated="' + escapeHtml(messages.selection_updated) + '" data-message-copy-unavailable="' + escapeHtml(messages.copy_unavailable) + '" data-message-response-copied="' + escapeHtml(messages.response_copied) + '"><h1>' + escapeHtml(screen.question) + '</h1>' + criteria + '<p>' + escapeHtml(messages.recommendation) + ': <strong>' + escapeHtml(recommendationLabel) + '</strong></p><p id="selection-help">' + escapeHtml(selectionHelp) + '</p><p class="vc-note">' + escapeHtml(messages.supporting_feedback_note) + '</p><ul class="vc-options" role="' + (multiple ? 'group' : 'radiogroup') + '" aria-label="' + escapeHtml(messages.visual_decision_options) + '" aria-describedby="selection-help">' + options + '</ul><label for="feedback">' + escapeHtml(messages.feedback_optional) + '</label><textarea id="feedback" data-feedback maxlength="4000" aria-label="' + escapeHtml(messages.feedback_aria) + '"></textarea><button type="button" data-copy aria-label="' + escapeHtml(messages.copy_response_aria) + '">' + escapeHtml(messages.copy_response) + '</button><p data-status role="status" aria-live="polite"></p><textarea data-copy-output aria-label="' + escapeHtml(messages.selectable_response_aria) + '" readonly hidden></textarea>' + fallbackSurface + '</main>' + INTERACTION_SCRIPT + '</body></html>';
 }
 
 /**

@@ -162,10 +162,15 @@ scope returns to the governed workflow.
 
 ## Design before implementation
 
-The [visual library](_refs/design/visual-library/README.md) includes eight
-business-screen families, four website families, six optional themes and six
-paired comparisons. Core and Portal patterns and licensed design references
-inform the original HTML compositions.
+The [visual library](_refs/design/visual-library/README.md) includes 22 layout
+families (14 business screens and eight website layouts), 42 variants, six optional
+themes and 12 paired comparisons. Core, Portal, Meta Astryx and licensed design
+references inform the original HTML compositions. These previews help choose
+structure; final design still follows the project's content, tokens and components.
+The [thumbnail workflow](_refs/design/visual-library/thumbnails.md) provides a
+searchable offline gallery, compact comparison cards and verified PNG paths for
+in-chat image display on supported hosts. Customized previews can capture their
+own thumbnails using an existing browser capability.
 
 <table>
   <tr>

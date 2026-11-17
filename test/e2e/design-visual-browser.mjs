@@ -61,6 +61,28 @@ try{
   await open('record-groups',renderStaticVisualScreen(createExampleScreen('record-groups')));
   const tabbed=page.locator('[data-variant="tabs"]');await tabbed.locator('[data-preview-tab="1"]').click();
   await check(await tabbed.locator('[data-tab-panel="1"]').isVisible(),'Tabs switch');
+  await open('settings-sidebar',renderPatternDocument(createPatternPreview({pattern_id:'op-settings',variant:'sidebar'})));
+  await page.locator('[data-preview-tab="2"]').click();
+  await check(await page.locator('[data-tab-panel="2"]').isVisible(),'Preference section switches');
+  await page.locator('[data-tab-panel="2"] input').fill('Local preference');
+  await page.locator('[data-preview-tab="0"]').click();
+  await page.locator('[data-preview-tab="2"]').click();
+  await check(await page.locator('[data-tab-panel="2"] input').inputValue()==='Local preference','Switching sections preserves the local edit');
+  await open('file-grid-search',renderPatternDocument(createPatternPreview({pattern_id:'op-files',variant:'grid'})));
+  await page.locator('[data-preview-search]').fill('Decision log');
+  await check(await page.locator('[data-search-row]:visible').count()===1,'File cards filter by visible content');
+  await page.locator('[data-preview-search]').fill('no matching sample');
+  await check(await page.locator('[data-search-empty]').isVisible(),'File search shows its empty result');
+  await open('faq-keyboard',renderPatternDocument(createPatternPreview({pattern_id:'web-faq'})));
+  await page.locator('.pp-faq-list summary').first().focus();
+  await page.keyboard.press('Enter');
+  await check(await page.locator('.pp-faq-list details').first().getAttribute('open')!==null,'FAQ expands with the keyboard');
+  await page.keyboard.press('Enter');
+  await check(await page.locator('.pp-faq-list details').first().getAttribute('open')===null,'FAQ collapses with the keyboard');
+  for(const id of ['op-dashboard','op-board','op-settings','op-files','op-messages','op-review','web-docs','web-catalog','web-contact','web-faq']){
+    await open(id+'-inspection',renderPatternDocument(createPatternPreview({pattern_id:id})));
+    await page.screenshot({path:join(output,id+'.png'),fullPage:true});
+  }
   await open('live-fragment',renderLiveDocument(createExampleScreen('queue-context'),{sessionId:'browser-probe',screenRevision:1}));
   // No live session is started here. The fixed pattern helper still runs on the waiting socket.
   await page.locator('[data-preview-viewport]').first().selectOption('mobile');
@@ -121,6 +143,16 @@ try{
       const readable=await page.locator('.pp-split').evaluate(layout=>[...layout.children].every(card=>card.getBoundingClientRect().width>=Math.min(360,layout.clientWidth)-1));
       await check(readable,'Enlarged list/detail retain readable widths or stack at '+width);
     }
+  }
+  for(const id of ['op-dashboard','op-board','op-settings','op-files','op-messages','op-review'])for(const variant of loadPattern(id).variants){
+    await page.setViewportSize({width:375,height:1000});
+    await open(id+'-'+variant.id+'-enlarged-action',renderPatternDocument(createPatternPreview({pattern_id:id,variant:variant.id,content:{primary_action:'Review the supplied content'}})));
+    await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+    const visible=await page.locator('.pp-heading>button').evaluate(button=>{
+      const action=button.getBoundingClientRect(),heading=button.parentElement.getBoundingClientRect();
+      return action.left>=heading.left-1&&action.right<=heading.right+1;
+    });
+    await check(visible,id+'/'+variant.id+': enlarged action stays inside the heading, not clipped by the frame');
   }
   await check(requests.length===0,'No remote requests');await check(errors.length===0,'No page script errors: '+errors.join('; '));
   const receipt={status:'passed',assertions,library_revision:libraryRevision(),browser:await browser.version(),remote_requests:requests,script_errors:errors,limitations:['Live socket authentication/reconnect is covered by the separate runtime suite; this probe checks the rendered live document.','No claim of full assistive-technology certification.']};

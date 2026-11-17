@@ -1,0 +1,27 @@
+{
+  "id": "review-layout",
+  "question": "Where should review context live?",
+  "patterns": [
+    {
+      "pattern_id": "op-review",
+      "variant": "side-by-side",
+      "label": "Document beside context",
+      "summary": "Readers refer to context frequently.",
+      "best_when": "Readers refer to context frequently",
+      "tradeoff": "The document has less width"
+    },
+    {
+      "pattern_id": "op-review",
+      "variant": "stacked",
+      "label": "Document then context",
+      "summary": "Reading the full draft comes first.",
+      "best_when": "Reading the full draft comes first",
+      "tradeoff": "Context is farther down the page"
+    }
+  ],
+  "constraint": "Use identical content and viewport. Confirm both alternatives satisfy the brief before offering.",
+  "criteria": [
+    "Keep every document section",
+    "Avoid implying approval"
+  ]
+}

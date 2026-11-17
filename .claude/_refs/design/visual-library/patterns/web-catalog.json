@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "web-catalog",
+  "name": "Resource catalog",
+  "surfaces": [
+    "public-website",
+    "landing-page",
+    "mobile-web"
+  ],
+  "jobs": [
+    "browse-catalog"
+  ],
+  "data_shapes": [
+    "content"
+  ],
+  "applicability": "Compare a small set of resources with the same metadata.",
+  "avoid_when": "Do not invent inventory, prices, reviews, availability or commercial claims.",
+  "variants": [
+    {
+      "id": "grid",
+      "layout": "catalog"
+    },
+    {
+      "id": "featured",
+      "layout": "catalog"
+    }
+  ],
+  "states": [
+    "data",
+    "loading",
+    "empty",
+    "no-results",
+    "error",
+    "permission-denied"
+  ],
+  "responsive": {
+    "wide": "Preserve task context and readable data density.",
+    "narrow": "Stack secondary regions; constrain table scrolling to its own region; retain all essential actions."
+  },
+  "source_refs": [
+    "astryx-product-gallery",
+    "uipro-landing-expanded"
+  ],
+  "component_mapping": {
+    "status": "candidate",
+    "core_version_evidence": null,
+    "verification": "Framework-neutral HTML only. Inspect the exact installed framework/component API before implementation; Astryx React/StyleX references do not establish Angular or Core compatibility."
+  },
+  "accessibility": [
+    "keyboard and visible focus",
+    "text and control contrast",
+    "long localized text and 200% zoom",
+    "status not conveyed by color alone"
+  ],
+  "adaptation": "Original dependency-free HTML composition informed by the cited layout description. Production actions and upstream assets are not copied; fixture content is illustrative.",
+  "source_locators": [
+    {
+      "source_ref": "uipro-landing-expanded",
+      "key": "Pattern ID",
+      "values": [
+        "marketplace-directory"
+      ]
+    }
+  ]
+}
