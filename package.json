@@ -78,9 +78,9 @@
     "test:e2e:release": "node --test test/e2e/tag-release.test.mjs test/e2e/npm-publication-contract.test.mjs"
   },
   "devDependencies": {
-    "@angular/compiler": "22.2.1",
-    "lefthook": "^2.1.16",
-    "typescript": "5.9.3",
+    "@angular/compiler": "22.2.6",
+    "lefthook": "^2.2.2",
+    "typescript": "7.0.2",
     "yaml": "2.9.1"
   }
 }
