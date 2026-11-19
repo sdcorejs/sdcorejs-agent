@@ -2,13 +2,19 @@ import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { scanCleanup, freezeCleanupPlan, applyCleanupPlan, restoreCleanup } from './cleanup-engine.mjs';
 import { runStorageAudit } from './storage-audit.mjs';
+import path from 'node:path';
+import { planPostMergeCleanup } from './post-merge.mjs';
+import { auditResources, parseResourceAuditArgs } from './resource-audit.mjs';
+import { coordinateResourceCleanup } from './resource-lifecycle.mjs';
+import { planWorkspaceBatch, applyWorkspaceBatch } from './workspace-batch.mjs';
 
 /** Portable harness entrypoint. Analysis is default; mutations require exact supplied authority. */
 export async function runCleanupCli(argv) {
   const mode = argv[0] && !argv[0].startsWith('--') ? argv[0] : 'analyze';
   const args = mode === argv[0] ? argv.slice(1) : argv;
   if (mode === 'storage-audit') return runStorageAudit(args);
-  if (!['analyze', 'plan', 'apply', 'restore', 'task-tail-cleanup'].includes(mode)) throw new Error('UNKNOWN_CLEANUP_MODE');
+  if (mode === 'resource-audit') return auditResources(parseResourceAuditArgs(args));
+  if (!['analyze', 'plan', 'apply', 'restore', 'task-tail-cleanup', 'post-merge-cleanup', 'lifecycle-assess', 'workspace-plan', 'workspace-apply'].includes(mode)) throw new Error('UNKNOWN_CLEANUP_MODE');
   const options = { scope: [], reference_scope: [] };
   for (let index = 0; index < args.length; index += 2) {
     const flag = args[index], value = args[index + 1];
@@ -19,6 +25,22 @@ export async function runCleanupCli(argv) {
   }
   if (!options.root) throw new Error('EXPLICIT_ROOT_REQUIRED');
   const input = options.input ? JSON.parse(await readFile(options.input, 'utf8')) : {};
+  if (mode === 'workspace-plan' || mode === 'workspace-apply') {
+    if (!options.input || !path.isAbsolute(options.root) || options.scope.length || options.reference_scope.length) throw new Error('INVALID_ARGUMENTS');
+    const root = path.resolve(options.root);
+    return mode === 'workspace-plan' ? planWorkspaceBatch({ ...input, root }) : applyWorkspaceBatch({ ...input, root });
+  }
+  if (mode === 'lifecycle-assess') {
+    if (!options.input || options.scope.length || options.reference_scope.length) throw new Error('INVALID_ARGUMENTS');
+    const roots = [input.repository?.root, input.snapshot?.repository?.root, input.audit?.repository?.root].filter(value => value !== undefined);
+    if (!roots.length || roots.some(value => typeof value !== 'string' || value !== path.resolve(options.root))) throw new Error('RESOURCE_LIFECYCLE_ROOT_MISMATCH');
+    return coordinateResourceCleanup(input);
+  }
+  if (mode === 'post-merge-cleanup') {
+    if (!options.input || options.scope.length || options.reference_scope.length) throw new Error('INVALID_ARGUMENTS');
+    if (path.resolve(options.root) !== input.repository?.root) throw new Error('POST_MERGE_ROOT_MISMATCH');
+    return planPostMergeCleanup(input);
+  }
   if (mode === 'analyze') {
     const analysis = await scanCleanup({ ...input, ...options });
     return { ...analysis, findings: analysis.findings.map(({ path, classification, risk, certainty, reasons, unknowns, protected: protectedPath, fingerprint }) => ({ path, classification, risk, certainty, reasons, unknowns, protected: protectedPath, fingerprint })) };

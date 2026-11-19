@@ -567,6 +567,16 @@ see [_refs/cleanup/storage-audit.md](_refs/cleanup/storage-audit.md) for the CLI
 selected existing Python runtime, coverage and provider/recovery boundaries.
 Its `analyze` and `plan` actions are read-only;
 `apply`, `restore` and `task-tail-cleanup` use the shared cleanup engine.
+The separate `post-merge-cleanup` mode retires proven task resources after
+completion and verified merge: disposable worktrees including their
+`node_modules`, exact local task branches, and exclusive stopped Docker
+containers/images. Its helper plans and revalidates read-only; the skill uses
+exact authorized native Git/Docker commands and verifies each result. A scoped
+task-resource grant can be reused without repeated prompts. Active/dirty or
+unknown worktrees, shared caches, standalone dependency trees, remote branches
+and Docker volumes remain held. See
+[_refs/cleanup/post-merge.md](_refs/cleanup/post-merge.md) for evidence, authority,
+recovery limits and the CLI. This mode never runs as part of the pre-merge tail.
 Analyze/plan are portable. Windows local-drive apply/restore uses the existing PowerShell
 native backend. Linux/macOS mutation requires a selected existing trusted
 CPython executable, a frozen native profile and explicitly approved cooperative

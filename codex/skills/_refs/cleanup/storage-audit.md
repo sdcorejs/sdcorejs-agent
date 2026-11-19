@@ -4,6 +4,11 @@ Use for disk-space, large dependency/caches or explicit whole-machine requests.
 Keep repository artifact hygiene, offers and task-tail on their existing engine.
 This mode observes metadata; it cannot produce apply/restore authority.
 
+For project and workspace age tables and CSV, add `--as-of <YYYY-MM-DD>`
+and `--time-zone <IANA-zone>` to the same audit. See
+[workspace-inventory.md](workspace-inventory.md) for accounting, content
+descriptions and the separate exact batch plan/apply workflow.
+
 ## Fast, accountable inspection
 
 Discover fixed local volumes and available free space with native read-only
@@ -128,3 +133,6 @@ provider/dependency effects stay held. Same-volume quarantine frees no space.
 Compare exact absent-after receipts to current existence to identify cache
 regrowth. Propose producer-side cache limits only with verified version/config
 support; no silent cache disabling, worktree deletion or scheduled jobs.
+For resources from completed-and-merged tasks, hand off the exact candidates
+to `post-merge-cleanup` in `_refs/cleanup/post-merge.md`. Storage measurements
+alone establish neither task ownership, merge status nor disposal authority.

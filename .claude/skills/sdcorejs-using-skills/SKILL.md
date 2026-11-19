@@ -59,9 +59,9 @@ A non-trivial implementation request without a valid approved plan must
 route to `sdcorejs-brainstorming`; it is not confirmed implementation. Do not load a track
 executor as an escape from the governed workflow.
 
-Fast-fix excludes flaky/root-cause work or inferred behavior. Scope, ownership,
-risk or public behavior growth returns to brainstorming. Working-tree safety,
-artifact lifecycle, evidence and required finish gates still apply.
+At real project entry/resume, run `sdcorejs-cleanup (lifecycle-assess)` via
+`../../_refs/cleanup/resource-lifecycle.md` once for bounded legacy proposals.
+Share offer suppression; bootstrap/Q&A starts no scan.
 
 ## Governed Workflow
 

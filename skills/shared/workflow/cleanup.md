@@ -1,12 +1,12 @@
 ---
 name: sdcorejs-cleanup
 description: >-
-  Use for low disk space, large caches/node_modules, explicit machine/Docker/WSL
-  storage inspection, or bounded repository output/asset/doc hygiene.
-  Storage-audit and portable analyze/plan are read-only. Windows local-drive
-  apply/restore; Linux ext4/macOS APFS need existing trusted CPython and approved
-  native maintenance. Exact authority required. Source refinement, test teardown
-  and quality review retain their owners.
+  Use for disk pressure, workspace size/age inventories, scoped delete batches,
+  cache/node_modules or machine/Docker/WSL storage audits,
+  legacy worktree audits, post-merge worktree/branch/Docker cleanup, or output/asset/doc
+  hygiene. Portable analyze/plan are read-only; exact mutation authority required.
+  Windows local-drive apply/restore; Linux ext4/macOS APFS need trusted CPython and approved
+  maintenance. Source refinement, test teardown and quality review keep their owners.
   Runtime-localized.
 required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose
 ---
@@ -35,6 +35,37 @@ or hashing millions of files. Whole-machine inspection includes accessible
 fixed local volumes, not network/removable drives unless requested. Analysis
 does not authorize cache cleaning, dependency pruning or Docker changes.
 
+For workspace inventory by project and age or "delete items over 20 days",
+load [workspace-inventory.md](../../../_refs/cleanup/workspace-inventory.md).
+Run the dated storage audit, describe contents and coverage, and present a
+review list. Freeze exact supported scopes with `workspace-plan` and use
+`workspace-apply` only after matching batch authority. Existing file, Git,
+producer and recovery boundaries apply to every unit.
+
+For completed-and-merged task resources, select `post-merge-cleanup` and load
+[`_refs/cleanup/post-merge.md`](../../../_refs/cleanup/post-merge.md). This is a
+separate post-merge workflow using exact native Git/Docker operations; the
+read-only planner never runs commands. It can reclaim dependency trees inside
+an approved disposable worktree. A completion message or PR closure alone is
+not merge evidence. Reuse exact task-resource authority already granted in the
+conversation; the pre-merge LOW file policy does not cover these operations.
+
+For legacy resources or automatic lifecycle proposals, load
+[`_refs/cleanup/resource-lifecycle.md`](../../../_refs/cleanup/resource-lifecycle.md).
+`resource-audit` observes registered worktrees/local branches without requiring
+old task records; Docker needs an explicit context and repository-label scope.
+Unknown original ownership stays review-only, including after audit acceptance.
+Select `lifecycle-assess` at these boundaries: run the coordinator on current
+trusted context and copy its result unchanged into `resource_cleanup_context`.
+Keep `.status` and `.completion.status` verbatim in enclosing handoff fields;
+localize explanatory prose, not the typed assessment. Use its
+completion/offer/authority result instead of deriving safety from task-status
+labels. An `offered` result needs one consumer analysis proposal; an existing
+covered grant needs fresh revalidation rather than another approval question.
+Carry the full returned result in runtime context. Presenting its analysis
+choice and handing authorized IDs to the native owner are separate steps;
+describing an offer as "ready" does not present that choice to the consumer.
+
 Load [`_refs/cleanup/workflow.md`](../../../_refs/cleanup/workflow.md) for the
 runtime scope, offer and task-tail contract. Use the single engine
 [`_refs/cleanup/cleanup-engine.mjs`](../../../_refs/cleanup/cleanup-engine.mjs)
@@ -48,11 +79,16 @@ engine. Do not implement another cleanup executor or run `git clean -fdx`.
 | Action | Boundary |
 |---|---|
 | `storage-audit` | `runStorageAudit`: read-only metadata inventory of explicit local roots, including caches/dependencies and opaque virtual disks; no mutation plan or authority. |
+| `workspace-plan` | Review an inventory age filter and freeze evidenced independent file plans. |
+| `workspace-apply` | Apply the exact approved batch via the existing engine and reconcile every unit. |
+| `resource-audit` | `auditResources`: bounded read-only repository/worktree/branch metadata, optional dependency/cache sizes and explicitly scoped Docker metadata; legacy ownership/use remain unknown. |
+| `lifecycle-assess` | `coordinateResourceCleanup`: read-only event assessment over trusted current task/audit context and shared offer state; no native execution or new authority. |
 | `analyze` | `scanCleanup`: read-only scan, evidence and classification of explicit scope. |
 | `plan` | `freezeCleanupPlan`: exact actions and current fingerprints, with no filesystem mutation. |
 | `apply` | `applyCleanupPlan`: separately authorized actions, immediate revalidation and affected verification. |
 | `restore` | `restoreCleanup`: recover exact receipt paths; fail if the destination is occupied or recovery bytes changed. |
 | `task-tail-cleanup` | Current-task artifacts only, after durable finalization and before convergence/final branch-ready. |
+| `post-merge-cleanup` | After verified merge and producer shutdown: plan exact task worktrees/local branches and exclusive stopped Docker containers/images; execute only separately authorized, freshly revalidated native operations. |
 
 Default to `analyze`. "Check this repo", "review this folder", "see what is
 unused", and accepting a proactive offer authorize analysis only. Analysis
@@ -172,9 +208,10 @@ Keep plan, policy, offer/suppression and receipt state runtime-local unless an
 explicit durable artifact need follows the existing artifact owner and
 lifecycle. Never commit runtime outputs, quarantine or temporary files.
 
-No Git history/branch/worktree deletion, dependency pruning, refactor, Docker
-prune, database/cloud cleanup, automatic system-wide scan, background daemon, cron or
-new hashing/graph/provider dependency. Findings may hand off to an existing
-owner within separately approved scope. Explicit storage-audit may observe
-machine-wide metadata; it does not expand the filesystem mutation engine,
+The ordinary filesystem actions and pre-merge task tail never delete branches,
+worktrees or Docker resources. Only `post-merge-cleanup` admits its explicitly
+bounded native operations. No Git history or remote-branch deletion, standalone
+dependency pruning, refactor, broad Docker prune, volume/database/cloud cleanup,
+automatic system-wide scan, background daemon, cron or new dependency. Explicit
+storage-audit may observe machine-wide metadata; it does not expand mutation,
 proactive offers or task-tail boundaries.

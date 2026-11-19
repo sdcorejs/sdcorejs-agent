@@ -90,6 +90,9 @@ Record:
 - per-unit change-scoped artifact paths and integration ownership for every
   shared `.sdcorejs/**` artifact
 - pre-existing worktrees that cleanup must preserve
+- task ID, original creation-run identity, exact source ref/HEAD, intended merge
+  target and any explicitly approved post-merge resource policy; pass these in
+  the runtime handoff, without creating a global cleanup queue
 
 Before returning a worktree assignment, verify that it is not nested inside
 another worktree, that the base equals the approved baseline, and that distinct
@@ -159,10 +162,15 @@ Return:
 - Do not edit source files from the isolation action.
 - Do not commit worktree contents.
 - Do not push branches from the isolation action.
-- Do not delete branches or worktrees without explicit request and confirmation.
-- Cleanup may remove only a worktree whose resolved path and
-  `created_by_current_run: true` record match the current protocol run. Never
-  remove a pre-existing worktree.
+- Do not delete branches or worktrees without matching explicit resource authority.
+- Isolation itself never removes a worktree. Later `sdcorejs-cleanup
+  (post-merge-cleanup)` requires the original task/run creation record, exact
+  path/HEAD, verified merge and matching resource authority under
+  `_refs/cleanup/post-merge.md`. Reuse that original provenance across sessions
+  only when supplied by a trusted task handoff; a directory name or age is not
+  provenance. Preserve worktrees pre-existing that original task or with unknown
+  ownership. Ordinary current-run cleanup retains its `created_by_current_run:
+  true` boundary and does not acquire post-merge authority.
 - Do not proceed past a failing baseline without telling the user.
 - Do not hardcode one package manager as universal.
 - Do not invent missing scripts.

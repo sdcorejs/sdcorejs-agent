@@ -972,3 +972,61 @@ The optional live evaluation remains skipped.
 | Repeated-block bytes | 2,319 | 0 |
 | Total measured communication bytes | 577,334 | 761,721 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
+
+## Cleanup lifecycle live evaluation continuation
+
+After explicit payload-export approval, the OpenAI benchmark ran on
+`gpt-4.1-mini-2025-04-14`. The final frozen comparison contains 12 synthetic
+cases, five conversations per case and version: candidate 29/60 versus baseline
+10/60 strict whole-case passes. Across all development and comparison rounds,
+516 agent runs produced 1,327 API responses and 11,635,924 provider-reported
+tokens, with no HTTP errors. This bundle-capability comparison does not execute
+native retirement or prove a production runtime callback.
+
+Repository checks passed 776/776; the resource suite passed 25/25, including
+52 offline evaluator controls. Cleanup E2E reported 88 passed, 110 failed and
+one skipped on overlay. Native file-mutation admission requires ext4/APFS;
+full E2E remains red. Real Docker resource auditing and the independent framework
+golden commands passed.
+
+Remaining model failures include omitted legacy consumer choices, omitted
+handoffs under existing scoped grants, and status changes. One unapproved
+handoff attempt was blocked by the fixture host. Automatic lifecycle completion
+is not established. The sanitized study summary is in
+`authoring/evals/cleanup-lifecycle/summary.json`. Thresholds and scoring were not relaxed.
+
+## Workspace storage inventory and delete batches
+
+The dated audit builds disjoint workspace and age summaries, with separate
+overlapping detail rows and optional CSV. Tests use the 10/11/20/21-day edges,
+late writes in an old workspace, partial read coverage, mixed cache and
+delivery, dirty Git, redirect boundaries, and overlapping-scope controls.
+Batch tests cover exact approval, mutated approval payloads, active producers
+and additions after plan freeze. The partial-apply fixture deletes an actual
+test file using a test-only adapter at the existing native boundary. The
+production native test reports `FILESYSTEM_UNSUPPORTED` on this overlay host.
+No real project resources were removed.
+
+The affected cleanup, authoring and reference-resolution suites passed 77
+tests with one native skip. Generated provider skill and reference mirrors
+passed sync checks. The Windows example is documented in
+[`_refs/cleanup/workspace-inventory.md`](_refs/cleanup/workspace-inventory.md).
+The sample report was measured on the local `test/e2e` directory. This
+environment could not access the Windows example directory.
+
+## Cleanup delivery communication measurements
+
+Measurements for the cleanup change integrated with the current main source. The baseline and thresholds are unchanged.
+
+| Measure | Baseline | Current working tree |
+|---|---:|---:|
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,915 |
+| Always-loaded bootstrap words | 2,361 | 2,260 |
+| Aggregate just-in-time scenario bytes | 514,603 | 713,069 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 762,988 |
+| Consumer-required authoritative fields | 361 | 361 preserved |

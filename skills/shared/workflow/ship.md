@@ -5,9 +5,9 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 ---
 
 # Ship
-
 Read `_refs/shared/git-disposition.md` and `_refs/shared/session-authority.md`
 before artifact handoff. Keep acceptance disposition separate from hygiene.
+At completion/merge boundaries, run `sdcorejs-cleanup (lifecycle-assess)` before handoff: present its `offer` once, pass every authorized ID to the post-merge owner under the existing grant, and copy its result unchanged into `resource_cleanup_context` with exact status fields.
 ## Purpose And Boundary
 
 Own the final delivery readiness boundary: prove the work satisfies the right
