@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, utimes, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -93,4 +93,199 @@ test('storage authority and output flags cannot feed a mutation plan', native, a
 test('bundled metadata and npm-recovery regression fixtures execute with the selected runtime', native, async () => {
   const { stdout, stderr } = await exec(python, ['-I', '-S', '-B', path.join(root, 'test/e2e/fixtures/cleanup-storage-tools.py')], { windowsHide: true });
   assert.match(stdout + stderr, /OK/u);
+});
+
+test('project inventory uses calendar age, observed writes and disjoint totals', native, async (t) => {
+  const dir = await fixture(t);
+  const output = await fixture(t);
+  const projects = ['2026-11-09-ten', '2026-11-08-eleven', '2026-10-30-twenty', '2026-10-29-twenty-one'];
+  for (const name of projects) {
+    const project = path.join(dir, name);
+    await mkdir(path.join(project, '.remotion', 'cache'), { recursive: true });
+    await mkdir(path.join(project, 'deliverables'));
+    await writeFile(path.join(project, '.remotion', 'cache', 'render.js'), '12345');
+    await writeFile(path.join(project, 'deliverables', 'clip.mp4'), '1234567');
+    await writeFile(path.join(project, 'package.json'), '{}');
+    const recent = new Date('2026-11-18T12:00:00Z');
+    await Promise.all(['.remotion/cache/render.js', 'deliverables/clip.mp4', 'package.json'].map(file => utimes(path.join(project, file), recent, recent)));
+  }
+  const csv = path.join(output, 'inventory.csv');
+  const report = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00', '--csv', csv]);
+  assert.equal(report.age_as_of_date, '2026-11-19');
+  assert.deepEqual(Object.fromEntries(report.projects.map(row => [row.name, row.age_bucket])),
+    Object.fromEntries(projects.map((name, i) => [name, ['0-10', '11-20', '11-20', 'over-20'][i]])));
+  assert.equal(report.age_groups.reduce((sum, row) => sum + row.logical_bytes, 0), report.logical_bytes);
+  const old = report.projects.find(row => row.name === projects[3]);
+  assert.equal(old.age_source, 'workspace-date-label');
+  assert.equal(old.recent_activity, true);
+  assert.equal(old.latest_write_known, true);
+  assert.match(old.contents, /build or test cache/u);
+  assert.match(old.contents, /deliverables/u);
+  assert.ok(old.keep_signals.includes('deliverables require a verified copy'));
+  assert.ok(old.top_items.some(item => item.name === 'deliverables' && item.logical_bytes === 7));
+  assert.ok(report.records.some(row => row.name === 'cache' && row.project === old.name));
+  assert.match(await readFile(csv, 'utf8'), /age_bucket.*keep_signals/u);
+  const partial = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--exclude', path.join(dir, projects[3], 'deliverables')]);
+  assert.equal(partial.projects.find(row => row.name === projects[3]).latest_write_known, false);
+});
+
+test('a batch filters old workspaces, freezes exact independent items, and retains stale or dirty items', native, async (t) => {
+  const dir = await fixture(t);
+  const old = '2026-10-29-project';
+  const cache = path.join(dir, old, '.remotion', 'cache');
+  const repo = path.join(dir, '2026-10-28-repo');
+  const repoCache = path.join(repo, '.remotion', 'cache');
+  await mkdir(cache, { recursive: true });
+  await mkdir(repoCache, { recursive: true });
+  await mkdir(path.join(dir, old, 'deliverables'));
+  await writeFile(path.join(dir, old, 'deliverables', 'keep.mp4'), 'handoff');
+  await writeFile(path.join(cache, 'render.js'), 'generated');
+  await writeFile(path.join(repoCache, 'render.js'), 'generated');
+  await writeFile(path.join(repo, 'source.js'), 'before');
+  await exec('git', ['init', repo]);
+  await exec('git', ['-C', repo, 'add', 'source.js']);
+  await exec('git', ['-C', repo, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-m', 'fixture']);
+  await writeFile(path.join(repo, 'source.js'), 'dirty');
+  const report = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const { freezeStorageBatch, approveStorageBatch, applyStorageBatch } =
+    await import('../../_refs/cleanup/storage-batch.mjs');
+  const evidence = file => ({ [file]: { owner: 'fixture', reproducible: true,
+    producer_status: 'finished', needed_for_evidence: false, evidence: ['Fixture cache generator and producer exit observed'] } });
+  const batch = await freezeStorageBatch({ report, age_bucket: 'over-20', selections: [
+    { path: cache, root: dir, action: 'delete', recovery_basis: 'Regenerate with fixture generator', evidence: evidence(old + '/.remotion/cache/render.js') },
+    { path: repoCache, root: repo, action: 'delete', evidence: evidence('.remotion/cache/render.js') },
+  ] });
+  const [eligible, held] = batch.items;
+  assert.equal(eligible.plan.actions.length, 1);
+  assert.equal(eligible.plan.actions[0].path, old + '/.remotion/cache/render.js');
+  assert.match(held.reasons.join(' '), /DIRTY_REPOSITORY/u);
+  assert.deepEqual(batch.candidates.map(row => row.name).sort(), ['2026-10-28-repo', old]);
+  const approval = approveStorageBatch(batch, { source: 'conversation', decision: 'approve', item_ids: [eligible.id] });
+  await writeFile(path.join(cache, 'new.js'), 'appeared after freeze');
+  const receipt = await applyStorageBatch({ batch, approval });
+  assert.equal(receipt.status, 'blocked');
+  assert.match(receipt.items[0].reasons.join(' '), /STALE_PLAN/u);
+  assert.equal(await readFile(path.join(cache, 'render.js'), 'utf8'), 'generated');
+  assert.equal(await readFile(path.join(cache, 'new.js'), 'utf8'), 'appeared after freeze');
+  assert.equal(await readFile(path.join(dir, old, 'deliverables', 'keep.mp4'), 'utf8'), 'handoff');
+  assert.ok(receipt.volumes.every(volume => volume.before && volume.after));
+});
+
+test('native batch removes only the stable approved fixture and reports partial completion', {
+  skip: (!python || (process.platform !== 'win32' && !process.env.SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT))
+    && 'Native batch execution requires a supported local fixture root and explicit Python.',
+}, async (t) => {
+  const parent = process.env.SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT ?? os.tmpdir();
+  const { realpath } = await import('node:fs/promises');
+  const dir = await realpath(await mkdtemp(path.join(parent, 'sdcorejs-storage-native-')));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const task = { id: 'storage-native-fixture', status: 'completed', durable_finalized: true };
+  const stale = '2026-10-28-stale';
+  const stable = '2026-10-29-stable';
+  for (const name of [stale, stable]) {
+    await mkdir(path.join(dir, name));
+    await writeFile(path.join(dir, name, 'render.js'), 'exact fixture output');
+  }
+  let boundary = null;
+  if (process.platform !== 'win32') {
+    const { inspectCleanupPosixCapabilities } = await import('../../_refs/cleanup/posix-file-operation.mjs');
+    const capabilities = await inspectCleanupPosixCapabilities({ root: dir, python });
+    assert.equal(capabilities.supported, true, JSON.stringify(capabilities));
+    boundary = {
+      version: 'posix-maintenance-v1', root_id: dir, python: capabilities.python,
+      helper_sha256: capabilities.helper_sha256, profile: capabilities.profile,
+      maintenance: { root_id: dir, task_id: task.id, generation: 'fixture-only', source: 'conversation',
+        owner: 'fixture', attestation: 'All fixture writes completed before execution',
+        fence_path: '.sdcorejs/tmp/cleanup-runtime/posix-maintenance.lock',
+        participants: [{ id: 'fixture', state: 'quiescent', evidence: 'Awaited all fixture writes',
+          writable_descriptors_closed: true, children_quiescent: true }] },
+    };
+  }
+  const { freezeStorageBatch, approveStorageBatch, applyStorageBatch } =
+    await import('../../_refs/cleanup/storage-batch.mjs');
+  const report = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const batch = await freezeStorageBatch({ report, age_bucket: 'over-20',
+    selections: [stale, stable].map(name => ({
+      path: path.join(dir, name), action: 'delete', task, posix_boundary: boundary,
+      recovery_basis: 'Recreate with fixture setup',
+      evidence: { [name + '/render.js']: { owner: 'fixture', task_id: task.id,
+        reproducible: true, producer_status: 'finished', needed_for_evidence: false,
+        evidence: ['Fixture source and awaited writer exit'] } },
+    })) });
+  assert.ok(batch.items.every(item => item.plan), JSON.stringify(batch.items));
+  const approval = approveStorageBatch(batch, { source: 'conversation', decision: 'approve',
+    item_ids: batch.items.map(item => item.id) });
+  await writeFile(path.join(dir, stale, 'new.js'), 'retain unapproved file');
+  const receipt = await applyStorageBatch({ batch, approval,
+    maintenance: Object.fromEntries(batch.items.map(item => [item.id, boundary?.maintenance])) });
+  assert.equal(receipt.status, 'partial', JSON.stringify(receipt));
+  assert.equal(receipt.items[0].status, 'retained');
+  assert.equal(receipt.items[1].receipt.actions[0].status, 'removed');
+  assert.equal(receipt.deleted_logical_bytes, Buffer.byteLength('exact fixture output'));
+  await assert.rejects(readFile(path.join(dir, stable, 'render.js')), { code: 'ENOENT' });
+  assert.equal(await readFile(path.join(dir, stale, 'new.js'), 'utf8'), 'retain unapproved file');
+  assert.equal(await readFile(path.join(dir, stale, 'render.js'), 'utf8'), 'exact fixture output');
+});
+
+test('storage selections cannot hide a protected ancestor by rebasing the engine root', native, async (t) => {
+  const dir = await fixture(t);
+  const workspace = path.join(dir, '2026-10-20-old');
+  const recovery = path.join(workspace, 'dist', 'recovery');
+  const target = path.join(recovery, 'temp');
+  await mkdir(target, { recursive: true });
+  await writeFile(path.join(target, 'render.js'), 'preserve recovery');
+  const report = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const { freezeStorageBatch } = await import('../../_refs/cleanup/storage-batch.mjs');
+  const batch = await freezeStorageBatch({ report, age_bucket: 'over-20', selections: [{
+    path: target, root: recovery, action: 'delete', recovery_basis: 'Untrusted fixture assertion',
+    evidence: { 'temp/render.js': { owner: 'fixture', producer_status: 'finished',
+      needed_for_evidence: false, reproducible: true, evidence: ['Untrusted fixture assertion'] } },
+  }] });
+  assert.equal(batch.items[0].plan, null);
+  assert.match(batch.items[0].reasons.join(' '), /PROTECTED_STORAGE_PATH/u);
+  const workspaceRow = report.projects.find(row => row.path === workspace);
+  assert.match(workspaceRow.contents, /evidence or recovery/u);
+  const sessions = path.join(dir, '.sdcorejs', 'tasks', 'sessions');
+  const sessionCache = path.join(sessions, '2026-10-29-retained', 'temp');
+  await mkdir(sessionCache, { recursive: true });
+  await writeFile(path.join(sessionCache, 'session.js'), 'preserve session');
+  const sessionReport = await runCleanupCli(['storage-audit', '--root', sessions, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const sessionBatch = await freezeStorageBatch({ report: sessionReport, age_bucket: 'over-20', selections: [{
+    path: sessionCache, action: 'delete', recovery_basis: 'Untrusted fixture assertion',
+  }] });
+  assert.equal(sessionBatch.items[0].plan, null);
+  assert.match(sessionBatch.items[0].reasons.join(' '), /PROTECTED_STORAGE_PATH/u);
+});
+
+test('storage planning does not refresh the Git index on disk', native, async (t) => {
+  const dir = await fixture(t);
+  const repo = path.join(dir, '2026-10-20-repo');
+  await mkdir(path.join(repo, 'cache'), { recursive: true });
+  const tracked = path.join(repo, 'source.js');
+  await writeFile(tracked, 'source');
+  await writeFile(path.join(repo, '.gitignore'), '/cache/\n');
+  await writeFile(path.join(repo, 'cache', 'render.js'), 'fixture');
+  await exec('git', ['init', repo]);
+  await exec('git', ['-C', repo, 'add', 'source.js', '.gitignore']);
+  await exec('git', ['-C', repo, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-m', 'fixture']);
+  const index = path.join(repo, '.git', 'index');
+  const before = await readFile(index);
+  const touched = new Date('2026-11-18T00:00:00Z');
+  await utimes(tracked, touched, touched);
+  const report = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const { freezeStorageBatch } = await import('../../_refs/cleanup/storage-batch.mjs');
+  const batch = await freezeStorageBatch({ report, age_bucket: 'over-20', selections: [{
+    path: path.join(repo, 'cache'), root: repo, action: 'delete', recovery_basis: 'Regenerate the fixture file',
+    evidence: { 'cache/render.js': { owner: 'fixture', producer_status: 'finished',
+      needed_for_evidence: false, reproducible: true, evidence: ['Fixture producer awaited'] } },
+  }] });
+  assert.ok(batch.items[0].plan, JSON.stringify(batch.items[0]));
+  assert.deepEqual(await readFile(index), before);
 });

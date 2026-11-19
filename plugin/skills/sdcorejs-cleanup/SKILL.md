@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-cleanup
-description: Use for low disk space, large caches/node_modules, explicit machine/Docker/WSL storage inspection, or bounded repository output/asset/doc hygiene. Storage-audit and portable analyze/plan are read-only. Windows local-drive apply/restore; Linux ext4/macOS APFS need existing trusted CPython and approved native maintenance. Exact authority required. Source refinement, test teardown and quality review retain their owners. Runtime-localized.
+description: Use for low disk space, large caches/node_modules, explicit machine/Docker/WSL storage inspection, workspace/project inventory by age, age-filtered cleanup batches, or bounded repository output/asset/doc hygiene. Storage-audit and portable analyze/plan are read-only. Windows local-drive apply/restore; Linux ext4/macOS APFS need existing trusted CPython and approved native maintenance. Exact authority required. Source refinement, test teardown and quality review retain their owners. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
 
@@ -46,6 +46,7 @@ engine. Do not implement another cleanup executor or run `git clean -fdx`.
 | Action | Boundary |
 |---|---|
 | `storage-audit` | `runStorageAudit`: read-only metadata inventory of explicit local roots, including caches/dependencies and opaque virtual disks; no mutation plan or authority. |
+| `storage-plan` / `storage-apply` | Freeze reviewed, non-overlapping storage selections through the exact-file engine. Approve the frozen batch once. Revalidate independent items and reconcile per-item results. |
 | `analyze` | `scanCleanup`: read-only scan, evidence and classification of explicit scope. |
 | `plan` | `freezeCleanupPlan`: exact actions and current fingerprints, with no filesystem mutation. |
 | `apply` | `applyCleanupPlan`: separately authorized actions, immediate revalidation and affected verification. |
@@ -57,7 +58,11 @@ unused", and accepting a proactive offer authorize analysis only. Analysis
 authority and mutation authority are separate. Quarantine and archive remove
 active paths and therefore also require mutation authority.
 
-For a disk-space request, default to `storage-audit`. Resolve authority from
+For a disk-space request, default to `storage-audit`. For age-based cleanup, use
+the project and age tables, describe each selected scope and its recovery basis,
+then use the batch workflow in `../../_refs/cleanup/storage-audit.md`. Age selects
+candidates. Live content, recovery evidence, and exact approval decide effects.
+Resolve authority from
 the full conversation: reuse existing matching authorization rather than
 asking again. Broader inspection does not broaden earlier mutation scope;
 existing exact-action/state gates still apply before a supported mutation.
