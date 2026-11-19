@@ -6,7 +6,7 @@ import { classifyArtifact } from '../shared/artifact-lifecycle.mjs';
 
 const SOURCES = new Set([
   'sdcorejs-explore', 'sdcorejs-test', 'sdcorejs-review',
-  'sdcorejs-design', 'sdcorejs-documentation',
+  'sdcorejs-design', 'sdcorejs-documentation', 'sdcorejs-ship', 'sdcorejs-git', 'sdcorejs-cleanup',
 ]);
 const OWNERS = new Set(['sequential-owner', 'integration-owner', 'fan-in-owner']);
 const POSITIVE_EVIDENCE = new Set([
@@ -25,6 +25,34 @@ function paths(values) {
   const normalized = values.map((value) => normalizeRepositoryPath(value));
   return normalized.every(({ ok }) => ok)
     ? unique(normalized.map(({ path }) => path)) : null;
+}
+
+function resources(values) {
+  if (!Array.isArray(values) || values.length === 0) return null;
+  const valid = values.every(value => OBJECT(value) && TEXT(value.identity) && !/[\0\r\n]/u.test(value.identity) &&
+    ['worktree', 'branch', 'docker-container', 'docker-image', 'docker-volume'].includes(value.kind));
+  return valid ? [...new Map(values.map(({ kind, identity }) => [`${kind}\0${identity}`, { kind, identity }])).values()]
+    .sort((a, b) => `${a.kind}:${a.identity}`.localeCompare(`${b.kind}:${b.identity}`)) : null;
+}
+
+/** Resource identity is independent of repository-relative file scan paths. Analysis only. */
+export function normalizeResourceCleanupSignal(signal) {
+  const scopeResources = resources(signal?.scope?.resources);
+  if (!OBJECT(signal) || !SOURCES.has(signal.source) || signal.significant !== true || !scopeResources ||
+      !TEXT(signal.scope.repository_id) || !['post-merge-resources', 'legacy-resources'].includes(signal.category) ||
+      !TEXT(signal.reason_to_offer) || !TEXT(signal.observed_state?.fingerprint) ||
+      !Array.isArray(signal.unknowns) || signal.unknowns.some(value => !TEXT(value)) ||
+      !Array.isArray(signal.evidence) || !signal.evidence.length || signal.evidence.some(value =>
+        !OBJECT(value) || value.kind !== 'resource-observation' || value.confirmed !== true || !TEXT(value.detail))) return null;
+  const normalized = { ...structuredClone(signal), scope: { repository_id: signal.scope.repository_id, resources: scopeResources } };
+  normalized.finding_id = identity([normalized.scope.repository_id, scopeResources, normalized.category]);
+  return normalized;
+}
+
+function validScope(scope) {
+  return TEXT(scope?.repository_id) && (Object.hasOwn(scope, 'resources')
+    ? !Object.hasOwn(scope, 'paths') && resources(scope.resources)
+    : paths(scope.paths));
 }
 
 /** A signal is evidence to offer analysis, never deletion authority. */
@@ -68,7 +96,7 @@ function stateCopy(state) {
       state.resolved_ids.some((id) => !HASH.test(id)) ||
       (state.pending !== null && (!OBJECT(state.pending) || !HASH.test(state.pending.offer_id) ||
         !Array.isArray(state.pending.finding_ids) || state.pending.finding_ids.some((id) => !HASH.test(id)) ||
-        !TEXT(state.pending.scope?.repository_id) || !paths(state.pending.scope?.paths) ||
+        !validScope(state.pending.scope) ||
         !Array.isArray(state.pending.options) || state.pending.options.length !== 3))) {
     throw new TypeError('invalid cleanup runtime handoff; do not silently reset suppression');
   }
@@ -86,11 +114,11 @@ function safeBoundary(boundary, signals) {
 
 /** Deduplicate worker findings at fan-in and present at most one unresolved offer. */
 export function coordinateCleanupOffer({
-  signals = [], state, boundary = {}, worker_role: workerRole = 'sequential-owner',
+  signals = [], resource_signals: resourceSignals = [], state, boundary = {}, worker_role: workerRole = 'sequential-owner',
   capabilities = {}, failed_surfaces: failedSurfaces = [],
 } = {}) {
   const next = stateCopy(state);
-  const observations = signals.map(normalizeCleanupSignal).filter(Boolean);
+  const observations = [...signals.map(normalizeCleanupSignal), ...resourceSignals.map(normalizeResourceCleanupSignal)].filter(Boolean);
   const result = (status, reason, offer = null) => ({ status, reason, state: next, offer });
   if (!OWNERS.has(workerRole)) return result('findings-only', 'only the sequential or fan-in owner presents offers');
   if (next.disabled) return result('suppressed', 'cleanup offers disabled for this runtime scope');
@@ -98,19 +126,21 @@ export function coordinateCleanupOffer({
   if (!safeBoundary(boundary, observations)) return result('deferred', 'wait for the primary result or a concrete disk-pressure blocker');
   const eligible = observations.filter(({ finding_id: id }) => !next.resolved_ids.includes(id));
   if (eligible.length === 0) return result('suppressed', 'no new significant positive evidence');
-  const repository = unique(eligible.map(({ scope }) => scope.repository_id))[0];
-  const group = eligible.filter(({ scope }) => scope.repository_id === repository);
+  const repository = eligible[0].scope.repository_id;
+  const resourceGroup = Boolean(eligible[0].scope.resources);
+  const group = eligible.filter(({ scope }) => scope.repository_id === repository && Boolean(scope.resources) === resourceGroup);
   const findingIds = unique(group.map(({ finding_id: id }) => id));
-  const scopePaths = unique(group.flatMap(({ scope }) => scope.paths));
+  const scopePaths = resourceGroup ? null : unique(group.flatMap(({ scope }) => scope.paths));
+  const scopeResources = resourceGroup ? resources(group.flatMap(({ scope }) => scope.resources)) : null;
   const options = [
-    `Analyze ${scopePaths.join(', ')} read-only (Recommended)`,
+    `Analyze ${resourceGroup ? scopeResources.map(value => value.identity).join(', ') : scopePaths.join(', ')} read-only (Recommended)`,
     'Skip this cleanup offer',
     'Disable cleanup offers for this session',
   ];
   const pending = {
     offer_id: identity([next.scope_id, repository, findingIds]),
     finding_ids: findingIds,
-    scope: { repository_id: repository, paths: scopePaths },
+    scope: { repository_id: repository, ...(resourceGroup ? { resources: scopeResources } : { paths: scopePaths }) },
     options,
   };
   next.pending = pending;
@@ -144,7 +174,7 @@ export function resolveCleanupOffer({ state, offer_id: offerId, response } = {})
     status: selection === 0 ? 'accepted' : selection === 1 ? 'declined' : 'disabled',
     state: next,
     analysis_authority: selection === 0 ? {
-      action: 'analyze', read_only: true, mutation_allowed: false, scope,
+      action: scope.resources ? 'resource-audit' : 'analyze', read_only: true, mutation_allowed: false, scope,
       approval_source: 'explicit-cleanup-analysis-choice', offer_id: offerId,
     } : null,
     mutation_allowed: false,

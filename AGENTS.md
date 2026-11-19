@@ -55,9 +55,9 @@ ship evidence. Broad refactors and under-specified AI-agent work return to
 brainstorming. `sdcorejs-simplify` is only for bounded, behavior-preserving
 source refinement.
 
-`sdcorejs-cleanup` owns bounded output/asset/doc hygiene (default read-only).
-Offers authorize analysis only; mutations require its exact authority gate.
-Load `_refs/cleanup/workflow.md` for risk, recovery and task-tail rules.
+`sdcorejs-cleanup` owns file hygiene and post-merge resources (default read-only).
+Offers grant analysis only; mutations need exact authority. Load
+`_refs/cleanup/workflow.md` or `_refs/cleanup/post-merge.md` for rules.
 
 ## Workflow
 

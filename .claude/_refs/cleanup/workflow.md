@@ -16,6 +16,7 @@ readiness policy live in `_refs/cleanup/offer-policy.mjs`.
 | `apply` | Frozen plan and explicit matching mutation approval or approved LOW task policy | Revalidate, apply bounded actions, verify, and emit an exact receipt. |
 | `restore` | Explicit approval bound to a recovery receipt | Restore exact quarantine/archive entries; occupied destinations block without overwrite. |
 | `task-tail-cleanup` | Completed current task after durable finalization | Select already-known artifacts; approved policy covers only qualifying LOW task outputs. |
+| `post-merge-cleanup` | Completed task with exact result proven merged | Use `_refs/cleanup/post-merge.md`: read-only resource planning, then separately authorized native Git/Docker operations. Not part of the pre-merge file tail. |
 
 "Check the repo", "review this folder", an offer acceptance, a finding,
 automatic analysis, and an ignored filename do not authorize deletion,
@@ -44,6 +45,11 @@ Use `scanCleanup` -> `freezeCleanupPlan` -> `approveCleanupPlan` or the already
 approved `approveCleanupPolicy` -> `applyCleanupPlan`. Globs may identify
 candidates; frozen actions contain exact files. Never use recursive deletion,
 destructive shell wildcards, or `git clean -fdx` as the engine.
+
+[Workspace batches](workspace-inventory.md) use one frozen engine plan per
+independent scope and one explicit approval over the combined batch identity.
+Retain stale units without widening any other action. A shared unsafe writer
+boundary stops further effects on that root.
 
 Analysis and planning are portable. Windows mutation uses the supported
 local-drive native handle boundary. Linux/macOS use the explicit POSIX
@@ -308,6 +314,11 @@ readiness. Restore is also a mutation: rerun affected verification,
 convergence and branch-ready after restoring. Filesystem success alone never
 proves cleanup success or Git readiness.
 
-This utility does not prune Git history/branches/worktrees, dependencies,
-Docker, databases, cloud storage or system caches, or perform code refactors.
-Findings outside its authority hand off to the appropriate owner.
+The filesystem engine does not prune Git history/branches/worktrees,
+dependencies, Docker, databases, cloud storage or system caches, or perform
+code refactors. The separate `post-merge-cleanup` workflow admits exact native
+removal of proven task worktrees (including their disposable dependencies),
+local task refs and exclusive Docker containers/images. See
+`_refs/cleanup/post-merge.md`; do not feed resource plans or native receipts into
+the filesystem engine or its convergence receipt chain. Findings outside those
+boundaries hand off to the appropriate owner.

@@ -1,0 +1,274 @@
+{
+  "status": "EXECUTED_WITH_UNRESOLVED_MODEL_HANDOFF_FAILURES",
+  "model": "gpt-4.1-mini-2025-04-14",
+  "total_agent_runs": 516,
+  "provider_responses": 1327,
+  "total_usage": {
+    "prompt_tokens": 11557990,
+    "completion_tokens": 77934,
+    "total_tokens": 11635924
+  },
+  "http_errors": 0,
+  "final_metrics": {
+    "with_skill": {
+      "strict_pass": 29,
+      "total": 60,
+      "proposal_scope_pass": 51,
+      "retirement_scope_pass": 50,
+      "completion_status_pass": 55,
+      "initial_status_pass": 49,
+      "all_resource_scopes_pass": 42,
+      "tokens": 1275062,
+      "mean_seconds": 2.734757067783964
+    },
+    "without_skill": {
+      "strict_pass": 10,
+      "total": 60,
+      "proposal_scope_pass": 37,
+      "retirement_scope_pass": 55,
+      "completion_status_pass": 56,
+      "initial_status_pass": 14,
+      "all_resource_scopes_pass": 37,
+      "tokens": 1502922,
+      "mean_seconds": 3.45526280828235
+    }
+  },
+  "case_results": [
+    {
+      "case": "merged-proactive",
+      "with_skill": {
+        "strict": 5,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 0,
+        "retire": 5,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      }
+    },
+    {
+      "case": "pr-not-merged",
+      "with_skill": {
+        "strict": 3,
+        "proposal": 3,
+        "retire": 5,
+        "completion": 5,
+        "status": 4,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      }
+    },
+    {
+      "case": "legacy-adoption",
+      "with_skill": {
+        "strict": 0,
+        "proposal": 0,
+        "retire": 5,
+        "completion": 5,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 0,
+        "retire": 5,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      }
+    },
+    {
+      "case": "legacy-dirty",
+      "with_skill": {
+        "strict": 5,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 4,
+        "status": 0,
+        "trials": 5
+      }
+    },
+    {
+      "case": "review-unresolved",
+      "with_skill": {
+        "strict": 1,
+        "proposal": 4,
+        "retire": 5,
+        "completion": 5,
+        "status": 1,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 3,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 3,
+        "trials": 5
+      }
+    },
+    {
+      "case": "same-sha-other-task",
+      "with_skill": {
+        "strict": 0,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 0,
+        "retire": 5,
+        "completion": 5,
+        "status": 1,
+        "trials": 5
+      }
+    },
+    {
+      "case": "existing-grant",
+      "with_skill": {
+        "strict": 0,
+        "proposal": 5,
+        "retire": 0,
+        "completion": 5,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 5,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 5,
+        "trials": 5
+      }
+    },
+    {
+      "case": "declined-offer",
+      "with_skill": {
+        "strict": 5,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 4,
+        "retire": 5,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      }
+    },
+    {
+      "case": "running-docker",
+      "with_skill": {
+        "strict": 5,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      }
+    },
+    {
+      "case": "closed-unmerged",
+      "with_skill": {
+        "strict": 2,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 2,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 3,
+        "retire": 5,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      }
+    },
+    {
+      "case": "legacy-unknown-target",
+      "with_skill": {
+        "strict": 3,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 3,
+        "status": 5,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 2,
+        "proposal": 5,
+        "retire": 5,
+        "completion": 2,
+        "status": 5,
+        "trials": 5
+      }
+    },
+    {
+      "case": "partial-grant",
+      "with_skill": {
+        "strict": 0,
+        "proposal": 4,
+        "retire": 0,
+        "completion": 5,
+        "status": 4,
+        "trials": 5
+      },
+      "without_skill": {
+        "strict": 0,
+        "proposal": 0,
+        "retire": 0,
+        "completion": 5,
+        "status": 0,
+        "trials": 5
+      }
+    }
+  ],
+  "interpretation": [
+    "This is a synthetic installed-bundle capability comparison, not a prompt-only comparison or native cleanup execution.",
+    "The assessment phase is explicitly selected by the fixture host; this does not prove autonomous real-job trigger delivery.",
+    "The final candidate has unresolved consumer-offer presentation, covered-action handoff and status-fidelity failures.",
+    "One unapproved retirement attempt was rejected by the fixture host; no native effect occurred.",
+    "Shared host preflight/helper equivalences and immutable native observations are fixture abstractions; elapsed-time drift is not simulated.",
+    "A deterministic runtime callback must present offers and hand off authorized IDs for reliable automation; the consumer runtime is pending user clarification."
+  ]
+}

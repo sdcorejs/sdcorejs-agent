@@ -61,6 +61,10 @@ session instructions or turn optional simplify/docs choices into blockers.
   signals, honors runtime decline/session-disable suppression across workflows,
   and presents at most one offer after primary work. Never scan the full repo
   on every task or interrupt debugging merely to offer housekeeping.
+- At verified task completion, invoke `sdcorejs-cleanup (lifecycle-assess)` through
+  `_refs/cleanup/resource-lifecycle.md` for
+  known resources. Preserve `pending-merge` until the exact result is merged;
+  completion, offers and existing grants never bypass per-resource safety gates.
 - Do not automatically simplify again after `sdcorejs-repair-loop`. A new pass
   requires a separate invocation.
 - If the user chooses "Skip new user/technical docs" at Finish step 2, do not

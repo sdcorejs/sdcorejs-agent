@@ -1,5 +1,7 @@
 """Read-only, metadata-first storage inventory. No content hashing or deletion."""
 import argparse, ctypes, heapq, json, math, os, shutil, sys, time
+import stat
+from collections import Counter
 from pathlib import Path
 
 def allocation(path):
@@ -47,7 +49,62 @@ def candidate_kind(path):
         return name
     return None
 
-def inventory(root, excludes=(), budget=0, output=None):
+# These are observation categories, never a retention or disposal decision.
+MANIFESTS = {'package.json', 'pyproject.toml', 'cargo.toml', 'go.mod', 'pom.xml',
+             'composer.json', 'gemfile', 'build.gradle', 'package-lock.json'}
+PROTECTED_ROLES = {'git-metadata', 'dependencies', 'database', 'recovery', 'evidence'}
+
+def data_role(path, inherited, directory):
+    name = path.name.lower()
+    parent = path.parent.name.lower()
+    suffix = path.suffix.lower()
+    if inherited in PROTECTED_ROLES:
+        return inherited
+    if name == '.git':
+        return 'git-metadata'
+    if directory and name in ('node_modules', '.venv', 'site-packages', 'vendor'):
+        return 'dependencies'
+    if directory and name in ('recovery', 'quarantine', 'cleanup-runtime', 'backups', 'restore'):
+        return 'recovery'
+    if directory and name in ('evidence', 'baselines', 'snapshots', 'diagnostics', 'test-results'):
+        return 'evidence'
+    if directory and name in ('pgdata', 'postgres-data') or not directory and (
+        name == 'pg_version' or suffix in ('.db', '.sqlite', '.sqlite3', '.vhdx', '.mdf')
+    ):
+        return 'database'
+    if directory and name == 'data':
+        # Verify the PostgreSQL directory signature without opening its files.
+        try:
+            if all(not is_redirect(path / child) for child in ('PG_VERSION', 'base', 'global')):
+                return 'database'
+        except OSError:
+            pass
+    if inherited == 'handoff-output' or directory and name in ('deliverables', 'delivery', 'handoff', 'exports'):
+        return 'handoff-output'
+    if not directory and suffix in ('.mp4', '.webm', '.mov'):
+        return 'media-output'
+    if directory and name in ('sdk', 'sdks', 'installers', 'toolchains') or not directory and suffix in ('.msi', '.msix', '.dmg', '.pkg'):
+        return 'sdk-installers'
+    if directory and (name in ('cache', 'caches', '.remotion', '.cache', '.turbo') or candidate_kind(path)):
+        return 'build-test-cache'
+    if directory and (name in ('dist', 'build', 'out') or name == '.next' or parent == '.next' and name == 'server'):
+        return 'build-output'
+    if not directory and (name in MANIFESTS or inherited not in ('build-test-cache', 'build-output') and
+                          suffix in ('.ts', '.tsx', '.js', '.jsx', '.py', '.go', '.rs', '.java', '.cs', '.cpp')):
+        return 'source-or-manifest'
+    if not directory and suffix == '.log' and inherited in (None, 'other'):
+        return 'logs'
+    return inherited or 'other'
+
+def source_birth(st):
+    birth = getattr(st, 'st_birthtime', None)
+    # Python 3.11 Windows exposes creation time as st_ctime.
+    if birth is None and os.name == 'nt':
+        birth = st.st_ctime
+    return birth if birth and math.isfinite(birth) else None
+
+def inventory(root, excludes=(), budget=0, output=None, workspace_metadata=False, measure_allocation=False,
+              classification_root=None):
     root=Path(os.path.abspath(root))
     if not math.isfinite(budget) or budget<0: raise ValueError('Traversal budget must be finite and nonnegative')
     for p in (root,*root.parents):
@@ -69,8 +126,10 @@ def inventory(root, excludes=(), budget=0, output=None):
           'skipped_reparse_count':0,'skipped_reparse_sample':[],'records':[],'candidates':[],'dependency_roots':[],
           'measurement':'Logical sums may count hardlinks more than once. Allocation is measured only for top large files. Candidate names are discovery hints, never deletion authority.'}
     data['volume_before']=shutil.disk_usage(root)._asdict()
+    root_stat = os.lstat(root)
+    root_device = root_stat.st_dev
     start=last=time.perf_counter(); large=[]; timed_out=False
-    def walk(path,depth=0,outer=None,module_owner=None):
+    def walk(path,depth=0,outer=None,module_owner=None,current_role=None,info=None):
         nonlocal last,timed_out
         data['directories']+=1
         kind=candidate_kind(path) if outer is None else None
@@ -78,7 +137,16 @@ def inventory(root, excludes=(), budget=0, output=None):
         module_root=path.name.lower()=='node_modules' and module_owner is None
         next_module_owner=path if module_root else module_owner
         size=count=errs=links=0; complete=True
+        newest = direct_newest = None
+        kinds, direct_kinds, markers = Counter(), Counter(), set()
+        direct_bytes = direct_files = 0
+        boundaries = set()
+        allocated = 0
         try:
+            if workspace_metadata:
+                current = os.lstat(path)
+                if (current.st_dev, current.st_ino) != (info.st_dev, info.st_ino) or is_redirect(path):
+                    raise OSError('Directory identity changed')
             with os.scandir(path) as entries:
                 for e in entries:
                     if budget and time.perf_counter()-start>=budget:
@@ -87,17 +155,48 @@ def inventory(root, excludes=(), budget=0, output=None):
                         if os.path.normcase(os.path.abspath(e.path)) in ex:
                             if not output or os.path.normcase(e.path)!=os.path.normcase(os.path.abspath(output)):
                                 data['excluded'].append(e.path); complete=False; data['status']='partial'
+                                boundaries.add('excluded-path')
                             continue
                         st=e.stat(follow_symlinks=False)
                         if e.is_symlink() or getattr(st,'st_file_attributes',0)&0x400:
                             links+=1; data['skipped_reparse_count']+=1
                             if len(data['skipped_reparse_sample'])<100: data['skipped_reparse_sample'].append(e.path)
                             complete=False; data['status']='partial'; continue
+                        if workspace_metadata and st.st_dev != root_device:
+                            boundaries.add('different-filesystem')
+                            complete=False; data['status']='partial'; continue
+                        if workspace_metadata and e.name.lower() in MANIFESTS | {'.git'}:
+                            markers.add(e.name.lower())
                         if e.is_dir(follow_symlinks=False):
-                            s,c,x,l,sub_complete=walk(Path(e.path),depth+1,owner,next_module_owner)
+                            role = data_role(Path(e.path), current_role, True) if workspace_metadata else None
+                            s,c,x,l,sub_complete,sub_newest,sub_kinds,sub_boundaries,sub_allocation=walk(
+                                Path(e.path),depth+1,owner,next_module_owner,role,st)
                             size+=s; count+=c; errs+=x; links+=l
                             complete=complete and sub_complete
+                            if workspace_metadata:
+                                kinds.update(sub_kinds)
+                                boundaries.update(sub_boundaries)
+                                if sub_newest is not None and (newest is None or sub_newest > newest):
+                                    newest = sub_newest
+                            if measure_allocation and allocated is not None:
+                                allocated = None if sub_allocation is None else allocated + sub_allocation
                         else:
+                            if workspace_metadata and not stat.S_ISREG(st.st_mode):
+                                boundaries.add('special-file')
+                                complete=False; data['status']='partial'; continue
+                            if workspace_metadata:
+                                role = data_role(Path(e.path), current_role, False)
+                                kinds[role] += st.st_size
+                                direct_kinds[role] += st.st_size
+                                direct_files += 1
+                                direct_bytes += st.st_size
+                                direct_newest = st.st_mtime if direct_newest is None else max(direct_newest, st.st_mtime)
+                                newest = st.st_mtime if newest is None else max(newest, st.st_mtime)
+                                if st.st_nlink > 1:
+                                    boundaries.add('hardlink-allocation-shared')
+                            if measure_allocation and allocated is not None:
+                                observed = allocation(e.path) if st.st_nlink == 1 else None
+                                allocated = None if observed is None else allocated + observed
                             size+=st.st_size; count+=1; data['files']+=1
                             if st.st_size>=100_000_000:
                                 item=(st.st_size,e.path,st.st_mtime)
@@ -110,14 +209,40 @@ def inventory(root, excludes=(), budget=0, output=None):
             errs+=1; complete=False; data['error_count']+=1; data['status']='partial'
             if len(data['errors'])<200: data['errors'].append({'path':str(path),'error':str(exc)})
         rec={'path':str(path),'logical_bytes':size,'files':count,'errors':errs,'skipped_reparse':links,'coverage':'complete' if complete else 'partial'}
-        if depth<=3 or size>=100_000_000: data['records'].append(rec)
+        if workspace_metadata:
+            if links:
+                boundaries.add('redirect-not-followed')
+            if errs:
+                boundaries.add('unreadable-or-changed')
+            if not complete and timed_out:
+                boundaries.add('scan-budget')
+            rec.update({'depth':depth,'creation_epoch':source_birth(info),'directory_role':current_role,
+                        'latest_write_observed_epoch':newest,'markers':sorted(markers),
+                        'content_bytes':dict(kinds),'boundaries':sorted(boundaries)})
+            if depth == 0:
+                data['root_files'] = {'path':str(path),'depth':0,'logical_bytes':direct_bytes,
+                    'files':direct_files,'latest_write_observed_epoch':direct_newest,
+                    'content_bytes':dict(direct_kinds),'coverage':rec['coverage'],'boundaries':rec['boundaries']}
+        if depth<=3 or size>=100_000_000 or workspace_metadata and (markers and not current_role in PROTECTED_ROLES): data['records'].append(rec)
         if kind: data['candidates'].append({**rec,'kind':kind,'decision':'inspect'})
         if module_root: data['dependency_roots'].append({**rec,'kind':'node_modules','decision':'inspect'})
         if time.perf_counter()-last>=25:
             print(json.dumps({'elapsed_seconds':round(time.perf_counter()-start),'files':data['files'],'current':str(path)}),file=sys.stderr,flush=True)
             last=time.perf_counter()
-        return size,count,errs,links,complete
-    data['logical_bytes']=walk(root)[0]
+        return size,count,errs,links,complete,newest,kinds,boundaries,allocated if complete else None
+    role = None
+    if workspace_metadata:
+        classification_root = Path(os.path.abspath(classification_root)) if classification_root else root
+        relative = root.relative_to(classification_root)
+        current = classification_root
+        role = data_role(current, None, True)
+        for part in relative.parts:
+            current = current / part
+            role = data_role(current, role, True)
+    summary=walk(root,current_role=role,info=root_stat)
+    data['logical_bytes']=summary[0]
+    if measure_allocation:
+        data['observed_allocation_bytes']=summary[-1]
     data['budget_exhausted']=timed_out
     data['duration_seconds']=time.perf_counter()-start
     data['finished_at_epoch']=time.time()
@@ -131,12 +256,16 @@ def main():
     parser.add_argument('--exclude',action='append',default=[],help='Exact directory to omit; marks coverage partial. Repeatable.')
     parser.add_argument('--max-seconds',type=float,default=0,help='0 scans to completion. A budget produces an explicit partial result.')
     parser.add_argument('--out',type=Path)
+    parser.add_argument('--workspace-metadata',action='store_true')
+    parser.add_argument('--measure-allocation',action='store_true')
+    parser.add_argument('--classification-root',type=Path)
     args=parser.parse_args()
     if args.max_seconds<0: parser.error('--max-seconds cannot be negative')
     sys.stdout.reconfigure(encoding='utf-8'); sys.stderr.reconfigure(encoding='utf-8')
     try:
         if args.out: validate_report_target(args.root,args.out)
-        data=inventory(args.root,args.exclude,args.max_seconds,args.out)
+        data=inventory(args.root,args.exclude,args.max_seconds,args.out,args.workspace_metadata,args.measure_allocation,
+                       args.classification_root)
         if args.out: write_report(args.root,args.out,json.dumps(data,ensure_ascii=False,indent=2))
     except (OSError,ValueError) as exc: parser.exit(2,str(exc)+'\n')
     if args.out:

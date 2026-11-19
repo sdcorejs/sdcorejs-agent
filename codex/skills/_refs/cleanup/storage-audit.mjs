@@ -3,6 +3,7 @@ import { lstat, realpath, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
+import { buildWorkspaceInventory, calendarCutoff, workspaceInventoryCsv } from './workspace-inventory.mjs';
 
 const exec = promisify(execFile);
 const helper = fileURLToPath(new URL('./storage_inventory.py', import.meta.url));
@@ -28,11 +29,11 @@ async function reportTarget(root, output) {
 }
 
 /** Metadata inventory only. Its output is deliberately not a cleanup action/approval plan. */
-export async function runStorageAudit(argv) {
+export async function runStorageAudit(argv, { inspectGit = true, measureAllocation = false, classificationRoot = null } = {}) {
   const options = { excludes: [] };
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index], value = argv[index + 1];
-    if (!value || !['--root', '--python', '--exclude', '--max-seconds', '--out'].includes(flag)) throw new Error('INVALID_ARGUMENTS');
+    if (!value || !['--root', '--python', '--exclude', '--max-seconds', '--out', '--as-of', '--time-zone', '--csv'].includes(flag)) throw new Error('INVALID_ARGUMENTS');
     if (flag === '--exclude') options.excludes.push(value);
     else {
       const key = flag.slice(2);
@@ -43,6 +44,8 @@ export async function runStorageAudit(argv) {
   if (!options.root || !path.isAbsolute(options.root)) throw new Error('ABSOLUTE_ANALYSIS_ROOT_REQUIRED');
   if (!options.python || !path.isAbsolute(options.python) || options.python.includes('\0')) throw new Error('ABSOLUTE_PYTHON_REQUIRED');
   const root = path.resolve(options.root);
+  const cutoff = options['as-of'] || options['time-zone'] || options.csv
+    ? calendarCutoff(options['as-of'], options['time-zone']) : null;
   const executable = await realpath(options.python);
   if (!(await lstat(executable)).isFile()) throw new Error('PYTHON_NOT_EXECUTABLE');
   for (const exclude of options.excludes) {
@@ -50,18 +53,30 @@ export async function runStorageAudit(argv) {
   }
   if (options['max-seconds'] !== undefined && (!Number.isFinite(Number(options['max-seconds'])) || Number(options['max-seconds']) < 0)) throw new Error('INVALID_SCAN_BUDGET');
   if (options.out) await reportTarget(root, options.out);
+  if (options.csv) {
+    if (options.out && samePath(path.resolve(options.out), path.resolve(options.csv))) throw new Error('DISTINCT_REPORT_TARGETS_REQUIRED');
+    await reportTarget(root, options.csv);
+  }
   const args = ['-I', '-S', '-B', helper, '--root', root];
   for (const exclude of options.excludes) args.push('--exclude', exclude);
   if (options['max-seconds'] !== undefined) args.push('--max-seconds', options['max-seconds']);
+  if (cutoff) args.push('--workspace-metadata');
+  if (measureAllocation) args.push('--measure-allocation');
+  if (classificationRoot) args.push('--classification-root', classificationRoot);
   // No implicit timeout or content-hashing/file-count cap. Partition large scans
   // or request a budget explicitly; a killed process never supplies a complete result.
   const pending = exec(executable, args, { windowsHide: true, maxBuffer: 128 * 1024 * 1024 });
   pending.child.stderr.on('data', chunk => process.stderr.write(chunk));
   const { stdout } = await pending;
   const result = { ...JSON.parse(stdout), schema_version: 1, kind: 'storage-audit', mutation_authorized: false };
+  if (cutoff) result.workspace_inventory = await buildWorkspaceInventory(result, cutoff, { inspectGit });
   if (options.out) {
     await reportTarget(root, options.out);
     await writeFile(options.out, `${JSON.stringify(result, null, 2)}\n`, { flag: 'wx' });
+  }
+  if (options.csv) {
+    await reportTarget(root, options.csv);
+    await writeFile(options.csv, workspaceInventoryCsv(result.workspace_inventory), { flag: 'wx' });
   }
   return result;
 }

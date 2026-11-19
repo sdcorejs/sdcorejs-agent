@@ -844,17 +844,30 @@ function hasDirectCleanupIntent(prompt, tokens) {
   const storagePressure = /\b(?:low (?:disk|storage)(?: space)?|disk (?:is )?(?:(?:nearly|almost) )?full)\b/u.test(prompt)
     || /\b(?:het cho|day o dia|o dia gan day)\b/u.test(normalized);
   const storageIntent = storagePressure || /\b(?:disk (?:space|usage)|storage[- ]audit)\b/u.test(prompt)
+    || /\b(?:workspace storage|workspace inventory)\b/u.test(prompt)
     || /\bdisk\b[^.?!]*\b(?:full|space|usage|capacity)\b/u.test(prompt)
     || (/\b(?:docker|wsl|node_modules|npm cache|appdata|vhdx)\b/u.test(prompt) && /\b(?:space|size|storage|reclaim)\b/u.test(prompt))
     || /\b(?:dung luong|chiem bao nhieu)\b/u.test(normalized);
-  const storageInspection = storagePressure || (storageIntent && (/\b(?:inspect|audit|analy[sz]e|check|scan|review|why|reclaim|free|clean|delete|remove|how)\b/u.test(prompt)
-    || /\b(?:ra soat|kiem tra|don dep|xoa|xem|chiem bao nhieu)\b/u.test(normalized)));
+  const storageInspection = storagePressure || (storageIntent && (/\b(?:inventory|inspect|audit|analy[sz]e|check|scan|review|why|reclaim|free|clean|delete|remove|how)\b/u.test(prompt)
+    || /\b(?:kiem ke|ra soat|kiem tra|don dep|xoa|xem|chiem bao nhieu)\b/u.test(normalized)));
   if (hasReviewIntent(prompt, tokens) && (hasAny(tokens, ['security', 'performance', 'accessibility', 'a11y', 'architecture', 'quality'])
     || (!storageInspection && !hasAny(tokens, ['unused', 'superseded', 'duplicates', 'deduplicate', 'dedup', 'quarantine', 'quarantined'])))) return false;
   if (hasBehaviorPreservationIntent(prompt, tokens)) return false;
   if (hasAny(tokens, ['teardown', 'test-data', 'dataset']) && hasAny(tokens, ['test', 'tests'])) return false;
   if (/\b(write|add|create|run)\b.*\b(?:unit|integration|e2e|test case|tests?)\b/u.test(prompt)) return false;
   if (hasAny(tokens, ['rewrite', 'restructure', 'grammar', 'docstring', 'jsdoc', 'tsdoc'])) return false;
+  const ageFilteredCleanup = /\b(?:delete|remove|xoa)\b/u.test(normalized)
+    && /\b(?:workspace|folders?|directories|items?|files?|muc|thu muc|tep)\b/u.test(normalized)
+    && /\b(?:older than|over|more than|tren|qua)\s+\d+\s+(?:days?|ngay)\b/u.test(normalized);
+  if (ageFilteredCleanup) return true;
+  const postMergeResources = /\b(?:post[- ]merge|after (?:the task is )?merged?|merged task|sau khi[^.?!]*merge)\b/u.test(normalized)
+    && /\b(?:worktrees?|branch(?:es)?|node_modules|docker|resources?)\b/u.test(normalized)
+    && /\b(?:clean(?:up)?|clean-up|remove|delete|don dep|xoa)\b/u.test(normalized);
+  if (postMergeResources) return true;
+  const legacyResources = /\b(?:worktrees?|resources?)\b/u.test(normalized)
+    && /\b(?:old|legacy|unused|leftover|stale)\b/u.test(normalized)
+    && /\b(?:audit|inspect|check|review|clean(?:up)?)\b/u.test(normalized);
+  if (legacyResources && !hasAny(tokens, ['security', 'implementation', 'correctness', 'code'])) return true;
   if (storageInspection && !hasAny(tokens, ['correctness', 'workflow', 'refactor', 'implementation'])) return true;
   const hygieneIntent = hasAny(tokens, ['cleanup', 'clean-up', 'quarantine', 'quarantined', 'deduplicate', 'dedup', 'duplicates', 'unused', 'superseded']) || /\bclean\s+up\b/u.test(prompt) || hasLocalizedCleanupIntent(prompt);
   const artifactScope = hasAny(tokens, [

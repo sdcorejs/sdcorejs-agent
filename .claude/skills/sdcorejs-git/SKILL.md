@@ -13,6 +13,7 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 Read `../../_refs/shared/git-disposition.md` and `../../_refs/shared/session-authority.md`
 before artifact handoff. Keep acceptance disposition separate from hygiene.
+After Git artifacts or observed merge, invoke read-only `sdcorejs-cleanup (lifecycle-assess)`; carry its pending-merge/verified assessment without new Git authority.
 
 ## Purpose
 
