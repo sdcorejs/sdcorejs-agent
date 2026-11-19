@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { scanCleanup, freezeCleanupPlan, applyCleanupPlan, restoreCleanup } from './cleanup-engine.mjs';
+import { freezeStorageBatch, applyStorageBatch } from './storage-batch.mjs';
 import { runStorageAudit } from './storage-audit.mjs';
 
 /** Portable harness entrypoint. Analysis is default; mutations require exact supplied authority. */
@@ -8,6 +9,11 @@ export async function runCleanupCli(argv) {
   const mode = argv[0] && !argv[0].startsWith('--') ? argv[0] : 'analyze';
   const args = mode === argv[0] ? argv.slice(1) : argv;
   if (mode === 'storage-audit') return runStorageAudit(args);
+  if (['storage-plan', 'storage-apply'].includes(mode)) {
+    if (args.length !== 2 || args[0] !== '--input' || !args[1]) throw new Error('BATCH_INPUT_REQUIRED');
+    const input = JSON.parse(await readFile(args[1], 'utf8'));
+    return mode === 'storage-plan' ? freezeStorageBatch(input) : applyStorageBatch(input);
+  }
   if (!['analyze', 'plan', 'apply', 'restore', 'task-tail-cleanup'].includes(mode)) throw new Error('UNKNOWN_CLEANUP_MODE');
   const options = { scope: [], reference_scope: [] };
   for (let index = 0; index < args.length; index += 2) {

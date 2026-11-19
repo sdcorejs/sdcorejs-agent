@@ -32,7 +32,7 @@ export async function runStorageAudit(argv) {
   const options = { excludes: [] };
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index], value = argv[index + 1];
-    if (!value || !['--root', '--python', '--exclude', '--max-seconds', '--out'].includes(flag)) throw new Error('INVALID_ARGUMENTS');
+    if (!value || !['--root', '--python', '--exclude', '--max-seconds', '--out', '--csv', '--as-of', '--timezone'].includes(flag)) throw new Error('INVALID_ARGUMENTS');
     if (flag === '--exclude') options.excludes.push(value);
     else {
       const key = flag.slice(2);
@@ -50,9 +50,14 @@ export async function runStorageAudit(argv) {
   }
   if (options['max-seconds'] !== undefined && (!Number.isFinite(Number(options['max-seconds'])) || Number(options['max-seconds']) < 0)) throw new Error('INVALID_SCAN_BUDGET');
   if (options.out) await reportTarget(root, options.out);
+  if (options.csv) await reportTarget(root, options.csv);
+  if (options.out && options.csv && samePath(path.resolve(options.out), path.resolve(options.csv))) throw new Error('REPORT_TARGETS_MUST_DIFFER');
   const args = ['-I', '-S', '-B', helper, '--root', root];
   for (const exclude of options.excludes) args.push('--exclude', exclude);
   if (options['max-seconds'] !== undefined) args.push('--max-seconds', options['max-seconds']);
+  for (const flag of ['csv', 'as-of', 'timezone']) {
+    if (options[flag] !== undefined) args.push(`--${flag}`, options[flag]);
+  }
   // No implicit timeout or content-hashing/file-count cap. Partition large scans
   // or request a budget explicitly; a killed process never supplies a complete result.
   const pending = exec(executable, args, { windowsHide: true, maxBuffer: 128 * 1024 * 1024 });

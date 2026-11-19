@@ -11,6 +11,7 @@ readiness policy live in `_refs/cleanup/offer-policy.mjs`.
 | Mode | Entry | Authority and outcome |
 |---|---|---|
 | `storage-audit` | Explicit disk-space, cache/dependency size or machine inspection | Read-only metadata of declared local roots; use `_refs/cleanup/storage-audit.md`. No cleanup plan, provider mutation or disposal authority. |
+| `storage-plan` / `storage-apply` | Age-filtered candidates followed by explicit file-bearing directory scopes | Freeze a separate engine plan per independent item. One matching batch approval, per-item receipts, and observed free-space delta. See `_refs/cleanup/storage-audit.md`. |
 | `analyze` | Explicit bounded inspection or accepted offer | Read-only scan and classification; report evidence, protected paths and unknowns. |
 | `plan` | Analysis with a proposed exact action list | Freeze exact paths/actions/state; no filesystem mutation. |
 | `apply` | Frozen plan and explicit matching mutation approval or approved LOW task policy | Revalidate, apply bounded actions, verify, and emit an exact receipt. |
@@ -61,7 +62,11 @@ repository boundaries, sensitive content and unreliable recovery block.
 Revalidate immediately before each action. Changed files/references/producer
 state, new directory entries, changed repository state or links, or another
 cleanup writer stop stale work; replan and reapprove. A newly appeared file
-never enters a previously approved recursive operation.
+never enters a previously approved recursive operation. A storage batch
+passes separate frozen scopes to the same engine. Retain the stale item
+and continue with independently approved items whose own state and
+references still match. If items share material Git or reference state,
+a change to that shared state holds the affected item too.
 
 Keep immutable approved specs, plans, architecture, ADRs, decisions and
 historical evidence. Mark supersession relationships rather than deleting

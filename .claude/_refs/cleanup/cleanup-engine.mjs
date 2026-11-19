@@ -156,6 +156,16 @@ function referencesTo(candidate, references) {
   return { hits, dynamic, complete };
 }
 
+function producerProcessHold(info) {
+  if (!Number.isInteger(info.producer_pid) || info.producer_pid <= 0) return null;
+  try {
+    process.kill(info.producer_pid, 0);
+    return 'producer process remains active';
+  } catch (error) {
+    return error.code === 'ESRCH' ? null : 'producer process state is unavailable';
+  }
+}
+
 function classify(file, { references, evidence, task, git, skill_pack }) {
   const info = evidence[file.path] ?? {};
   let metadata = file.text ? parseArtifactFrontmatter(file.text) : {};
@@ -185,10 +195,8 @@ function classify(file, { references, evidence, task, git, skill_pack }) {
   if (!file.fingerprint || file.state.nlink > 1) record.unknowns.push(file.state.nlink > 1 ? 'hard-linked file has independent aliases' : 'content fingerprint unavailable');
   if (!info.owner) record.unknowns.push('unknown artifact owner');
   if (info.producer_status !== 'finished') record.unknowns.push('producer completion is unproven');
-  if (Number.isInteger(info.producer_pid) && info.producer_pid > 0) {
-    try { process.kill(info.producer_pid, 0); record.unknowns.push('producer process remains active'); }
-    catch (error) { if (error.code !== 'ESRCH') record.unknowns.push('producer process state is unavailable'); }
-  }
+  const producer = producerProcessHold(info);
+  if (producer) record.unknowns.push(producer);
   if (info.active || git.records.some((line) => ['M', 'A', 'R', 'C', 'U'].some((flag) => line.slice(0, 2).includes(flag)) && line.slice(3) === file.path)) record.unknowns.push('actively produced or modified file');
   if (refs.hits.length) return protect('referenced', 'current references retain this file');
   const tracked = info.tracked === true || git.tracked.includes(file.path);
@@ -347,6 +355,7 @@ export async function applyCleanupPlan({ root, plan, approval = null, policy = n
           if (destination === action.path || destination.startsWith(`${action.path}/`)) throw new Error('INVALID_DESTINATION');
           await checkedPath(root, destination, { missing: true, runtime: action.action === 'quarantine' });
         }
+        if (producerProcessHold(liveNow.evidence?.[action.path] ?? {})) throw new Error('PRODUCER_PROCESS_NOT_QUIESCENT');
         mutation = await performSafeFileOperation({ root, root_state: plan.state.root_state,
           source: action.path, destination, fingerprint: action.fingerprint, state: stateOf(stat), writer: lock,
           transaction: action.posix_transaction, maintenance });

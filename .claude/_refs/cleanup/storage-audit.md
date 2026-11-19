@@ -51,12 +51,103 @@ source/personal/evidence, system-managed, container/VM or unknown. Names such
 as Temp, cache, build and dist do not establish disposability. `dependency_roots`
 lists outermost node_modules independently, including inside npm-cache/Temp.
 Those breakdowns overlap parent totals: never sum them again. Logical totals
-may count hardlinks repeatedly. Allocation is measured only for the top large
-files, not for all directory totals. Record volume-free observations separately.
+may count hardlink paths repeatedly. The single-link allocation column omits
+multiply linked files and is an estimate ceiling. Snapshots, shared extents,
+compression and allocation availability can affect reclaimed space. Keep this
+estimate separate from approved reclaim, measured native source allocation,
+and volume-free observations.
 
 Give each significant group an exact path/provider, size/basis/date, coverage,
 recommendation, recovery prerequisites, blocker and next supported action.
 Prioritize likely material space returns instead of many tiny deletions.
+
+## Project, age and contents tables
+
+For an example on the Windows machine that owns the Codex directory, run:
+
+```powershell
+node _refs/cleanup/cli.mjs storage-audit --root "C:\Users\Admin\Documents\Codex" --python "<absolute-python.exe>" --timezone "+07:00" --out "<new-report-outside-root>.json" --csv "<new-report-outside-root>.csv"
+```
+
+Substitute any user-specified absolute local root. Choose the user's time zone
+(an IANA identifier when available, or a fixed offset). The default is UTC.
+An optional `--as-of` ISO timestamp with an explicit offset makes the calendar
+cutoff repeatable. Date ranges are inclusive calendar days in that time zone:
+0–10, 11–20, over 20, and unknown. A valid YYYY-MM-DD workspace name label takes
+precedence over filesystem creation time. Without either, or with a future
+age date, report unknown. A Linux metadata-change time is not a creation date.
+Show newest observed regular-file write separately and mark activity in the
+latest 10 calendar days, including possible clock skew. Partial scans report
+observed timestamps only. Unobserved files can be newer.
+
+Use `age_groups` for disjoint bucket totals, `projects` for the first-level
+workspace rows (plus any files directly under the root), and `records` for
+directory details and discovered repo/manifest roots. A root with project
+metadata or a date label is one workspace. Root, repo and detail rows may
+overlap. Never add detail rows, cache breakdowns, or parents to the totals.
+The CSV includes a table column for filtering explicitly before summing.
+
+Display `contents` as the localized “What is in this group?” column. Include
+project identity and metadata evidence, data categories and the top one to
+three immediate entries by measured logical size. Git directories and Git
+indirections are observed markers, with worktree/submodule role requiring
+verification. Manifest presence is evidence of project type. Folder names,
+extensions and cache/SDK/build hints require verification against producer
+configuration and handoff records. Distinguish source, dependencies, build and
+test caches, SDKs/installers, databases, build outputs, deliverables, evidence
+and recovery. Never dump config, manifests, remote URLs, secrets or file
+contents. Example wording: “PostgreSQL experiment workspace, 5.22 GiB.
+Observed data, installer and run logs. Verify database and recovery ownership
+before considering the entire workspace.”
+
+## Review and apply an age-filtered batch
+
+1. Run the audit and filter `projects` by `age_bucket`. “Delete over 20 days”
+   selects `over-20` candidates for review. Use `records` to narrow a mixed
+   workspace to a specific disposable subtree, such as a Remotion build cache.
+   Recent writes, live processes, dirty Git, unique handoff outputs, recovery
+   data and scan gaps must be visible in the review.
+2. Inspect proposed absolute paths, producer state, ownership, consumers and
+   recovery. Provide fresh per-file evidence to the existing cleanup engine.
+   A finished process ID and a verified regeneration recipe or retained copy
+   are evidence. A name, age, or a lockfile alone is insufficient.
+3. Use `storage-plan --input <local-json>` or
+   `freezeStorageBatch({report, age_bucket, selections})` from
+   `_refs/cleanup/storage-batch.mjs`. Inputs use the JSON report object,
+   bucket key, and explicit selections. With empty selections, the result is a
+   review list only. A selection contains `path` (absolute audited directory),
+   `root` (absolute engine root, defaults to the audited root), `action`
+   (`delete` or `quarantine`), `recovery_basis`, and optional
+   `reference_scope`, `evidence`, `task` and `posix_boundary`. Reuse the
+   engine's root-relative evidence map, bounded reference scopes and the
+   existing POSIX admission. Example selection path
+   `C:\Users\Admin\Documents\Codex\2026-10-29-demo\.remotion\cache`
+   means **only the exact files in that cache**, not the workspace or its videos.
+   The workspace directory itself is never removed by a file-only plan.
+4. Show the batch ID, selected and held paths, operation, affected data,
+   exact file list, estimated reclaim and its basis, and recovery evidence for
+   each item. Hold mixed scopes with protected or unsupported entries for
+   narrower review. Dirty repositories, nested repositories, worktrees,
+   junctions, hardlinks and recovery data keep their engine boundaries.
+   Use an individual repo as the engine root only for a separately checked
+   child scope. Do not use a parent scan to remove a repo or worktree.
+5. Bind the user's single approval of the displayed items and actions using
+   `approveStorageBatch(batch, {source: 'conversation', decision: 'approve',
+   item_ids: [...]})` in the trusted harness. If the same frozen batch and
+   items were already approved, reuse that approval. Keep reports, batch,
+   approval and receipts runtime-local, outside analyzed scopes. Apply with
+   `storage-apply --input <local-json>` containing `batch`, `approval` and
+   current POSIX `maintenance` keyed by item ID when required. A harness can use
+   `applyStorageBatch` with an `observe(item)` callback for current task and
+   producer evidence. Recheck known writers before apply. The engine also checks
+   recorded producer PIDs and the native file boundary at the point of removal.
+6. Report each confirmed removed file, retained scope or error, and any
+   interrupted native transaction. Sum confirmed logical file bytes removed
+   by delete separately from native allocation and the measured available
+   space before and after on the audited volume. Partial execution is explicit.
+   A new file, changed reference or changed producer holds stale work while
+   independent approved items continue. Replan and reapprove changed items.
+   Quarantine can remove active paths while holding bytes on the same volume.
 
 ## Dependency recovery evidence
 
