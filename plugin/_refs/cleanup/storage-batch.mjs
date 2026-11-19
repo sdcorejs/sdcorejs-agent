@@ -5,7 +5,7 @@ import { approveCleanupPlan, cleanupFingerprint, validateCleanupPlan } from './c
 
 const buckets = new Set(['0-10', '11-20', 'over-20', 'unknown']);
 const mutating = new Set(['delete', 'quarantine']);
-const protectedPath = /(?:^|\/)(?:\.git|\.codex|\.agents|\.aws|node_modules|recovery|quarantine|backups?|evidence|cleanup-runtime|\.sdcorejs\/(?:sessions|specs|architecture|plans|product|design|conventions|approvals))(?:\/|$)/iu;
+const protectedPath = /(?:^|\/)(?:\.git|\.codex|\.agents|\.aws|node_modules|recovery|quarantine|backups?|evidence|cleanup-runtime|public|baselines|snapshots|reference-screenshots|adr|decisions|architecture-decisions|\.sdcorejs\/(?:(?:tasks\/)?sessions|current-session\.md|specs|architecture|plans|product|design|conventions|approvals))(?:\/|$)/iu;
 const protectedScope = value => protectedPath.test(value.split(path.sep).join('/'));
 const database = /(?:^|\/)(?:PG_VERSION|pg_control)$|\.(?:db|sqlite3?|mdf|vhdx?)$/iu;
 

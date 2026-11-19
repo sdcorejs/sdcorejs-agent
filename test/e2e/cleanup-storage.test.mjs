@@ -250,6 +250,17 @@ test('storage selections cannot hide a protected ancestor by rebasing the engine
   assert.match(batch.items[0].reasons.join(' '), /PROTECTED_STORAGE_PATH/u);
   const workspaceRow = report.projects.find(row => row.path === workspace);
   assert.match(workspaceRow.contents, /evidence or recovery/u);
+  const sessions = path.join(dir, '.sdcorejs', 'tasks', 'sessions');
+  const sessionCache = path.join(sessions, '2026-10-29-retained', 'temp');
+  await mkdir(sessionCache, { recursive: true });
+  await writeFile(path.join(sessionCache, 'session.js'), 'preserve session');
+  const sessionReport = await runCleanupCli(['storage-audit', '--root', sessions, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const sessionBatch = await freezeStorageBatch({ report: sessionReport, age_bucket: 'over-20', selections: [{
+    path: sessionCache, action: 'delete', recovery_basis: 'Untrusted fixture assertion',
+  }] });
+  assert.equal(sessionBatch.items[0].plan, null);
+  assert.match(sessionBatch.items[0].reasons.join(' '), /PROTECTED_STORAGE_PATH/u);
 });
 
 test('storage planning does not refresh the Git index on disk', native, async (t) => {
