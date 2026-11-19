@@ -5,7 +5,8 @@ import { approveCleanupPlan, cleanupFingerprint, validateCleanupPlan } from './c
 
 const buckets = new Set(['0-10', '11-20', 'over-20', 'unknown']);
 const mutating = new Set(['delete', 'quarantine']);
-const protect = /(?:^|\/)(?:\.git|node_modules|recovery|quarantine|backups?|evidence|cleanup-runtime)(?:\/|$)/iu;
+const protectedPath = /(?:^|\/)(?:\.git|\.codex|\.agents|\.aws|node_modules|recovery|quarantine|backups?|evidence|cleanup-runtime|\.sdcorejs\/(?:sessions|specs|architecture|plans|product|design|conventions|approvals))(?:\/|$)/iu;
+const protectedScope = value => protectedPath.test(value.split(path.sep).join('/'));
 const database = /(?:^|\/)(?:PG_VERSION|pg_control)$|\.(?:db|sqlite3?|mdf|vhdx?)$/iu;
 
 function within(root, target) {
@@ -59,10 +60,12 @@ export async function freezeStorageBatch({ report, age_bucket, selections = [] }
     const observed = report.records.find(row => samePath(row.path, target));
     const item = { id: `storage-${index + 1}`, path: target, action: selection.action,
       contents: observed?.contents ?? 'unmeasured scope', keep_signals: observed?.keep_signals ?? [],
-      recovery_basis: selection.recovery_basis ?? null, estimated_reclaim_bytes: null,
+      logical_bytes: observed?.logical_bytes ?? null, recovery_basis: selection.recovery_basis ?? null,
+      estimated_reclaim_bytes: null,
       estimate_basis: null, reasons: [], plan: null };
     items.push(item);
     try {
+      if (protectedScope(target)) throw new Error('PROTECTED_STORAGE_PATH');
       if (!observed || observed.coverage !== 'complete') throw new Error('COMPLETE_INVENTORY_REQUIRED');
       if (Object.keys(observed.categories ?? {}).some(kind =>
         ['Git metadata', 'installed dependencies', 'evidence or recovery', 'databases', 'sensitive paths'].includes(kind))) {
@@ -71,6 +74,15 @@ export async function freezeStorageBatch({ report, age_bucket, selections = [] }
       const root = await canonicalDirectory(selection.root ?? auditRoot);
       if (!within(auditRoot, root) || !within(root, target) || samePath(root, target)) {
         throw new Error('SELECT_A_CHILD_SCOPE_WITHIN_THE_ENGINE_ROOT');
+      }
+      if (!samePath(root, auditRoot)) {
+        const marker = await lstat(path.join(root, '.git')).catch(error => {
+          if (error.code === 'ENOENT') return null;
+          throw error;
+        });
+        if (!marker || marker.isSymbolicLink() || !(marker.isFile() || marker.isDirectory())) {
+          throw new Error('SEPARATE_ENGINE_ROOT_REQUIRES_REPOSITORY');
+        }
       }
       await canonicalDirectory(target);
       const scope = path.relative(root, target).split(path.sep).join('/');
@@ -81,12 +93,12 @@ export async function freezeStorageBatch({ report, age_bucket, selections = [] }
       if (typeof item.recovery_basis !== 'string' || !item.recovery_basis.trim()) throw new Error('REVIEWED_RECOVERY_BASIS_REQUIRED');
       if (!analysis.findings.length) throw new Error('NO_REGULAR_FILES_IN_SCOPE');
       const holds = analysis.findings.filter(finding => finding.protected || finding.risk === 'BLOCKED'
-        || finding.unknowns.length || protect.test(finding.path) || database.test(finding.path)
+        || finding.unknowns.length || protectedScope(path.join(root, finding.path)) || database.test(finding.path)
         || (selection.action === 'delete' && !finding.reproducible));
       if (holds.length) {
         item.reasons = holds.map(finding => ({
           path: finding.path, reasons: [...finding.reasons, ...finding.unknowns,
-            ...(protect.test(finding.path) || database.test(finding.path) ? ['protected storage path'] : []),
+            ...(protectedScope(path.join(root, finding.path)) || database.test(finding.path) ? ['protected storage path'] : []),
             ...(!finding.reproducible && selection.action === 'delete' ? ['reliable regeneration required'] : [])],
         }));
         continue;
@@ -97,7 +109,6 @@ export async function freezeStorageBatch({ report, age_bucket, selections = [] }
         actions: analysis.findings.map(finding => ({ path: finding.path, action: selection.action })),
         posix_boundary: selection.posix_boundary ?? null,
       });
-      item.logical_bytes = bytes;
       item.estimated_reclaim_bytes = selection.action === 'delete' ? observed.single_link_allocated_bytes : 0;
       item.estimate_basis = selection.action === 'delete' ? 'single-link allocation observed at audit, before native accounting'
         : 'same-volume quarantine';
@@ -176,9 +187,11 @@ export async function applyStorageBatch({ batch, approval, maintenance = {}, obs
         maintenance: maintenance[item.id], observe: live });
       logicalBytes += receipt.actions.filter(action => action.status === 'removed').reduce((sum, action) => sum + action.bytes, 0);
       reclaimedBytes += receipt.metrics.reclaimed_bytes;
-      if (['applied', 'verified'].includes(receipt.status)) applied++;
-      uncertain ||= receipt.metrics_known === false || receipt.status === 'partial';
-      items.push({ id: item.id, path: item.path, status: receipt.status,
+      const recoveryCreated = receipt.actions.some(action => action.recovery_copy);
+      const itemStatus = receipt.status === 'blocked' && recoveryCreated ? 'partial' : receipt.status;
+      if (['applied', 'verified'].includes(itemStatus)) applied++;
+      uncertain ||= receipt.metrics_known === false || itemStatus === 'partial';
+      items.push({ id: item.id, path: item.path, status: itemStatus,
         reasons: receipt.errors.map(error => error.code), receipt });
     } catch (error) {
       items.push({ id: item.id, path: item.path, status: 'retained', reasons: [error.code ?? error.message] });

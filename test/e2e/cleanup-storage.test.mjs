@@ -230,3 +230,51 @@ test('native batch removes only the stable approved fixture and reports partial 
   assert.equal(await readFile(path.join(dir, stale, 'new.js'), 'utf8'), 'retain unapproved file');
   assert.equal(await readFile(path.join(dir, stale, 'render.js'), 'utf8'), 'exact fixture output');
 });
+
+test('storage selections cannot hide a protected ancestor by rebasing the engine root', native, async (t) => {
+  const dir = await fixture(t);
+  const workspace = path.join(dir, '2026-10-20-old');
+  const recovery = path.join(workspace, 'dist', 'recovery');
+  const target = path.join(recovery, 'temp');
+  await mkdir(target, { recursive: true });
+  await writeFile(path.join(target, 'render.js'), 'preserve recovery');
+  const report = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const { freezeStorageBatch } = await import('../../_refs/cleanup/storage-batch.mjs');
+  const batch = await freezeStorageBatch({ report, age_bucket: 'over-20', selections: [{
+    path: target, root: recovery, action: 'delete', recovery_basis: 'Untrusted fixture assertion',
+    evidence: { 'temp/render.js': { owner: 'fixture', producer_status: 'finished',
+      needed_for_evidence: false, reproducible: true, evidence: ['Untrusted fixture assertion'] } },
+  }] });
+  assert.equal(batch.items[0].plan, null);
+  assert.match(batch.items[0].reasons.join(' '), /PROTECTED_STORAGE_PATH/u);
+  const workspaceRow = report.projects.find(row => row.path === workspace);
+  assert.match(workspaceRow.contents, /evidence or recovery/u);
+});
+
+test('storage planning does not refresh the Git index on disk', native, async (t) => {
+  const dir = await fixture(t);
+  const repo = path.join(dir, '2026-10-20-repo');
+  await mkdir(path.join(repo, 'cache'), { recursive: true });
+  const tracked = path.join(repo, 'source.js');
+  await writeFile(tracked, 'source');
+  await writeFile(path.join(repo, '.gitignore'), '/cache/\n');
+  await writeFile(path.join(repo, 'cache', 'render.js'), 'fixture');
+  await exec('git', ['init', repo]);
+  await exec('git', ['-C', repo, 'add', 'source.js', '.gitignore']);
+  await exec('git', ['-C', repo, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-m', 'fixture']);
+  const index = path.join(repo, '.git', 'index');
+  const before = await readFile(index);
+  const touched = new Date('2026-11-18T00:00:00Z');
+  await utimes(tracked, touched, touched);
+  const report = await runCleanupCli(['storage-audit', '--root', dir, '--python', python,
+    '--as-of', '2026-11-19T23:00:00+07:00', '--timezone', '+07:00']);
+  const { freezeStorageBatch } = await import('../../_refs/cleanup/storage-batch.mjs');
+  const batch = await freezeStorageBatch({ report, age_bucket: 'over-20', selections: [{
+    path: path.join(repo, 'cache'), root: repo, action: 'delete', recovery_basis: 'Regenerate the fixture file',
+    evidence: { 'cache/render.js': { owner: 'fixture', producer_status: 'finished',
+      needed_for_evidence: false, reproducible: true, evidence: ['Fixture producer awaited'] } },
+  }] });
+  assert.ok(batch.items[0].plan, JSON.stringify(batch.items[0]));
+  assert.deepEqual(await readFile(index), before);
+});

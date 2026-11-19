@@ -131,6 +131,9 @@ before considering the entire workspace.”
    junctions, hardlinks and recovery data keep their engine boundaries.
    Use an individual repo as the engine root only for a separately checked
    child scope. Do not use a parent scan to remove a repo or worktree.
+   Existing exact-scan budgets still apply. If a scope is too large, split it
+   into disjoint audited subdirectories and retain any file the engine cannot
+   fingerprint. The metadata report itself has no cleanup hashing limit.
 5. Bind the user's single approval of the displayed items and actions using
    `approveStorageBatch(batch, {source: 'conversation', decision: 'approve',
    item_ids: [...]})` in the trusted harness. If the same frozen batch and

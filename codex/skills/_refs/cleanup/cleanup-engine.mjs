@@ -54,7 +54,7 @@ async function gitState(root) {
     if (!samePath(path.resolve(top.trim()), root)) throw new Error('AMBIGUOUS_REPOSITORY_ROOT');
     const [{ stdout: revision }, { stdout: dirty }, { stdout: index }] = await Promise.all([
       exec('git', ['rev-parse', 'HEAD'], { cwd: root, windowsHide: true }),
-      exec('git', ['status', '--porcelain=v1', '-z', '--untracked-files=all'], { cwd: root, windowsHide: true, maxBuffer: 4 * 1024 * 1024 }),
+      exec('git', ['--no-optional-locks', '-c', 'core.fsmonitor=false', 'status', '--porcelain=v1', '-z', '--untracked-files=all'], { cwd: root, windowsHide: true, maxBuffer: 4 * 1024 * 1024 }),
       exec('git', ['ls-files', '--stage', '-z'], { cwd: root, windowsHide: true, maxBuffer: 4 * 1024 * 1024 }),
     ]);
     const records = dirty.split('\0').filter(Boolean).filter((record) => !isCleanupRuntimePath(record.slice(3)));

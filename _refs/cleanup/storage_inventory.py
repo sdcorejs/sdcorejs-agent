@@ -107,10 +107,10 @@ def file_category(name, parts, inherited):
         return 'sensitive paths'
     if name == '.git' or '.git' in parts:
         return 'Git metadata'
-    if inherited:
-        return inherited
     if suffix in ('.sqlite', '.sqlite3', '.db', '.mdf') or name in ('pg_version', 'pg_control'):
         return 'databases'
+    if inherited:
+        return inherited
     if suffix in ('.msi', '.msix', '.dmg', '.deb', '.rpm') or name == 'sdkmanifest.xml':
         return 'SDKs and installers'
     if name in MANIFESTS or suffix in ('.js', '.ts', '.tsx', '.py', '.rs', '.go', '.java', '.cs', '.cpp'):
@@ -122,14 +122,20 @@ def file_category(name, parts, inherited):
 
 def directory_category(path, inherited):
     name, parent = path.name.lower(), path.parent.name.lower()
-    if inherited or name == '.git':
-        return inherited or 'Git metadata'
+    if name == '.git':
+        return 'Git metadata'
     if name == 'node_modules':
         return 'installed dependencies'
-    if name in ('deliverables', 'exports', 'handoff', 'delivery'):
-        return 'deliverables'
     if name in ('evidence', 'recovery', 'quarantine', 'backup', 'backups', 'cleanup-runtime'):
         return 'evidence or recovery'
+    if name in ('.codex', '.aws', '.agents'):
+        return 'sensitive paths'
+    if inherited in ('Git metadata', 'evidence or recovery', 'sensitive paths', 'databases'):
+        return inherited
+    if name in ('deliverables', 'exports', 'handoff', 'delivery'):
+        return 'deliverables'
+    if inherited:
+        return inherited
     if name in ('dist', 'build', 'out', 'target'):
         return 'build outputs (verify)'
     if name in ('sdk', 'sdks', 'installers'):
@@ -196,7 +202,8 @@ def inventory(root, excludes=(), budget=0, output=None, as_of=None, tz_name="UTC
     if output: ex.add(os.path.normcase(os.path.abspath(output)))
     cutoff = calendar(as_of, tz_name)
     root_stat = root.lstat()
-    data = {'root': str(root), 'started_at_epoch': time.time(), 'status': 'complete',
+    data = {'schema_version': 1, 'kind': 'storage-audit', 'mutation_authorized': False,
+            'root': str(root), 'started_at_epoch': time.time(), 'status': 'complete',
             'logical_bytes': 0, 'files': 0, 'directories': 0, 'errors': [], 'error_count': 0,
             'excluded': [], 'skipped_reparse_count': 0, 'skipped_reparse_sample': [],
             'records': [], 'projects': [], 'age_groups': [], 'candidates': [], 'dependency_roots': [],
@@ -307,7 +314,7 @@ def inventory(root, excludes=(), budget=0, output=None, as_of=None, tz_name="UTC
                             item_name = '(sensitive entry)' if file_type == 'sensitive paths' else entry.name
                             top_item(top, item_name, st.st_size)
                             top_item(own_top, item_name, st.st_size)
-                            if st.st_size >= 100_000_000:
+                            if st.st_size >= 100_000_000 and file_type != 'sensitive paths':
                                 item = (st.st_size, entry.path, stamp)
                                 if len(large) < 100:
                                     heapq.heappush(large, item)
