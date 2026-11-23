@@ -77,7 +77,7 @@ jobs:
           sha256sum --check SHA256SUMS
           printf 'RELEASE_DIR=%s\n' "$RELEASE_DIR" >> "$GITHUB_ENV"
       # Keep inspected bytes available even if registry setup/publication fails.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sdcorejs-agent-${{ github.ref_name }}
           path: |

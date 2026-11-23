@@ -143,7 +143,7 @@ jobs:
         with:
           node-version: 24.15.0
           package-manager-cache: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - run: npm ci --ignore-scripts
@@ -156,7 +156,7 @@ jobs:
           node scripts/release.mjs build --tag 1.0.0 --preview --out "$RUNNER_TEMP/sdcorejs-preview" > "$RUNNER_TEMP/preview-build.json"
           cd "$RUNNER_TEMP/sdcorejs-preview"
           sha256sum --check SHA256SUMS
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: runner.os == 'Linux'
         with:
           name: sdcorejs-agent-1.0.0-preview
