@@ -220,15 +220,79 @@ function codes(result) {
   return result.blockers.map(({ code }) => code);
 }
 
-function evaluate({ rows = [validationRow()], evidence = passingEvidence(), coverage, current = currentState() } = {}) {
+function evaluate({ rows = [validationRow()], evidence = passingEvidence(), coverage, current = currentState(), decisions = decisionCoverage() } = {}) {
   return evaluateValidationEvidence({
     validation_map: rows,
     coverage_matrix: coverage ?? projectCoverageMatrix(rows),
     test_evidence: evidence,
     current,
-    decision_coverage: decisionCoverage(),
+    decision_coverage: decisions,
   });
 }
+
+test('a passing browser click leaves an approved handoff blocked when the row layout differs', () => {
+  const source_ref = 'design/test-case-list/handoff-manifest.json';
+  const source_hash = `sha256:v1:${'e'.repeat(64)}`;
+  const target = { id: 'test-case-list-expanded', screen: 'Test case list', route: '/test-cases',
+    device: 'desktop', state: 'first test case expanded, sidebar open', content_width_css_px: 960,
+    checkpoints: [{ id: 'expand-icon-placement', expected: 'inline-with-row-content' }, { id: 'detail-expanded', expected: true }] };
+  const row = validationRow({ boundary: { ...validationRow().boundary, kind: 'none' }, authorization_boundary: false, risk: 'layout and interaction',
+    levels: ['browser-e2e'], planned_command: 'npm run test:e2e -- test-case-list',
+    expected_proof: 'Expanding a row reveals its details and preserves the approved inline layout.',
+    ui_handoff: { source_ref, source_hash, targets: [target] } });
+  const evidence = passingEvidence();
+  evidence.runs[0].command = row.planned_command;
+  evidence.runs[0].run_id = 'run-click';
+  evidence.cases[0].evidence_run_id = 'run-click';
+  evidence.cases[0].test_ref = 'e2e/test-case-list.spec.ts#expand reveals details';
+  const current = currentState({ ui_handoff_sources: { [source_ref]: source_hash } });
+  const compare = () => evaluate({ rows: [row], evidence, current, decisions: nonAuthorizationDecisionCoverage() });
+  const missing = compare();
+  assert.equal(missing.ready, false);
+  assert.ok(codes(missing).includes('UI_HANDOFF_NOT_VERIFIED'), missing.blocker_messages.join('\n'));
+  assert.equal(missing.lifecycle[0].state, 'passed');
+
+  const { id, checkpoints, ...sample } = target;
+  const capture = { target_id: id, source_hash, associated_HEAD_or_diff: current.associated_HEAD_or_diff,
+    config_fingerprint: current.config_fingerprint, environment_fingerprint: current.environment_fingerprint, kind: 'running-app', ...sample,
+    evidence_ref: 'artifact://test-case-list/expanded.png', redactions_applied: true,
+    observations: [{ id: 'expand-icon-placement', observed: 'below-row-content' }, { id: 'detail-expanded', observed: true }] };
+  evidence.ui_handoff = [capture];
+  const drift = compare();
+  assert.equal(drift.ready, false);
+  assert.ok(codes(drift).includes('UI_HANDOFF_CHECKPOINT_MISMATCH'), drift.blocker_messages.join('\n'));
+  assert.equal(drift.lifecycle[0].state, 'passed');
+
+  capture.observations[0].observed = checkpoints[0].expected;
+  capture.content_width_css_px = 1440;
+  assert.ok(codes(compare()).includes('UI_HANDOFF_SAMPLE_MISMATCH'));
+  capture.content_width_css_px = sample.content_width_css_px;
+  capture.state = 'all rows collapsed, sidebar open';
+  assert.ok(codes(compare()).includes('UI_HANDOFF_SAMPLE_MISMATCH'));
+  capture.state = sample.state;
+  capture.kind = 'generated-mockup';
+  assert.ok(codes(compare()).includes('UI_HANDOFF_SAMPLE_MISMATCH'));
+  capture.kind = 'running-app';
+  current.ui_handoff_sources[source_ref] = FINGERPRINT;
+  assert.ok(codes(compare()).includes('UI_HANDOFF_STALE'));
+  current.ui_handoff_sources[source_ref] = source_hash;
+  current.config_fingerprint = `sha256:v1:${'f'.repeat(64)}`;
+  evidence.runs[0].config_fingerprint = current.config_fingerprint;
+  const stale = compare();
+  assert.ok(codes(stale).includes('UI_HANDOFF_STALE'));
+  assert.equal(stale.lifecycle[0].state, 'passed');
+  evidence.ui_handoff.push({ ...capture, config_fingerprint: current.config_fingerprint });
+  evidence.ui_handoff.push({ ...evidence.ui_handoff.at(-1), content_width_css_px: 1440 });
+  const handoff = buildPortableHandoff({ contextType: 'test_evidence', consumer: 'sdcorejs-ship', context: evidence });
+  assert.deepEqual(handoff.authoritative.ui_handoff, evidence.ui_handoff);
+  evidence.ui_handoff.push(structuredClone(evidence.ui_handoff.at(-2)));
+  assert.ok(codes(compare()).includes('UI_HANDOFF_NOT_VERIFIED'));
+  evidence.ui_handoff.pop();
+  const passed = compare();
+  assert.equal(passed.ready, true, passed.blocker_messages.join('\n'));
+  row.ui_handoff.source_hash = { toString: null };
+  assert.ok(codes(compare()).includes('UI_HANDOFF_INVALID'));
+});
 
 test('validation map accepts canonical rows and the smallest proving layer', () => {
   assert.deepEqual(VALIDATION_AUTOMATION, ['automated', 'deferred', 'manual', 'not-applicable']);

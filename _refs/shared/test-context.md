@@ -157,6 +157,10 @@ Manual UAT remains distinct from automated pass.
 
 ## Test evidence
 
+For an agreed UI handoff, carry the optional `ui_handoff` comparisons
+through runtime and portable handoffs. Use the fields in the
+[validation map](validation-map.md#agreed-ui-handoff).
+
 ```yaml
 test_evidence:
   schema_version: 2

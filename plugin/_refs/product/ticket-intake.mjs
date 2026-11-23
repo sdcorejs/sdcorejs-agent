@@ -87,6 +87,14 @@ function safeUrl(value, field, { instance = false } = {}) {
   return instance ? url.href.replace(/\/+$/u, '') : url.href;
 }
 
+function ticketRoutePath(route) {
+  try {
+    const url = new URL(route, 'https://route.invalid');
+    if (url.protocol === 'https:' || url.protocol === 'http:') return exact(url.pathname, 'UI route path');
+  } catch { /* The tracker payload never includes raw route input on error. */ }
+  throw new TypeError('UI evidence requires a safe route path');
+}
+
 function root() {
   const value = systemRegistry.artifact_roots.tickets;
   if (typeof value !== 'string' || !/^\.sdcorejs\/[a-z0-9-]+$/u.test(value)) throw new TypeError('registry artifact_roots.tickets is missing or unsafe');
@@ -536,7 +544,20 @@ export function createTicketUpdatePlan(input) {
   if (summary.includes('sdcorejs-delivery:')) throw new TypeError('summary cannot contain delivery markers');
   const marker = `<!-- sdcorejs-delivery:${fingerprint({ identity: identity.value, delivery_id: deliveryId })} -->`;
   const trace = input.validation_evidence.validation_map.map((row) => `${row.requirement_id} / ${row.acceptance_criterion_id}: ${row.case_ids.join(', ')} [${row.evidence_class}]`).join('\n');
-  const payload = { operation: 'comment', body: `${marker}\n${summary}\n\nImplementation evidence: ${result.result}\nSource snapshot: ${input.snapshot.path}\nSource revision: ${input.snapshot.revision}\nCode: ${clean(input.validation_evidence.current.associated_HEAD_or_diff, 'current code')}\n${trace}` };
+  const visualTrace = (result.ui_handoff ?? []).map(sample => {
+    const ref = exact(sample.evidence_ref, 'UI evidence reference');
+    const hosted = /^https?:\/\//iu.test(ref);
+    if (!hosted && /https?:\/\//iu.test(ref)) throw new TypeError('UI evidence link must be a standalone URL');
+    const evidenceRef = hosted ? safeUrl(ref, 'UI evidence reference') : ref;
+    const routePath = ticketRoutePath(sample.route);
+    return clean(
+      `- ${sample.screen} (${routePath}, ${sample.device}, ${sample.state}, ${sample.content_width_css_px} CSS px) — ${sample.result} (${evidenceRef})`,
+      'UI handoff evidence',
+    );
+  }).join('\n');
+  if (visualTrace.includes('sdcorejs-delivery:')) throw new TypeError('UI handoff evidence cannot contain delivery markers');
+  const visualEvidence = visualTrace ? `\n\nUI handoff evidence\n${visualTrace}` : '';
+  const payload = { operation: 'comment', body: `${marker}\n${summary}\n\nImplementation evidence: ${result.result}\nSource snapshot: ${input.snapshot.path}\nSource revision: ${input.snapshot.revision}\nCode: ${clean(input.validation_evidence.current.associated_HEAD_or_diff, 'current code')}\n${trace}${visualEvidence}` };
   const body = {
     schema_version: 1, artifact_kind: 'ticket-delivery', record_type: 'plan', identity: identity.value, delivery_id: deliveryId, marker,
     owner: 'sdcorejs-product', owner_repository_id: input.snapshot.owner_repository_id, change_ref: input.snapshot.change_ref, commit_policy: 'with-change', redaction_applied: true,

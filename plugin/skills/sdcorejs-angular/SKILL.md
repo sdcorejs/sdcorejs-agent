@@ -78,9 +78,9 @@ switches profiles or authorizes inferred screens, seed data, auth, or admin
 features.
 
 For normal feature implementation from PRDs, user stories, or acceptance
-criteria, a design handoff is the preferred UI source of truth. The UI preflight
-searches `.sdcorejs/design/specs/**` and `.sdcorejs/design/wireframes/**`. If no
-matching artifact exists there and the approved execution profile is not
+criteria, resolve any supplied handoff with `../../_refs/shared/ui-handoff-fidelity.md`.
+The UI preflight also searches `.sdcorejs/design/specs/**` and
+`.sdcorejs/design/wireframes/**`. If there is no matching handoff and the approved profile is not
 `technical-prototype`, route the work to `sdcorejs-design` first so layout,
 states, copy, and visual direction are settled before code generation.
 

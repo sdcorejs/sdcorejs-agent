@@ -70,6 +70,72 @@ unique. `partial` or `missing` blocks plan approval.
 - `not-applicable` and `deferred` need a concrete rationale. Manual and deferred
   rows also need an owner and an explicit acknowledgement requirement.
 
+## Agreed UI handoff
+
+Use the optional `ui_handoff` field on the affected row when
+[implementation fidelity](ui-handoff-fidelity.md#implementation-fidelity) establishes
+an agreed handoff. Use a stable bundle reference and hash a manifest of every
+accepted source by path or immutable revision and content digest. Include the
+accepted README, PROMPT and visual files. A changed or missing input requires
+rechecking the bundle. Record target IDs once across the map. Checkpoint values
+are comparable strings, numbers or booleans.
+
+```yaml
+ui_handoff:
+  source_ref: design/case-list/handoff-manifest.json
+  source_hash: <sha256:v1 hash of the agreed sources>
+  targets:
+    - id: test-case-list-expanded
+      screen: Test case list
+      route: /test-cases
+      device: desktop
+      state: first test case expanded, sidebar open
+      content_width_css_px: 960
+      checkpoints:
+        - { id: expand-icon-placement, expected: inline-with-row-content }
+        - { id: detail-expanded, expected: true }
+```
+
+Test publishes one active `test_evidence.ui_handoff` record per checked target.
+After a recapture, replace the active record and retain earlier captures and
+outcomes as local history outside the handoff. Resolve conflicting results
+before selecting current evidence. Evaluation requires one unambiguous record
+for the current code, configuration, environment and approved scope. A
+wrong-width or wrong-state attempt cannot satisfy the target.
+Copy the observed screen, route, device and state. Measure usable content
+width in CSS pixels using the same precision as the recorded reference.
+Keep the actual observation of each checkpoint, including discrepancies.
+Carry only redacted evidence references.
+
+```yaml
+ui_handoff:
+  - target_id: test-case-list-expanded
+    source_hash: <same source hash>
+    associated_HEAD_or_diff: <tested code identity>
+    config_fingerprint: <tested configuration hash>
+    environment_fingerprint: <tested environment hash>
+    kind: running-app
+    screen: Test case list
+    route: /test-cases
+    device: desktop
+    state: first test case expanded, sidebar open
+    content_width_css_px: 960
+    evidence_ref: <sanitized capture or rendered observation>
+    redactions_applied: true
+    observations:
+      - { id: expand-icon-placement, observed: inline-with-row-content }
+      - { id: detail-expanded, observed: true }
+```
+
+Ship independently rechecks the handoff bytes and passes the results in
+`current.ui_handoff_sources`, a map from source reference to verified hash.
+`evaluateValidationEvidence` also evaluates every declared comparison through
+`evaluateUiHandoffEvidence`. A successful behavioral case stays passed even
+when a visual comparison blocks readiness. Existing rows without an agreed
+handoff keep their usual evidence requirements. A bounded change can call the
+same comparison helper directly with its recorded `handoff`, `comparisons`
+and `current` inputs.
+
 ## Lifecycle and evidence
 
 The states are deliberately distinct: planned is not authored, authored is not

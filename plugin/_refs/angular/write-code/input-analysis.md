@@ -193,11 +193,8 @@ UI decomposition:
   - ...
 ```
 
-Treat visual input as an approximate UI specification unless the user explicitly
-asks for pixel-perfect implementation. Extract visible page regions, hierarchy,
-form groups, table columns, actions, responsive assumptions, component states,
-spacing rhythm, alignment, and typography hierarchy. Do not invent hidden
-behavior from an image.
+Apply [implementation fidelity](../../shared/ui-handoff-fidelity.md#implementation-fidelity)
+to resolve source authority and record any agreed visual checks before writing.
 
 For PRD/requirement input, also include:
 
@@ -230,10 +227,9 @@ evidence. If the API artifact is only a mock/specification and no runnable
 backend/configuration is available, plan a mock-first service instead of live API
 integration.
 
-For mixed visual and PRD input, use the PRD as the source of truth for behavior
-and acceptance criteria, the image as the source of truth for visual structure,
-and Core UI/local project conventions as the source of truth for implementation
-primitives. Also include:
+For mixed visual and PRD input, use the shared handoff source-resolution rule
+above. Map the agreed requirements and choose implementation primitives using
+Core UI and local project conventions. Include:
 
 ```text
 Image + PRD mapping:
@@ -274,6 +270,15 @@ Do not create a new primitive button, input, select, dropdown, table, modal,
 drawer, card, tooltip, badge, loading indicator, empty state, or error state
 when Core UI or a local shared component already satisfies the need.
 
+For eligible Core UI projects, inventory all controls within the requested
+screen scope, including templates and child components. Match
+each control's actual job to the installed version's verified registry. For
+example, choose `sd-select` for choosing a value, `sd-segmented` for a filter
+that switches between options, and `sd-button` for an action when those
+components fit and exist in that version. Recheck the full inventory against
+the implementation. For any custom control, record the specific capability
+gap that prevented using Core UI and a shared local component.
+
 Create feature-specific components only when they are domain-specific,
 compose multiple primitives into a feature flow, improve readability or reuse
 inside the feature, and avoid incorrect coupling to unrelated features.
@@ -295,17 +300,17 @@ Match project conventions for:
 
 ## Post-Implementation UI Check
 
-For UI-affecting Angular changes, perform a UI check before final response and
-before claiming the work is complete.
+For UI-affecting Angular changes, perform a UI check before the final response.
+For an agreed handoff, apply the
+[running UI comparison](../../shared/ui-handoff-fidelity.md#running-ui-comparison).
 
-Prefer a real browser/preview check when the target app can run in the current
-environment. If a browser/preview is unavailable, perform a code-level UI
-review and say so honestly. Do not claim visual/browser verification unless it actually happened.
+For other UI changes, prefer a real browser or preview when available. Report
+the scope of a code-level review if the app cannot run.
 
 Check:
 
 - visual consistency: spacing, padding, alignment, typography hierarchy, colors,
-  icons, Core UI control usage, and loading/empty/disabled/error/success states
+  icons, and loading/empty/disabled/error/success states
 - layout behavior: breakpoints, overflow, long text, empty data, form alignment,
   table/list behavior, modal/drawer/card spacing, and action placement
 - Angular behavior: bindings, validation messages, loading/error/empty states,
@@ -313,8 +318,8 @@ Check:
 - accessibility basics: labels, keyboard access, accessible button names, focus
   handling, non-misleading ARIA, and error association when project conventions
   support it
-- source consistency: no duplicated Core UI or project shared primitive, correct
-  feature folder placement, local styling conventions, reused services/components,
+- source consistency: the Core control inventory above, feature folder
+  placement, local styling conventions, reused services/components,
   no unrelated refactors, and conformance with the approved component tree,
   state ownership, provider scope, registration, and public API decisions
 

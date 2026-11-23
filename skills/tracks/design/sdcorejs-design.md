@@ -8,7 +8,7 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; load `_refs/shared/design-handoff.md` for durable handoffs.
+Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`. Load `_refs/shared/design-handoff.md` for durable handoffs. Use `_refs/shared/ui-handoff-fidelity.md` for implementation checkpoints.
 Resolve track/profile and artifact values from `_refs/shared/system-registry.json`, roots from `_refs/shared/artifact-paths.mjs`, approved spec/plan parents with `_refs/shared/approved-artifact.mjs`, and ownership with `_refs/shared/repository-contract.mjs`.
 Emit `artifact_context` for every design artifact and ledger written. Never rebuild a Design path by hand.
 
