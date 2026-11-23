@@ -105,6 +105,7 @@ Always load:
 Conditional contracts:
 
 - `../_refs/shared/validation-map.md` for governed acceptance/coverage mapping.
+- `../_refs/shared/ui-handoff-fidelity.md` for evidence against an agreed UI handoff.
 - `../_refs/shared/convergence-contract.md` when producing governed convergence
   evidence; execute `../_refs/shared/convergence-contract.mjs` validators at that
   gate. Read implementation details only to diagnose a validator issue.

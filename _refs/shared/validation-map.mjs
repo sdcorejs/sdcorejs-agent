@@ -75,7 +75,10 @@ const ROW_KEYS = new Set([
   'module_e2e',
   'module_id',
   'owner_repository_id',
+  'ui_handoff',
 ]);
+const UI_SAMPLE_TEXT_FIELDS = ['screen', 'route', 'device', 'state'];
+const UI_FRESHNESS_FIELDS = ['associated_HEAD_or_diff', 'config_fingerprint', 'environment_fingerprint'];
 const TEST_STATUS_DOMAINS = Object.freeze({
   planning: new Set(['missing', 'planned', 'approved', 'not-applicable']),
   authoring: new Set(['not-requested', 'not-written', 'written', 'updated', 'existing']),
@@ -115,6 +118,94 @@ function clone(value) {
 
 function issue(code, path, message) {
   return { code, path, message };
+}
+
+const oneLine = value => isText(value) && !/[\r\n\0]/u.test(value);
+const observable = value => typeof value === 'boolean' || Number.isFinite(value) || oneLine(value);
+const uiFingerprint = value => typeof value === 'string' && FINGERPRINT.test(value);
+
+function validateUiHandoffDeclaration(handoff, path, seen = new Set()) {
+  if (!isObject(handoff) || !oneLine(handoff.source_ref) || !uiFingerprint(handoff.source_hash) ||
+      !Array.isArray(handoff.targets) || !handoff.targets.length) {
+    return [issue('UI_HANDOFF_INVALID', path, 'requires the agreed source reference, source hash and comparison targets')];
+  }
+  const blockers = [];
+  for (const [index, target] of handoff.targets.entries()) {
+    const targetPath = `${path}.targets[${index}]`;
+    if (!isObject(target) || !oneLine(target.id) ||
+        UI_SAMPLE_TEXT_FIELDS.some(field => !oneLine(target[field])) ||
+        !Number.isFinite(target.content_width_css_px) || target.content_width_css_px <= 0 ||
+        !Array.isArray(target.checkpoints) || !target.checkpoints.length) {
+      blockers.push(issue('UI_HANDOFF_INVALID', targetPath, 'requires a screen, route, device, state, usable content width and checkpoints'));
+      continue;
+    }
+    if (seen.has(target.id)) blockers.push(issue('UI_HANDOFF_INVALID', targetPath, 'duplicates a comparison target id'));
+    seen.add(target.id);
+    const checkpointIds = new Set();
+    for (const point of target.checkpoints) {
+      if (!isObject(point) || !oneLine(point.id) || checkpointIds.has(point.id) || !observable(point.expected)) {
+        blockers.push(issue('UI_HANDOFF_INVALID', targetPath, 'each checkpoint needs a unique id and an observable expected value'));
+        continue;
+      }
+      checkpointIds.add(point.id);
+    }
+  }
+  return blockers;
+}
+
+/** Evaluate recorded comparisons. The caller observes and cites the live UI. */
+export function evaluateUiHandoffEvidence({ handoff, comparisons, current } = {}) {
+  const path = 'validation_evidence.test_evidence.ui_handoff';
+  const blockers = validateUiHandoffDeclaration(handoff, 'ui_handoff');
+  const samples = [];
+  if (blockers.length) return { ready: false, blockers, samples };
+  if (!isObject(current?.ui_handoff_sources) || !Object.hasOwn(current.ui_handoff_sources, handoff.source_ref) ||
+      current.ui_handoff_sources[handoff.source_ref] !== handoff.source_hash ||
+      !oneLine(current.associated_HEAD_or_diff) || !uiFingerprint(current.config_fingerprint) ||
+      !uiFingerprint(current.environment_fingerprint)) {
+    blockers.push(issue('UI_HANDOFF_STALE', path, 'the current handoff, code, configuration and environment must be verified'));
+    return { ready: false, blockers, samples };
+  }
+  for (const target of handoff.targets) {
+    const targetPath = `${path}.${target.id}`;
+    const history = Array.isArray(comparisons) ? comparisons.filter(record => record?.target_id === target.id) : [];
+    const matches = history.filter(record => record.source_hash === handoff.source_hash &&
+      UI_FRESHNESS_FIELDS.every(field => record[field] === current[field]));
+    if (history.length && !matches.length) {
+      blockers.push(issue('UI_HANDOFF_STALE', targetPath, 'comparison must match the approved source, current code, configuration and environment'));
+      continue;
+    }
+    const samplesInScope = matches.filter(record => record.kind === 'running-app' &&
+      UI_SAMPLE_TEXT_FIELDS.every(field => record[field] === target[field]) &&
+      record.content_width_css_px === target.content_width_css_px);
+    if (matches.length && !samplesInScope.length) {
+      blockers.push(issue('UI_HANDOFF_SAMPLE_MISMATCH', targetPath, 'compare the real screen at the agreed route, device, state and usable content width'));
+      continue;
+    }
+    const [record] = samplesInScope;
+    if (samplesInScope.length !== 1 || !oneLine(record.evidence_ref) || record.redactions_applied !== true) {
+      blockers.push(issue('UI_HANDOFF_NOT_VERIFIED', targetPath, 'requires one current, redacted running-app comparison with an evidence reference'));
+      continue;
+    }
+    const before = blockers.length;
+    const points = Array.isArray(record.observations) ? record.observations : [];
+    const observed = new Map(points.filter(point => isObject(point) && oneLine(point.id) && observable(point.observed))
+      .map(point => [point.id, point.observed]));
+    if (observed.size !== target.checkpoints.length || observed.size !== points.length ||
+        target.checkpoints.some(point => !observed.has(point.id))) {
+      blockers.push(issue('UI_HANDOFF_NOT_VERIFIED', targetPath, 'requires one observation for every agreed checkpoint'));
+      continue;
+    }
+    for (const point of target.checkpoints) {
+      if (observed.get(point.id) !== point.expected) {
+        blockers.push(issue('UI_HANDOFF_CHECKPOINT_MISMATCH', `${targetPath}.${point.id}`, 'observed UI differs from the agreed handoff'));
+      }
+    }
+    samples.push({ target_id: target.id, screen: target.screen, route: target.route, device: target.device, state: target.state,
+      content_width_css_px: target.content_width_css_px, evidence_ref: record.evidence_ref,
+      result: blockers.length === before ? 'PASS' : 'FAIL' });
+  }
+  return { ready: blockers.length === 0, blockers, samples };
 }
 
 function issueText(value) {
@@ -360,6 +451,7 @@ export function validateValidationMap(input, { decision_coverage: decisionCovera
   const acceptanceCriteria = records.filter((record) => record.type === 'acceptance-criterion');
   const mappedCriteria = new Set();
   const globalCaseIds = new Set();
+  const uiTargetIds = new Set();
 
   for (const [index, row] of input.entries()) {
     const path = `validation_map[${index}]`;
@@ -371,6 +463,12 @@ export function validateValidationMap(input, { decision_coverage: decisionCovera
     for (const key of Object.keys(row)) {
       if (!ROW_KEYS.has(key)) {
         blockerValues.push(issue('ROW_FIELD_UNKNOWN', `${path}.${key}`, 'is outside the closed validation row schema'));
+      }
+    }
+    if (Object.hasOwn(row, 'ui_handoff')) {
+      blockerValues.push(...validateUiHandoffDeclaration(row.ui_handoff, `${path}.ui_handoff`, uiTargetIds));
+      if (row.status === 'not-applicable' || row.automation === 'not-applicable') {
+        blockerValues.push(issue('UI_HANDOFF_INVALID', `${path}.ui_handoff`, 'an agreed comparison cannot be marked not applicable'));
       }
     }
     if (!REQUIREMENT_ID.test(row.requirement_id ?? '')) {
@@ -737,6 +835,7 @@ export function evaluateValidationEvidence({
     : [];
   let hasDeferred = false;
   let hasManual = false;
+  const uiSamples = [];
   for (const [rowIndex, row] of validationMap.entries()) {
     if (!isObject(row)) continue;
     if (row.automation === 'not-applicable' || row.status === 'not-applicable') continue;
@@ -750,6 +849,11 @@ export function evaluateValidationEvidence({
       if (!currentEvidenceRefs.includes(reference)) {
         blockerValues.push(issue('CURRENT_EVIDENCE_REF_MISSING', `validation_evidence.validation_map[${rowIndex}].evidence_refs`, `current test evidence must emit ${reference}`));
       }
+    }
+    if (row.ui_handoff) {
+      const comparison = evaluateUiHandoffEvidence({ handoff: row.ui_handoff, comparisons: testEvidence.ui_handoff, current });
+      blockerValues.push(...comparison.blockers);
+      uiSamples.push(...comparison.samples);
     }
     if (row.automation === 'manual') {
       hasManual = true;
@@ -847,6 +951,7 @@ export function evaluateValidationEvidence({
     ready,
     result: ready ? (hasManual ? 'MANUAL' : 'PASS') : hasDeferred ? 'DEFERRED' : 'FAIL',
     lifecycle: lifecycleValues,
+    ...(uiSamples.length ? { ui_handoff: uiSamples } : {}),
     blockers,
     blocker_messages: blockers.map(issueText),
   };

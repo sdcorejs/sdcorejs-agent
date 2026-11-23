@@ -491,7 +491,7 @@ after post-gate writes or incomplete artifact closure.
 ## Cross-References
 
 - `../../_refs/shared/finish-gate.md` - consolidated post-code options and final branch-ready ordering.
-- `../../_refs/orchestration/tail/verify-before-done.md` - verification mode and acceptance evidence gate.
+- `../../_refs/orchestration/tail/verify-before-done.md` - verification and agreed UI handoff acceptance gate.
 - `../../_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.
 - `../../_refs/orchestration/tail/ship-context.md` - complete output contract and invariants.
 - `sdcorejs-git` - commit, PR, changelog, release notes, tag/release artifacts.

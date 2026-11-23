@@ -10,6 +10,10 @@
 
 ## Action boundary
 
+For an agreed handoff, use the
+[running UI comparison](ui-handoff-fidelity.md#running-ui-comparison).
+The guide-path constraints below apply to documentation captures.
+
 `ui-evidence-capture` is a direct/internal test action used by documentation,
 ship, or an explicitly requested capture. It reuses the target project's
 existing browser runner and authenticated persona fixtures. It does not install

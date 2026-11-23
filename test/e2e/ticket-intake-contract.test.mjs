@@ -317,6 +317,37 @@ test('E2E is selected by behavior and pure logic requires a documented approved 
   }
 });
 
+test('ticket delivery requires agreed layout evidence and projects it into the exact authorized payload', () => {
+  const evidence = validation();
+  setFullE2E(evidence, 0, ['browser-e2e']);
+  const source_ref = 'design/orders/handoff-manifest.json';
+  const source_hash = `sha256:v1:${'b'.repeat(64)}`;
+  const sample = { screen: 'Orders', route: '/orders?filter=opaque-route#private-fragment',
+    device: 'desktop', state: 'row expanded', content_width_css_px: 960 };
+  evidence.validation_map[0].ui_handoff = { source_ref, source_hash, targets: [{ id: 'orders-expanded',
+    ...sample, checkpoints: [{ id: 'toggle-placement', expected: 'inline' }] }] };
+  evidence.coverage_matrix = structuredClone(evidence.validation_map);
+  evidence.current.ui_handoff_sources = { [source_ref]: source_hash };
+  const evidenceRef = 'https://artifacts.example.com/orders/expanded.png';
+  evidence.test_evidence.ui_handoff = [{ ...sample, target_id: 'orders-expanded', source_hash,
+    associated_HEAD_or_diff: evidence.current.associated_HEAD_or_diff,
+    config_fingerprint: evidence.current.config_fingerprint, environment_fingerprint: evidence.current.environment_fingerprint,
+    kind: 'running-app', redactions_applied: true, evidence_ref: evidenceRef + '?X-Amz-Signature=opaque-fixture',
+    observations: [{ id: 'toggle-placement', observed: 'below' }] }];
+  const input = delivery({ e2e_policy: { behavior: 'ui' }, validation_evidence: evidence });
+  const blocked = createTicketUpdatePlan(input);
+  assert.equal(blocked.plan, null);
+  assert.ok(blocked.blockers.includes('UI_HANDOFF_CHECKPOINT_MISMATCH'));
+
+  evidence.test_evidence.ui_handoff[0].observations[0].observed = 'inline';
+  const result = createTicketUpdatePlan(input);
+  assert.equal(result.status, 'ready');
+  assert.equal(result.remote_sync_status, 'pending');
+  assert.match(result.plan.payload.body, /Orders \(\/orders, desktop, row expanded, 960 CSS px\) — PASS/u);
+  assert.ok(result.plan.payload.body.includes(evidenceRef));
+  assert.doesNotMatch(result.plan.payload.body, /opaque-fixture|X-Amz-Signature|opaque-route|private-fragment/u);
+});
+
 test('an unrelated full E2E criterion cannot satisfy a required UI, API, CLI or job behavior', () => {
   for (const [behavior, level] of [['ui', 'browser-e2e'], ['api', 'api-e2e'], ['cli', 'integration'], ['job', 'integration']]) {
     const evidence = twoCriteriaValidation();

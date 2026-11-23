@@ -11,6 +11,8 @@ const OPTIONAL_SHARED_RUNTIME_FIELDS = Object.freeze({
   cleanup_signals: 'array',
   cleanup: 'nullable-object',
 });
+const optionalRuntimeFields = contextType => contextType === 'test_evidence'
+  ? { ...OPTIONAL_SHARED_RUNTIME_FIELDS, ui_handoff: 'array' } : OPTIONAL_SHARED_RUNTIME_FIELDS;
 
 const CONTEXT_INPUT_ALIASES = deepFreeze({
   requirement_context: {
@@ -1222,10 +1224,9 @@ export function validateRequiredHandoffFields({ contextType, consumer, context }
   const compatibility = normalizeCompatibilityInput(contextType, context);
   const normalizedContext = compatibility.context;
   const errors = [...compatibility.errors];
-  // Shared cleanup state is conditional and remains runtime-only. Omitting it
-  // does not change an existing producer contract; a present malformed value
-  // must not be silently dropped or reset while crossing a workflow boundary.
-  for (const [field, kind] of Object.entries(OPTIONAL_SHARED_RUNTIME_FIELDS)) {
+  // Conditional evidence must survive transfer when present. Existing
+  // producers can continue to omit optional fields.
+  for (const [field, kind] of Object.entries(optionalRuntimeFields(contextType))) {
     if (!Object.hasOwn(normalizedContext, field)) continue;
     const value = normalizedContext[field];
     const valid = kind === 'array' ? Array.isArray(value)
@@ -1342,7 +1343,7 @@ export function buildPortableHandoff({
   }
 
   const requiredFields = CONSUMER_REQUIRED_FIELDS[contextType][consumer];
-  const sharedFields = Object.keys(OPTIONAL_SHARED_RUNTIME_FIELDS)
+  const sharedFields = Object.keys(optionalRuntimeFields(contextType))
     .filter((field) => Object.hasOwn(normalizedContext, field));
   const authoritative = pickPaths(normalizedContext, [...new Set([...requiredFields, ...sharedFields])]);
   const embeddedAuthoritativePath = findForbiddenEmbeddedArtifact(authoritative);

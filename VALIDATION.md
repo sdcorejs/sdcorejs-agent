@@ -1030,3 +1030,20 @@ Measurements for the cleanup change integrated with the current main source. The
 | Repeated-block bytes | 2,319 | 0 |
 | Total measured communication bytes | 577,334 | 762,988 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
+
+## Agreed UI handoff communication measurements
+
+Measurements after splitting the UI fidelity guidance from the durable Design handoff reference. Baseline thresholds remain the same. See [UI handoff verification benchmark](authoring/evals/ui-handoff/README.md) for actual Chromium checks and offline tokenizer counts.
+
+| Measure | Baseline | Current working tree |
+|---|---:|---:|
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,915 |
+| Always-loaded bootstrap words | 2,361 | 2,260 |
+| Aggregate just-in-time scenario bytes | 514,603 | 713,884 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 763,803 |
+| Consumer-required authoritative fields | 361 | 361 preserved |

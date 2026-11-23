@@ -219,7 +219,9 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(angularInputAnalysis, /Requirement mapping/);
   assert.match(angularInputAnalysis, /Image \+ PRD mapping/);
   assert.match(angularInputAnalysis, /Post-Implementation UI Check/);
-  assert.match(angularInputAnalysis, /Do not claim visual\/browser verification unless it actually happened/);
+  assert.match(angularInputAnalysis, /ui-handoff-fidelity\.md#running-ui-comparison/);
+  const handoffFidelity = await readFile(new URL('../../_refs/shared/ui-handoff-fidelity.md', import.meta.url), 'utf8');
+  assert.match(handoffFidelity, /Missing reference material or an unavailable app leaves the\s+affected visual checks unverified/);
 
   const coreDocsFetch = await readFile(new URL('../../_refs/angular/core-docs-fetch.mjs', import.meta.url), 'utf8');
   assert.match(coreDocsFetch, /--require-installed/);

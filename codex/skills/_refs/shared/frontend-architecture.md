@@ -9,6 +9,9 @@ The route/page shell is the minimum screen boundary, not the maximum component
 count. The goal is a cohesive component and service graph: neither a monolithic
 screen nor a directory of arbitrary wrappers.
 
+When planning from visual inputs, apply
+[implementation fidelity](ui-handoff-fidelity.md#implementation-fidelity) before code.
+
 ## Contents
 
 - [When This Gate Is Required](#when-this-gate-is-required)

@@ -137,6 +137,12 @@ reports only when the script exists.
 
 ## Step 4 - Verify By Mode
 
+For an affected screen with an agreed handoff, apply the
+[running UI comparison](../../shared/ui-handoff-fidelity.md#running-ui-comparison).
+Use the approved validation map when available. For a bounded change without
+a map, call `evaluateUiHandoffEvidence` on its recorded checks and report the
+visual result alongside the independent test result.
+
 ### feature-acceptance
 
 1. Extract explicit AC from the selected scope and validate the approved

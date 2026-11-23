@@ -178,6 +178,16 @@ the sanitized content hash alone cannot distinguish it.
 
 ## Behavior-based verification and delivery
 
+For an agreed UI handoff, include the
+[ticket evidence](../shared/ui-handoff-fidelity.md#ticket-evidence) in the authorized
+update. Preserve the current visual comparisons in the canonical validation
+input using evidence references the authorized ticket readers can access.
+The delivery plan includes the verified screen, state and evidence reference.
+Hosted links use the same URL sanitation as ticket attachments. Supply a
+durable link usable without its query string. The comment includes only the
+route path. Record filter and interaction details in the sanitized state.
+Add remaining differences to the sanitized delivery summary.
+
 Pass the actual approved `validation_map`, its exact `coverage_matrix`, current
 v2 `test_evidence`, current HEAD/diff/config/environment fingerprints, and
 `decision_coverage` as `validation_evidence`. Canonical evaluation must accept

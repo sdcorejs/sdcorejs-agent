@@ -18,6 +18,9 @@ repository role, ownership scope, and canonical artifact roots from
 verify approved spec/plan parents through
 `_refs/shared/approved-artifact.mjs`.
 
+For source authority, implementation checkpoints and acceptance, use the
+[UI fidelity reference](ui-handoff-fidelity.md).
+
 ## Canonical Layout
 
 ```text
