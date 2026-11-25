@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, existsSync, writeFileSync, mkdirSync, symlinkSync, rmSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, writeFileSync, mkdirSync, realpathSync, symlinkSync, rmSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -238,7 +238,7 @@ function testTarballInstallation(work, tarball) {
   `);
   const packedCli = path.join(consumer, 'node_modules/sdcorejs-agent/bin/skills.mjs');
   const race = spawnSync(process.execPath, ['--require', editor, packedCli, 'uninstall', ...opencode], {
-    cwd: consumer, env: { ...env, SAVED_FILE: ownedConfig }, encoding: 'utf8',
+    cwd: consumer, env: { ...env, SAVED_FILE: realpathSync(ownedConfig) }, encoding: 'utf8',
   });
   assert.equal(race.status, 1, race.stderr);
   assert.equal(readFileSync(ownedConfig, 'utf8'), 'saved during uninstall');
