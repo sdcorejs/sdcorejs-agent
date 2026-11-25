@@ -2,6 +2,7 @@
 
 Load only the references required by the selected task:
 
+- Any executor editing production source: first apply `_refs/simplify/before-writing-code.md`.
 - Non-trivial execution progress: `_refs/shared/tasklist.md`. Keep live state in
   the runtime; never create a mutable session checkpoint.
 - Response profiles, user projections, runtime-context handoffs, or related

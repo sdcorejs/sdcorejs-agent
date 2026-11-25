@@ -129,8 +129,7 @@ export function buildRelease({ root = ROOT, tag, out, preview = false }) {
   mkdirSync(portable); mkdirSync(claude);
   copyInputs(root, skills, 'codex', portable, sourceModes);
   copyInputs(root, claudeFiles, 'plugin', claude, sourceModes);
-  // The source .cmd checkout uses CRLF, but this polyglot wrapper also executes
-  // as a POSIX shell script. LF works for both shell and cmd.exe consumers.
+  // Keep the archive's polyglot launcher usable even from a CRLF export.
   const wrapper = path.join(claude, 'hooks/run-hook.cmd');
   writeFileSync(wrapper, readFileSync(wrapper, 'utf8').replaceAll('\r\n', '\n'));
   for (const directory of [portable, claude]) {
@@ -186,7 +185,7 @@ export function buildRelease({ root = ROOT, tag, out, preview = false }) {
   const ciRun = process.env.GITHUB_RUN_ID
     ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
     : 'not run by this local build';
-  writeFileSync(path.join(out, 'release-notes.md'), `SDCoreJS Agent ${version}\n\nSource commit: ${sourceCommit}\n\n25 skills, an explicit npm installer for Codex and Claude Code, and separate OpenAI and Claude Code plugins. All archives use version ${version}.\n\nCI: ${ciRun}\n\nChecksums and source file hashes are in the attached manifests. OpenAI review/publication and live-host activation are separate; they have not been performed by this workflow. Full E2E/live-agent evidence is not implied by CI; see docs/RELEASE_PROCESS.md and CHANGELOG.md at this tag.\n`, { flag: 'wx' });
+  writeFileSync(path.join(out, 'release-notes.md'), `SDCoreJS Agent ${version}\n\nSource commit: ${sourceCommit}\n\n25 skills, an explicit npm installer for Codex, Claude Code and OpenCode, and separate OpenAI and Claude Code plugins. All archives use version ${version}.\n\nCI: ${ciRun}\n\nChecksums and source file hashes are in the attached manifests. OpenAI review/publication and live-host activation are separate; they have not been performed by this workflow. Full E2E/live-agent evidence is not implied by CI; see docs/RELEASE_PROCESS.md and CHANGELOG.md at this tag.\n`, { flag: 'wx' });
   const checksums = {
     ...artifacts,
     'release-manifest.json': digest(path.join(out, 'release-manifest.json')),

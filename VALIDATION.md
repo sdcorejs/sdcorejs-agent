@@ -1047,3 +1047,20 @@ Measurements after splitting the UI fidelity guidance from the durable Design ha
 | Repeated-block bytes | 2,319 | 0 |
 | Total measured communication bytes | 577,334 | 763,803 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
+
+## Before-code simplification guidance
+
+The production fast fix, approved implementation and source repair scenarios load the guidance on demand. These are deterministic text measurements.
+
+| Measure | Baseline | Current working tree |
+|---|---:|---:|
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,925 |
+| Always-loaded bootstrap words | 2,361 | 2,252 |
+| Aggregate just-in-time scenario bytes | 514,603 | 721,923 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 771,852 |
+| Consumer-required authoritative fields | 361 | 361 preserved |

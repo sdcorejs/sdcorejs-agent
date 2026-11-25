@@ -7,6 +7,23 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+## 1.1.0 — 2026-11-25
+
+- Simplify guides ordinary coding before the first production edit. Trace callers,
+  reuse compatible behavior at its existing owner, and preserve and rerun existing
+  tests. Scoped refactors bind verification to the edited files and to the
+  assertions or caller probes that actually ran.
+- Install all 25 skills for OpenCode at project or user scope with the npm CLI.
+  The installer registers the before-code instructions alongside existing project
+  rules and records its own files for removal.
+- Cleanup reports workspace and project storage by age, contents and scan
+  coverage. Consumers can approve an exact batch, retain changed or protected
+  items, and reconcile the results with measured free space.
+- Approved UI handoffs now carry layout and interaction checks through design,
+  Angular implementation, visual verification and delivery evidence.
+
+## 1.0.0 — 2026-11-17
+
 - Publish the npm skill assets as the public package `sdcorejs-agent`.
   Add an explicit Codex and Claude Code native installer with dry-run and removal.
   Derive npm and OpenAI/Claude artifact versions from bare SemVer Git tags:

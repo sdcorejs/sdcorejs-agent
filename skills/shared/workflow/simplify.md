@@ -1,22 +1,49 @@
 ---
 name: sdcorejs-simplify
 description: >-
-  Behavior-preserving code simplification utility for recently changed or
-  explicitly scoped executable source code. Use to improve clarity,
-  consistency, and maintainability after a green baseline without changing
-  observable behavior, public contracts, strings, prompts, configuration, or
-  protected framework boundaries. Broad refactors return to planning; bugs,
-  findings, tests, documentation, and performance work retain their dedicated
-  owners. Runtime-localized.
+  Before editing production code, trace callers and tests. Keep and rerun existing
+  tests. Reuse compatible behavior in the narrowest owner. Use for scoped refactors.
 required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose
 ---
 
 # Simplify
 
-Read `_refs/shared/session-authority.md` before classification or any approval/finish
-transition. Reuse scoped session authority; preserve unresolved risk decisions.
+## Before writing production code
+
+Before the first edit to authorized production source, including a small fix,
+inspect the entry point, implementations, callers and tests. Compare boundary
+inputs, errors and side effects. Reuse compatible behavior and keep distinct
+contracts with their owners. Add cases alongside existing regression assertions
+and inspect the test diff for removals. Run old and new cases through the public
+caller and read the named passes and exit status before reporting success.
+For a requested read-only runtime check, run the relevant callers and report
+their actual outputs. Answer ordinary questions directly.
+
+Compare alternatives using the [before-code guidance](../../../_refs/simplify/before-writing-code.md).
+A standalone skill directory supports ordinary coding. The scoped refactor
+workflow below uses the full pack's shared protocols and verifier.
+
+## Example decision
+
+A route reads one selected tag. An export needs every selected tag in order.
+Run this example as a Node ES module to see what sharing the route's lookup
+would do to the export.
+
+```js
+import assert from 'node:assert/strict';
+
+const query = new URLSearchParams('tag=red&tag=blue');
+assert.equal(query.get('tag'), 'red');
+assert.deepEqual(query.getAll('tag'), ['red', 'blue']);
+```
+
+Both callers can use the platform parser directly. Each keeps the lookup that
+returns the shape it promises.
 
 ## Shared protocols
+
+Read `_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
 
 1. Read `_refs/shared/runtime-protocols.md`, then
    `_refs/shared/tasklist.md`; keep progress runtime-only.
@@ -136,14 +163,25 @@ simplified.
 
 ## Step 4 - Establish baseline verification
 
-Apply actions require current baseline verification:
+Use the [scoped evidence procedure](../../../_refs/simplify/verification.md#capturing-evidence-for-a-scoped-write) to bind each test run to the code it exercised.
+
+### Prerequisites for a scoped refactor
+
+Start with the authorized source scope, its current revision and a runnable
+check for the behavior that scope must preserve.
 
 1. Use the committed package manager and existing scripts; invent nothing.
-2. Run the narrowest focused tests/typecheck/lint/build that covers the scope.
-3. Record exact command, cwd/scope, exit code, and result.
+2. Exercise the selected caller through a focused test or direct probe.
+3. Record the exact command, cwd/scope, exit code and observed assertion result.
 4. Reuse `test_context` evidence only when it covers the same current diff and
    selected hunks and is not stale.
 
+### Troubleshooting
+
+If a test run collects zero tests, check the working directory and filter
+against the project's test script. If a compiler or assertion fails, record
+the failing case and exit status. Compare with the same command on the
+baseline to distinguish an existing failure from a regression in the edit.
 If no runnable behavior oracle exists, downgrade to analyze-only. Write mode
 requires a separate explicit override after warning and must report
 `behavior_verification: limited`; never call it verified behavior preservation.
@@ -190,7 +228,7 @@ When invoked from the finish gate:
 4. pass `simplify_context` to review and the remaining tail;
 5. never auto-run a second simplification after repair-loop.
 
-## Hard boundaries
+## Limitations and hard boundaries
 
 - Never change observable behavior to make code shorter.
 - Never change tests, fixtures, snapshots, prompts, docs, config, contracts, or

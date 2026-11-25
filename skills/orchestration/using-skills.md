@@ -11,10 +11,9 @@ transition. Reuse scoped session authority; preserve unresolved risk decisions.
 
 ## Bootstrap
 
-Match descriptions before reading skill bodies. Load
-`_refs/shared/runtime-protocols.md`, then only task-relevant references.
-Current instructions/evidence override stored context. Resolve route semantics
-from `_refs/shared/system-registry.json`; read needed fields.
+Match descriptions before reading bodies. Load `_refs/shared/runtime-protocols.md`
+and relevant fields of `_refs/shared/system-registry.json`. Current evidence
+overrides stored context.
 
 Priority when several skills match:
 
@@ -32,6 +31,8 @@ Priority when several skills match:
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
 6. Open-ended, ambiguous, or under-specified change:
    `sdcorejs-brainstorming`.
+
+Before coding, including fast fixes, apply `_refs/simplify/before-writing-code.md`.
 
 ## Entry Gate
 

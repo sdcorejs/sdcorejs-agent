@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, existsSync, writeFileSync, mkdirSync, symlinkSync, rmSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, writeFileSync, mkdirSync, realpathSync, symlinkSync, rmSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -200,6 +200,64 @@ function testTarballInstallation(work, tarball) {
     }
     execFileSync(process.execPath, [path.join(folder, '_refs/design/visual-library/select-patterns.mjs'), 'business-app', 'manage-records']);
   }
+  const opencode = ['--agent', 'opencode', '--scope', 'project'];
+  const native = path.join(consumer, '.opencode');
+  const ownedConfig = path.join(native, 'opencode.jsonc');
+  const customConfig = path.join(native, 'opencode.json');
+  const customText = '{ "instructions": ["project-rules.md"] }';
+  const rootConfig = path.join(consumer, 'opencode.jsonc');
+  const rootText = ['{', '  // Team settings', '  "instructions": ["team.md"],', '}', ''].join('\n');
+  writeFileSync(rootConfig, rootText);
+  check(0, 'install', ...opencode, '--dry-run');
+  assert.equal(existsSync(native), false);
+  mkdirSync(native);
+  writeFileSync(customConfig, customText);
+  check(0, 'install', ...opencode);
+  const originalConfig = readFileSync(ownedConfig, 'utf8');
+  const { $schema, instructions: [rule] } = JSON.parse(originalConfig);
+  // OpenCode inserts this key on first launch if it is missing, changing
+  // the owned file and breaking idempotent install and removal.
+  assert.equal($schema, 'https://opencode.ai/config.json');
+  assert.equal(rule, '.opencode/skills/_refs/simplify/before-writing-code.md');
+  assert.match(readFileSync(path.join(consumer, rule), 'utf8'), /Trace the requested behavior/);
+  assert.match(check(0, 'install', ...opencode), /already installed/);
+  writeFileSync(ownedConfig, '{"instructions":["my-rule.md"]}');
+  check(1, 'uninstall', ...opencode);
+  assert.ok(existsSync(path.join(consumer, rule)));
+  writeFileSync(ownedConfig, originalConfig);
+  // Emulate an editor saving at the move boundary, after uninstall's inventory.
+  const editor = path.join(work, 'edit-during-uninstall.cjs');
+  writeFileSync(editor, `
+    const fs = require('node:fs');
+    const move = fs.renameSync;
+    fs.renameSync = (from, to) => {
+      if (from === process.env.SAVED_FILE) fs.writeFileSync(from, 'saved during uninstall');
+      return move(from, to);
+    };
+    require('node:module').syncBuiltinESMExports();
+  `);
+  const packedCli = path.join(consumer, 'node_modules/sdcorejs-agent/bin/skills.mjs');
+  const race = spawnSync(process.execPath, ['--require', editor, packedCli, 'uninstall', ...opencode], {
+    cwd: consumer, env: { ...env, SAVED_FILE: realpathSync(ownedConfig) }, encoding: 'utf8',
+  });
+  assert.equal(race.status, 1, race.stderr);
+  assert.equal(readFileSync(ownedConfig, 'utf8'), 'saved during uninstall');
+  assert.ok(existsSync(path.join(consumer, rule)));
+  writeFileSync(ownedConfig, originalConfig);
+  check(0, 'uninstall', ...opencode);
+  assert.equal(existsSync(ownedConfig), false);
+  assert.equal(readFileSync(customConfig, 'utf8'), customText);
+  assert.equal(readFileSync(rootConfig, 'utf8'), rootText);
+  writeFileSync(ownedConfig, '{}');
+  check(1, 'install', ...opencode);
+  assert.equal(existsSync(path.join(consumer, rule)), false);
+
+  const globalOpenCode = ['--agent', 'opencode', '--scope', 'user'];
+  check(0, 'install', ...globalOpenCode);
+  const globalConfig = path.join(home, '.opencode/opencode.json');
+  assert.deepEqual(JSON.parse(readFileSync(globalConfig, 'utf8')).instructions, ['~/.opencode/skills/_refs/simplify/before-writing-code.md']);
+  check(0, 'uninstall', ...globalOpenCode);
+  assert.equal(existsSync(globalConfig), false);
   const changed = path.join(target, 'sdcorejs-design/SKILL.md');
   const original = readFileSync(changed);
   writeFileSync(changed, 'local edits');

@@ -15,7 +15,8 @@ npx sdcorejs-agent@VERSION install --agent codex --scope project --dry-run
 npx sdcorejs-agent@VERSION install --agent codex --scope project
 ```
 
-Use `npx.cmd` on Windows, `--agent claude-code` for Claude Code, or
+Use `npx.cmd` on Windows, `--agent opencode` for OpenCode with automatic
+before-code instructions, `--agent claude-code` for Claude Code, or
 `--scope user` for personal installation. To remove the pack, run
 `uninstall` in place of `install` with the same version, agent and scope.
 The CLI refuses collisions and preserves locally edited files. An npm dependency

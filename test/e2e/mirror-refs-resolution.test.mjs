@@ -3,7 +3,8 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { parse as parseYaml } from 'yaml';
 
 // Generated plugin/ and .claude/ skill mirrors must resolve every `_refs/` path
 // from the SKILL.md directory, and the session-start bootstrap must carry
@@ -147,4 +148,73 @@ test('review risk and bootstrap runtime resources resolve in generated distribut
       assert.equal(existsSync(path.join(ROOT, base, 'shared', name)), true, base + '/' + name);
     }
   }
+});
+
+test('startup and resumed coding sessions receive a usable decision before opening a skill', () => {
+  const { hooks } = JSON.parse(read('plugin/hooks/hooks.json'));
+  const matcher = new RegExp('^(?:' + hooks.SessionStart[0].matcher + ')$');
+  for (const event of ['startup', 'resume', 'clear', 'compact']) assert.ok(matcher.test(event), event);
+  const pluginRoot = path.join(ROOT, 'plugin');
+  const command = hooks.SessionStart[0].hooks[0].command;
+  const windows = process.platform === 'win32';
+  const shell = windows ? process.env.ComSpec || 'cmd.exe' : 'sh';
+  const args = windows
+    ? ['/d', '/c', command.replaceAll('${CLAUDE_PLUGIN_ROOT}', '%CLAUDE_PLUGIN_ROOT%')]
+    : ['-c', command];
+  const env = { ...process.env, CLAUDE_PLUGIN_ROOT: pluginRoot };
+  delete env.CURSOR_PLUGIN_ROOT;
+  delete env.COPILOT_CLI;
+  const result = spawnSync(shell, args, { cwd: ROOT, env, encoding: 'utf8', windowsHide: true });
+  assert.equal(result.status, 0, result.stderr);
+  const injected = JSON.parse(result.stdout).hookSpecificOutput.additionalContext;
+  const native = read('codex/skills/sdcorejs-simplify/SKILL.md');
+  const catalogEntry = native.split('\n').find(line => line.startsWith('description:'));
+  for (const context of [injected, catalogEntry]) {
+    assert.match(context, /before editing production code, trace callers and tests/i);
+    assert.match(context, /reuse compatible behavior/i);
+    assert.match(context, /narrowest owner/i);
+    assert.match(context, /keep and rerun existing\s+tests/i);
+  }
+  const ordinary = native.split('## Before writing production code')[1].split('\n## ')[0];
+  assert.match(ordinary, /before the first edit/i);
+  assert.match(ordinary, /read-only/i);
+  assert.doesNotMatch(ordinary, /\]\(\.\.\//u, 'ordinary coding decisions work when only this skill is staged');
+});
+
+test('a standalone Simplify skill carries its ordinary guide; full-pack protocols resolve from shared refs', async () => {
+  const { name, email } = JSON.parse(read('plugin/.claude-plugin/plugin.json')).author;
+  for (const root of [...CLAUDE_LAYOUTS, 'codex/skills']) {
+    const skill = path.join(ROOT, root, 'sdcorejs-simplify');
+    const entry = readFileSync(path.join(skill, 'SKILL.md'), 'utf8');
+    const { metadata } = parseYaml(entry.split('---')[1]);
+    assert.equal(metadata?.author, `${name} <${email}>`);
+    assert.equal(metadata.tags, 'refactoring');
+    const links = [...entry.matchAll(/\]\(([^)#]+)(?:#[^)]*)?\)/g)].map(match => match[1]);
+    for (const link of links) assert.ok(existsSync(path.resolve(skill, link)), link);
+    assert.ok(links.includes('references/simplify/before-writing-code.md'));
+    const contract = links.find(link => link.endsWith('/simplify-contract.mjs'));
+    assert.match(contract, /^(?:\.\.\/)+_refs\/simplify\//);
+    await import(pathToFileURL(path.resolve(skill, contract)).href);
+    assert.equal(existsSync(path.join(skill, 'references/simplify/simplify-contract.mjs')), false);
+
+    const ordinaryRoot = path.join(skill, 'references');
+    const pending = new Set([path.join(ordinaryRoot, 'simplify/before-writing-code.md')]);
+    for (const file of pending) {
+      assert.ok(file.startsWith(ordinaryRoot + path.sep), file);
+      const guide = readFileSync(file, 'utf8');
+      for (const [, link] of guide.matchAll(/\]\((?![a-z]+:)([^)#\s]+)(?:#[^)]*)?\)/gi)) {
+        pending.add(path.resolve(path.dirname(file), link));
+      }
+    }
+  }
+});
+
+test('the installed Simplify example demonstrates why two callers need different query contracts', () => {
+  const guide = read('codex/skills/sdcorejs-simplify/SKILL.md');
+  const example = guide.match(/## Example[^\n]*\n[\s\S]*?^```js\n([\s\S]+?)^```/mu)?.[1];
+  assert.ok(example, 'A standalone consumer can run the example with Node.');
+  const run = code => spawnSync(process.execPath, ['--input-type=module', '--eval', code], { encoding: 'utf8' });
+  const actual = run(example);
+  assert.equal(actual.status, 0, actual.stderr);
+  assert.notEqual(run(example.replace('.getAll(', '.get(')).status, 0, 'Losing repeated values must fail the example.');
 });

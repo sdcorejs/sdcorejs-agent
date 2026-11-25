@@ -11,8 +11,14 @@ const OPTIONAL_SHARED_RUNTIME_FIELDS = Object.freeze({
   cleanup_signals: 'array',
   cleanup: 'nullable-object',
 });
-const optionalRuntimeFields = contextType => contextType === 'test_evidence'
-  ? { ...OPTIONAL_SHARED_RUNTIME_FIELDS, ui_handoff: 'array' } : OPTIONAL_SHARED_RUNTIME_FIELDS;
+function optionalRuntimeFields(contextType) {
+  if (contextType === 'test_evidence') return { ...OPTIONAL_SHARED_RUNTIME_FIELDS, ui_handoff: 'array' };
+  if (contextType === 'simplify_context') return {
+    ...OPTIONAL_SHARED_RUNTIME_FIELDS, source_revision: 'string', final_diff_scope_hash: 'string',
+    behavior_evidence: 'nullable-object',
+  };
+  return OPTIONAL_SHARED_RUNTIME_FIELDS;
+}
 
 const CONTEXT_INPUT_ALIASES = deepFreeze({
   requirement_context: {
@@ -1229,7 +1235,8 @@ export function validateRequiredHandoffFields({ contextType, consumer, context }
   for (const [field, kind] of Object.entries(optionalRuntimeFields(contextType))) {
     if (!Object.hasOwn(normalizedContext, field)) continue;
     const value = normalizedContext[field];
-    const valid = kind === 'array' ? Array.isArray(value)
+    const valid = kind === 'string' ? isNonEmptyString(value)
+      : kind === 'array' ? Array.isArray(value)
       : kind === 'nullable-object' ? value === null || isPlainObject(value)
         : isPlainObject(value);
     if (!valid) errors.push(`${contextType} invalid optional runtime field: ${field} must be ${kind}`);
@@ -2464,6 +2471,7 @@ function inferFreshness(context) {
     'associated_HEAD_or_diff',
     'change.associated_HEAD_or_diff',
     'working_tree_preflight.current_HEAD',
+    'final_diff_scope_hash',
     'baseline.diff_scope_hash',
     'baseline.HEAD',
     'current_HEAD',

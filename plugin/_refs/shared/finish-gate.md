@@ -42,7 +42,7 @@ session instructions or turn optional simplify/docs choices into blockers.
 - The documentation gate captures `user_guide`, `technical_doc`, and whether a
   missing corresponding doc file may be created. `skip` is valid for user-guide
   and technical-doc, but skipping does not skip automatic code-documentation.
-- Behavior-preserving simplification is a visible opt-in choice. Never silently
+- A separate post-test refactor is optional. Behavior-preserving simplification is a visible opt-in choice. Never silently
   choose or run it. `Analyze` is read-only. `Apply` must invoke
   `sdcorejs-simplify` with current test evidence and the bounded changed-source
   scope.

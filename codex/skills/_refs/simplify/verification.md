@@ -16,8 +16,8 @@
 Every apply action requires a current **green baseline**:
 
 1. Discover the committed package manager, workspace, and existing scripts.
-2. Select focused tests, typecheck, lint, build, or project validation that
-   covers the eligible files and hunks.
+2. Select an executed check with an observable behavioral assertion covering
+   the changed paths. Use lint, typecheck and build as supplementary evidence.
 3. Run the narrowest sufficient commands before editing.
 4. Record each exact command, cwd/scope, exit code, and result.
 5. Separate pre-existing failures from failures introduced by the run.
@@ -30,13 +30,28 @@ If no suitable runnable oracle exists, default to analyze-only. Apply requires
 a separate explicit override after warning and must record
 `behavior_verification: limited`.
 
+### Capturing evidence for a scoped write
+
+The executor freezes the owner root, selected paths and authorized ranges before its first write. Use owner-relative paths and the execution contract's path normalization. Check actual changed files against the selection and the approved step's allowed and prohibited paths, including untracked files. For a current-diff selection compare the task base to the pre-Simplify worktree and take the **new side** with `simplifyPatchHunks(path, taskPatch, 'new')`. A task deletion leaves a gap and a task addition leaves editable lines. Freeze only the authorized ranges in `scope.files[].allowed_hunks`. For a named function, select its lines in that same pre-Simplify tree. An explicitly authorized whole file may omit ranges.
+
+1. Save the original bytes of every selected regular source file. Capture absence for an authorized new or deleted file. Resolve the owner root and exclude symlinks, non-regular files and inaccessible paths before reading. Treat only a confirmed missing file as absent.
+2. Use [scope-evidence.mjs](scope-evidence.mjs) to compute `simplifyScopeHash([{path, content}, ...])` on the entire selection, using raw file bytes or `null` for absence. It hashes the sorted normalized paths and their individual SHA-256 digests. Capture each phase's owner HEAD and digest independently from the scoped test receipt. Bracket the test execution with both identities and discard a run if either changes during it.
+3. For each behavior receipt supply `kind: behavior`, the executed `command`, selected stable case ID in `assertion`, `exit_code: 0`, `result: PASSED`, `covered_paths`, `source_revision` and `diff_scope_hash`. Run the same assertion and command before and after. Match each phase's revision and digest to the independently captured baseline or final snapshot. Record one observation from each run.
+   - For a test runner, read the report. Set `executed_tests` to the number of tests that ran. Copy the selected ID into `passed_assertions` only if the reporter shows that case passed. Use a fully qualified ID for ambiguous names. Omit skipped, pending and unrelated cases. Zero matches or missing results require a fresh run.
+   - For a direct caller probe, record `caller_probe: {assertion, expected, observed}`. Freeze the expected value across both runs. Read the case ID and observed value from the probe after it invokes the public entry point. Compare the expected and observed values as text, using the same serialization for structured results. A direct probe supplies its own observation and omits the test-runner fields.
+4. For each pass, record actual `changed_paths` and `hunks` as `{path, start, count}` from the complete diff, including unsuccessful writes before rollback. Preserve the pre-pass and candidate bytes. Compare individual file snapshots with Git's `diff --no-index --no-ext-diff --no-textconv --no-color --unified=0 --inter-hunk-context=0` and feed the complete output for that file to `simplifyPatchHunks(path, patch)`. Git exit code 1 means the files differ. A partial, binary or metadata-only change lacks text-hunk evidence.
+5. Coordinates use original lines, starting at 1. An insertion has count 0 and names the gap after its anchor line (0 at file start). An allowed positive range includes insertions anchored to its lines. Keep the operation's original coordinates across passes. If the first pass shifts line numbers, map the second pass's actual edit back using the saved snapshots. Ambiguous ownership requires a narrower scope. Inspect both pass transitions, even when the final diff cancels an edit.
+6. Count distinct normalized files per pass and across all passes, and distinct original ranges across all passes. Apply the [execution limits](scope-and-invariants.md#execution-limits) and return to scope selection when exceeded. After rolling back the entire operation, verify the restored baseline digest. An empty pass list finishes unchanged.
+
+The evaluator checks these executor observations. File names, an estimated hunk count or a digest copied from the receipt do not establish what ran. Keep source bytes, diffs and logs local. The runtime handoff carries identities, ranges and test results.
+
 ## Evidence reuse
 
 Reuse current `test_context` or `test_evidence` only when it:
 
 - belongs to the same change and current diff/hash;
 - covers the selected files and hunks;
-- records a command that actually ran and passed;
+- identifies the selected passing case or the matching result from a direct caller probe;
 - is not stale after a later write.
 
 Authored tests without execution are not a baseline. A prior review or ship
@@ -121,6 +136,7 @@ simplify_context:
     owner_module_id: <module id or null>
     execution_host_repository_id: <stable repository id>
   source_revision: <owner repository revision>
+  final_diff_scope_hash: <SHA-256 over the same selection at finalization>
   approved_plan_step:
     step_id: <id or null>
     owner_repository_id: <stable repository id or null>
@@ -140,7 +156,8 @@ simplify_context:
     branch: <branch>
     HEAD: <sha>
     status_snapshot: <summary>
-    diff_scope_hash: <hash or deterministic summary>
+    diff_scope_hash: <SHA-256 over selected paths and bytes>
+    result: PASSED | FAILED
     package_manager: <manager>
     commands:
       - command: <exact command>
@@ -150,6 +167,7 @@ simplify_context:
 
   scope:
     requested: []
+    files: [] # path, assessed surfaces and authorized allowed_hunks when bounded
     eligible_files: []
     eligible_hunks: []
     excluded:
@@ -183,6 +201,8 @@ simplify_context:
 
   passes:
     - pass: 1
+      changed_paths: []
+      hunks: [] # observed original-side path/start/count
       files: []
       rationale: []
       changes: []
@@ -197,6 +217,10 @@ simplify_context:
     protected_content_changes: none
     public_contract_changes: none
     dependency_changes: none
+
+  behavior_evidence:
+    before: <behavior receipt bound to the baseline>
+    after: <behavior receipt bound to the final snapshot>
 
   verification:
     before: []
@@ -248,7 +272,8 @@ and raw logs.
 
 Use:
 
-- "covered by current focused tests" when the exact commands passed;
+- "covered by current focused tests" when the selected case passed before and after;
+- the entry point, input and observed result for a direct caller probe;
 - "limited" when an explicit override lacks a complete behavior oracle;
 - "not verified" when required commands did not run.
 

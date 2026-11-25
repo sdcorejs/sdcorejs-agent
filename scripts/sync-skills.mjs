@@ -179,11 +179,7 @@ async function mirrorRefs(targets) {
 
 async function mirrorClaudeSkill(skill, roots, adapter) {
   const generated = toClaudeSkill(skill, adapter);
-  for (const root of roots) {
-    const destDir = path.join(root, skill.name);
-    await ensureDir(destDir);
-    await writeFile(path.join(destDir, 'SKILL.md'), generated, 'utf8');
-  }
+  for (const root of roots) await writeSkill(root, skill.name, generated);
 }
 
 function toClaudeSkill(skill, adapter) {
@@ -216,9 +212,38 @@ function rewriteClaudeRefs(text) {
 }
 
 async function mirrorCodexSkill(sourceText, name, root) {
-  const destDir = path.join(root, name);
-  await ensureDir(destDir);
-  await writeFile(path.join(destDir, 'SKILL.md'), toCodexSkill(sourceText), 'utf8');
+  await writeSkill(root, name, toCodexSkill(sourceText));
+}
+
+async function writeSkill(root, name, text) {
+  const dir = path.join(root, name);
+  await ensureDir(dir);
+  if (name === 'sdcorejs-simplify') {
+    const manifest = JSON.parse(await readFile(path.join(repoRoot, 'plugin/.claude-plugin/plugin.json'), 'utf8'));
+    text = text.replace('\n---\n', `\nmetadata:\n  author: ${JSON.stringify(`${manifest.author.name} <${manifest.author.email}>`)}\n  tags: refactoring\n---\n`);
+    const guide = 'simplify/before-writing-code.md';
+    text = text.replace(/(?:\.\.\/)+_refs\/simplify\/before-writing-code\.md/g, `references/${guide}`);
+    await copySimplifyGuides(path.join(dir, 'references'), new Set([guide]));
+  }
+  await writeFile(path.join(dir, 'SKILL.md'), text, 'utf8');
+}
+
+// A single skill directory supports ordinary coding. Dedicated refactors use
+// the executable contracts from the full pack's shared reference directory.
+async function copySimplifyGuides(destination, files) {
+  await rm(destination, { recursive: true, force: true });
+  for (const file of files) {
+    const text = await readFile(path.join(refsRoot, file), 'utf8');
+    const output = path.join(destination, file);
+    await ensureDir(path.dirname(output));
+    await writeFile(output, text, 'utf8');
+    const links = /\]\((?![a-z]+:)([^)#\s]+)(?:#[^)]*)?\)/gi;
+    for (const [, link] of text.matchAll(links)) {
+      const target = path.posix.join(path.posix.dirname(file), link);
+      if (target.startsWith('../') || path.isAbsolute(link)) throw new Error(`Outside shared resources: ${file} -> ${link}`);
+      files.add(target);
+    }
+  }
 }
 
 function toCodexSkill(sourceText) {

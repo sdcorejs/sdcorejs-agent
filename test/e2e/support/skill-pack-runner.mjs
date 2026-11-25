@@ -1,5 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { parse as parseYaml } from 'yaml';
 import { fileURLToPath } from 'node:url';
 import { assessReadOnlyOpportunity } from '../../../_refs/orchestration/parallel-protocol.mjs';
 
@@ -563,59 +564,22 @@ function parseFrontmatter(text) {
   const end = normalized.indexOf('\n---', 3);
   if (end === -1) return { __errors: ["missing closing '---' frontmatter delimiter"] };
 
-  const block = normalized.slice(3, end).trim();
-  const result = { __keys: [], __errors: [] };
-  const lines = block.split(/\r?\n/);
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index];
-    if (!line.trim()) continue;
-    const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)\s*$/);
-    if (!match) {
-      result.__errors.push(`unsupported frontmatter line ${index + 1}: ${line}`);
-      continue;
+  try {
+    const fields = parseYaml(normalized.slice(3, end));
+    if (!fields || typeof fields !== 'object' || Array.isArray(fields)) {
+      return { __errors: ['frontmatter must be a mapping'] };
     }
-
-    const key = match[1];
-    if (Object.hasOwn(result, key)) {
-      result.__errors.push(`duplicate frontmatter key '${key}'`);
-      continue;
+    const errors = [];
+    for (const [key, value] of Object.entries(fields)) {
+      if (key === 'metadata') {
+        if (!value || typeof value !== 'object' || Array.isArray(value) ||
+            Object.values(value).some(item => typeof item !== 'string')) errors.push('metadata must map names to strings');
+      } else if (typeof value !== 'string') errors.push(`frontmatter field ${key} must be a string`);
     }
-
-    const rawValue = match[2].trim();
-    if (isBlockScalarMarker(rawValue)) {
-      const folded = [];
-      while (index + 1 < lines.length && /^\s+/.test(lines[index + 1])) {
-        index += 1;
-        folded.push(lines[index].trim());
-      }
-      result[key] = folded.join(rawValue.startsWith('>') ? ' ' : '\n').trim();
-      result.__keys.push(key);
-      continue;
-    }
-
-    if (hasYamlMappingColon(rawValue) && !isQuotedScalar(rawValue)) {
-      result.__errors.push(`frontmatter line ${index + 1} contains an unquoted mapping colon: ${line}`);
-      continue;
-    }
-
-    result[key] = rawValue;
-    result.__keys.push(key);
+    return { ...fields, __keys: Object.keys(fields), __errors: errors };
+  } catch (error) {
+    return { __errors: [error.message] };
   }
-  return result;
-}
-
-function isBlockScalarMarker(value) {
-  return /^[>|][+-]?$/.test(value);
-}
-
-function isQuotedScalar(value) {
-  if (value.length < 2) return false;
-  const quote = value[0];
-  return (quote === '"' || quote === "'") && value.endsWith(quote);
-}
-
-function hasYamlMappingColon(value) {
-  return /:\s/.test(value);
 }
 
 async function listMarkdownFiles(root) {
@@ -668,7 +632,7 @@ function diagnoseCodexMirror(skills) {
   const diagnostics = [];
   for (const skill of skills) {
     for (const error of skill.frontmatterErrors) diagnostics.push(`codex/skills:${skill.path}: ${error}`);
-    const extraKeys = skill.frontmatterKeys.filter((key) => !['name', 'description'].includes(key));
+    const extraKeys = skill.frontmatterKeys.filter((key) => !['name', 'description', 'metadata'].includes(key));
     if (extraKeys.length > 0) diagnostics.push(`codex/skills:${skill.path}: unsupported frontmatter keys ${extraKeys.join(',')}`);
     if (/(^|[^./])_refs\//.test(skill.text)) diagnostics.push(`codex/skills:${skill.path}: unresolved repo-root _refs path`);
   }

@@ -23,7 +23,7 @@ function requiredString(value, field) {
   }
 }
 
-function normalizeRepositoryPath(value) {
+export function normalizeRepositoryPath(value) {
   requiredString(value, 'repository_relative_path');
   const normalized = value.replaceAll('\\', '/').replace(/^\.\/+/u, '');
   if (
@@ -59,7 +59,7 @@ function globToRegex(glob) {
   return new RegExp(`^${expression}$`, 'u');
 }
 
-function pathMatches(path, patterns) {
+export function pathMatches(path, patterns) {
   return patterns.some((pattern) => globToRegex(pattern).test(path));
 }
 
