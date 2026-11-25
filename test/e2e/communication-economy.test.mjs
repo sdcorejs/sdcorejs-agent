@@ -819,6 +819,27 @@ test('portable handoff preserves every required field for every supported contex
   }
 });
 
+test('portable simplify handoffs retain both scoped receipts and identify the final code', () => {
+  for (const consumer of Object.keys(runtimePolicy.CONSUMER_REQUIRED_FIELDS.simplify_context)) {
+    const context = contextFor('simplify_context', consumer);
+    context.source_revision = 'a'.repeat(40);
+    context.final_diff_scope_hash = 'b'.repeat(64);
+    context.behavior_evidence = {
+      before: {source_revision: context.baseline.HEAD, diff_scope_hash: context.baseline.diff_scope_hash},
+      after: {source_revision: context.source_revision, diff_scope_hash: context.final_diff_scope_hash},
+    };
+    const handoff = runtimePolicy.buildPortableHandoff({contextType: 'simplify_context', consumer, context});
+    assert.equal(handoff.current_HEAD_or_diff, context.final_diff_scope_hash);
+    for (const field of ['behavior_evidence', 'source_revision', 'final_diff_scope_hash']) {
+      assert.deepEqual(handoff.authoritative[field], context[field]);
+    }
+    delete context.final_diff_scope_hash;
+    context.behavior_evidence = null;
+    const noEdits = runtimePolicy.buildPortableHandoff({contextType: 'simplify_context', consumer, context});
+    assert.equal(noEdits.authoritative.behavior_evidence, null);
+  }
+});
+
 test('portable test evidence preserves manual acknowledgements for every consumer', () => {
   const matrix = requireObject('CONSUMER_REQUIRED_FIELDS');
   const build = requireFunction('buildPortableHandoff');

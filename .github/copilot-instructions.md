@@ -102,6 +102,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
   read-only evidence. Preserve host/session authority, sequential/no-agent
   choices and worker non-recursion; unknown independence stays with the owner.
   Parallel investigation does not authorize parallel fixes.
+- Before writing production code, apply `_refs/simplify/before-writing-code.md` automatically.
 - Pure Q&A answers directly. A bounded low-risk fix may use targeted context,
   the smallest edit, focused verification, and concise review; scope growth
   escalates to the full workflow.

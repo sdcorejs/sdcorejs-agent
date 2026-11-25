@@ -32,7 +32,7 @@ generated prose remain English-only and locale-neutral.
 
 ## Dispatch
 
-Dispatch by `name:` frontmatter and the `description:` trigger. Load only frontmatter at session start; read a skill body only after selecting that skill.
+At startup read frontmatter only. Dispatch by `name:` and `description:`, then load the selected body.
 
 Use `_refs/shared/system-registry.json` as the versioned source for tracks,
 stack profiles, artifact kinds, repository roles, review/repair/ship support,
@@ -40,7 +40,7 @@ and evidence classes. Keep track, stack profile, capability profile, artifact
 owner, repository role, and execution host as separate fields. The current
 working directory is never evidence of artifact ownership.
 
-When multiple skills match, apply this priority before reading a body:
+Resolve overlapping skills in this order:
 
 1. Explicit skill name from the user.
 2. Approved spec: architecture when required; approved plan:
@@ -59,8 +59,8 @@ When multiple skills match, apply this priority before reading a body:
 Review repair belongs to `sdcorejs-repair-loop`; readiness belongs to
 `sdcorejs-ship`; Git artifacts belong to `sdcorejs-git` after the required
 ship evidence. Broad refactors and under-specified AI-agent work return to
-brainstorming. `sdcorejs-simplify` is only for bounded, behavior-preserving
-source refinement.
+brainstorming. Apply `_refs/simplify/before-writing-code.md` before coding.
+Post-test Simplify edits stay bounded and behavior-preserving.
 
 `sdcorejs-cleanup` owns file hygiene and post-merge resources (default read-only).
 Offers grant analysis only; mutations need exact authority. Load
@@ -159,9 +159,8 @@ checkpoints. Read persona only when relevant; live progress stays in the runtime
 
 ## Reference Loading
 
-Follow `_refs/shared/runtime-protocols.md` for mandatory shared JIT hooks;
-its context, progress, communication, delegation and visual rules apply at
-their declared triggers. Additional loading:
+Follow the mandatory JIT hooks in `_refs/shared/runtime-protocols.md` for context,
+progress, communication, delegation and visuals. Also load:
 
 - `_refs/harness/capability-contract.json` for semantic action/capability resolution.
 - `_refs/shared/artifact-lifecycle.md` before `.sdcorejs/**` writes or Git closure.

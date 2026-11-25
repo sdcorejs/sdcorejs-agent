@@ -79,7 +79,8 @@ limits:
 ```
 
 These are safety boundaries, not quality metrics. When the proven scope exceeds
-a limit, ask for a subset or return to planning.
+a limit, ask for a subset or return to planning. Freeze approved ranges and capture
+actual pass writes using [scoped verification evidence](verification.md#capturing-evidence-for-a-scoped-write).
 
 ## Eligible executable source
 
@@ -198,6 +199,7 @@ behavior or a public API.
 
 ## Allowed local refinements
 
+Assess reuse, ownership and test gaps using [the before-code guidance](before-writing-code.md).
 Prefer low-risk, local improvements:
 
 - reduce nesting with guard clauses only when validation/error order is stable;

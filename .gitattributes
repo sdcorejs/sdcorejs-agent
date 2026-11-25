@@ -38,6 +38,8 @@ Dockerfile      text eol=lf
 .gitignore      text eol=lf
 .clinerules     text eol=lf
 LICENSE         text eol=lf
+# Both hook entrypoints run under a POSIX shell, including Git Bash on Windows.
+plugin/hooks/run-hook.cmd text eol=lf
 plugin/hooks/session-start text eol=lf
 
 # Binary - never normalize.

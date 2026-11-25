@@ -39,6 +39,7 @@
       "message_kind": "fast-fix-success",
       "capability_status": "supported",
       "current_jit_paths": [
+        "_refs/simplify/before-writing-code.md",
         "_refs/shared/project-context.md",
         "_refs/shared/tasklist.md",
         "_refs/shared/finish-gate.md"
@@ -107,6 +108,7 @@
       "message_kind": "execution-handoff-success",
       "capability_status": "unknown",
       "current_jit_paths": [
+        "_refs/simplify/before-writing-code.md",
         "_refs/shared/project-context.md",
         "_refs/shared/tasklist.md",
         "_refs/shared/artifact-lifecycle.md",
@@ -179,6 +181,7 @@
       "message_kind": "execution-handoff-success",
       "capability_status": "unknown",
       "current_jit_paths": [
+        "_refs/simplify/before-writing-code.md",
         "_refs/shared/project-context.md",
         "_refs/shared/tasklist.md",
         "_refs/shared/artifact-lifecycle.md",

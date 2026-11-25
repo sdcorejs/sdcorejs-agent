@@ -57,17 +57,19 @@ Run in Claude Code:
 ```
 
 The plugin contains its generated skills, shared references and session hook.
+For a versioned 1.1.0 installation, use the Claude ZIP from GitHub Releases.
 
 ### Native Skills from npm
 
-After the 1.0.0 release, run from the target project directory:
+Run from the target project directory:
 
 ```sh
-npx sdcorejs-agent@1.0.0 install --agent codex --scope project --dry-run
-npx sdcorejs-agent@1.0.0 install --agent codex --scope project
+npx sdcorejs-agent@1.1.0 install --agent codex --scope project --dry-run
+npx sdcorejs-agent@1.1.0 install --agent codex --scope project
 ```
 
-Use `--agent claude-code` for Claude Code native skills or `--scope user` for
+Use `--agent opencode` for OpenCode with automatic before-code instructions,
+`--agent claude-code` for Claude Code native skills, or `--scope user` for
 all local projects. The command installs 25 skills with their shared references.
 On Windows, use `npx.cmd` in PowerShell or Command Prompt. See the
 [installation guide](docs/INSTALLATION.md) for destinations, removal, collisions,
@@ -542,8 +544,14 @@ inputs/versions, separate application state, require evidence and redacted
 tracing/audit/usage data, and run offline deterministic evals. Live engine/model
 verification is always reported separately.
 
-`sdcorejs-simplify` is a daily workflow utility, not an implementation track.
-It analyzes or applies bounded refinements to recently changed executable
+The Claude plugin injects Simplify's coding rule at session start and resume.
+Native skills expose the rule in the skill description when the host supplies
+its catalog to the model. Managed project instructions also carry it. For an
+ordinary coding request the executor applies the [before-code guidance](_refs/simplify/before-writing-code.md)
+before its first production edit, including on a bounded fix. The owner reads related
+callers and tests, looks for compatible existing behavior and chooses the
+smallest complete implementation. A separate Simplify request or finish choice
+analyzes or applies bounded refinements to recently changed executable
 source or an explicit source scope while preserving observable behavior.
 Apply mode requires a green focused baseline and reruns the same verification;
 analyze mode is read-only. Prompts, docs, configuration, strings, tests,

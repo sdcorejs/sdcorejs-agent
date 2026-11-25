@@ -468,3 +468,28 @@ async function listFiles(root, predicate) {
   }));
   return nested.flat().sort((a, b) => relative(ROOT, a).localeCompare(relative(ROOT, b)));
 }
+
+test('ordinary source writes reach the before-code rule through the installed bootstrap and executor router', async () => {
+  const router = await readFile(join(ROOT, '_refs/shared/runtime-protocols.md'), 'utf8');
+  const ref = '_refs/simplify/before-writing-code.md';
+  assert.ok(router.includes(ref), 'all source-writing owners load the before-code rule');
+  for (const path of [
+    'codex/skills/sdcorejs-using-skills/SKILL.md',
+    'plugin/skills/sdcorejs-using-skills/SKILL.md',
+    '.claude/skills/sdcorejs-using-skills/SKILL.md',
+  ]) {
+    const bootstrap = await readFile(join(ROOT, path), 'utf8');
+    assert.ok(bootstrap.includes(ref), path);
+  }
+  const pack = await loadSkillPack(ROOT);
+  assert.equal(dispatchPrompt(pack, 'execute the approved plan')?.name, 'sdcorejs-execute-plan');
+  const rule = await readFile(join(ROOT, ref), 'utf8');
+  assert.match(rule, /authorized.*source.*edit/i);
+  assert.match(rule, /caller/i);
+  assert.match(rule, /read-only/i);
+  const skill = pack.sourceSkills.find(entry => entry.name === 'sdcorejs-simplify');
+  assert.match(skill.description, /keep and rerun existing tests/i);
+  assert.match(rule, /existing regression\s+(?:assertions|cases)/i);
+  assert.match(rule, /requested runtime check/i);
+  assert.ok((await readFile(join(ROOT, '_refs/shared/project-bootstrap-template.md'), 'utf8')).includes('sdcorejs-simplify'));
+});

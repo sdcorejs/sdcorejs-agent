@@ -8,6 +8,8 @@ Check semantic naming/routes, effective protection, comparable screen behavior,
 hardcoded assumptions, complete-data claims and the tests proving affected risks.
 Scale checks to changed surfaces; escalate authorization, tenant and completeness
 changes regardless of line count. Record missing evidence rather than claiming pass.
+Before writing production code, apply the before-code guidance from sdcorejs-simplify.
+Trace callers and tests, reuse compatible behavior, and put new logic with its narrowest owner.
 Use sdcorejs-explore for context and sdcorejs-review for read-only assessment.
 Observed patterns remain proposals. Only an authorized Explore sync may update
 conventions or this managed block after final code writes; review never writes it.

@@ -1,0 +1,39 @@
+{
+  "opencode": "1.19.5",
+  "ponytail": "ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10",
+  "model": "gpt-4.1-mini-2025-04-14",
+  "maxSteps": 14,
+  "timeoutSeconds": 420,
+  "repositories": {
+    "utils": {"slug":"sdcorejs/sdcorejs-utils","revision":"ec5225785f00569564f94b96d2b93131e569a28e"},
+    "link-insight": {"slug":"sdcorejs/link-insight","revision":"cd767fea41099a947129d5b88342b8a8f0e2dabd"}
+  },
+  "cases": [
+    {
+      "id": "finite", "repo": "utils",
+      "prompt": "Consumers of @sdcorejs/utils need isFiniteNumericString(value, options?) as a named export and on NumberUtilities. It should narrow unknown to string, follow the existing numeric-string syntax and options, and accept only values that convert to finite numbers. Preserve existing public behavior. Document the new API, add focused tests, and run them.",
+      "focus": "src/fns/number.fns.spec.ts", "oracle": "finite.spec.ts", "oraclePath": "src/fns/held-out.spec.ts",
+      "oracleTests": [
+        ["public finite numeric string contract", "requires a string and a finite numeric result across public entries"],
+        ["public finite numeric string contract", "delegates each lexical option and narrows unknown"]
+      ],
+      "assertions": ["The built ESM, CommonJS and functions package exports agree and expose a string type guard.", "Public documentation describes the new API accurately.", "Options, non-string inputs and numeric overflow follow the requested contract.", "The implementation reuses the established number parsing or syntax checks without changing legacy callers.", "The added tests actually exercise the new API."]
+    },
+    {
+      "id": "cache", "repo": "link-insight",
+      "prompt": "Add an asynchronous has(canonicalUrl) method to SummaryCache so callers can ask whether a usable cached summary exists. It must agree with get, including removal of stale or malformed stored entries. Preserve the behavior of existing callers, add focused tests, and run them.",
+      "focus": "tests/storage/summary-cache.test.ts", "oracle": "cache.test.ts", "oraclePath": "tests/storage/held-out.test.ts",
+      "oracleTests": [
+        ["public cache presence contract", "observes expiry at the exact boundary and preserves a different URL"],
+        ["public cache presence contract", "evicts invalid stored data and propagates storage errors"]
+      ],
+      "assertions": ["Misses, valid hits, expiry at the boundary, corrupt entries and storage failures agree with get.", "Removal stays scoped to the requested URL.", "The two paths share existing cache validation and expiry behavior.", "The added tests exercise the public method."]
+    },
+    {
+      "id": "review", "repo": "utils", "readOnly": true,
+      "prompt": "Can callers replace NumberUtilities.toVNCurrency and NumberUtilities.toISO with NumberUtilities.toVN everywhere? Check the function identities and the exact results for '1,234.5' and null through the public package entry point. Give a brief recommendation and leave project files unchanged.",
+      "focus": "src/fns/number.fns.spec.ts",
+      "assertions": ["The answer identifies the true alias, the distinct US formatter and both locale outputs.", "The null result is stated and the public API was actually exercised.", "No project files were edited."]
+    }
+  ]
+}

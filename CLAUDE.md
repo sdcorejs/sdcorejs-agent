@@ -148,6 +148,7 @@ for read-only evidence only. Preserve host/session authority, sequential/no-agen
 choices and worker non-recursion; unknown independence stays with the owner.
 Parallel investigation does not authorize parallel fixes.
 
+Before writing production code, apply `_refs/simplify/before-writing-code.md` automatically.
 Pure Q&A answers directly. A small, explicit, low-risk fix uses targeted
 context, the smallest edit, focused verification, and concise review. Scope,
 ownership, risk, or behavior growth escalates to the full workflow.

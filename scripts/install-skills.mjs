@@ -14,7 +14,7 @@ const packageRoot = fileURLToPath(new URL('..', import.meta.url));
 const source = path.join(packageRoot, 'skills');
 const ownership = '.sdcorejs-agent.json';
 const usage = `Usage: sdcorejs-agent list
-       sdcorejs-agent install|uninstall --agent codex|claude-code --scope project|user [--dry-run]`;
+       sdcorejs-agent install|uninstall --agent codex|claude-code|opencode --scope project|user [--dry-run]`;
 
 function stat(file) {
   return lstatSync(file, { throwIfNoEntry: false });
@@ -80,17 +80,39 @@ function run(args) {
     agent: { type: 'string' }, scope: { type: 'string' }, 'dry-run': { type: 'boolean' },
   } });
   const { agent, scope, 'dry-run': dryRun } = values;
-  if (!['install', 'uninstall'].includes(command) || !['codex', 'claude-code'].includes(agent)
+  if (!['install', 'uninstall'].includes(command) || !['codex', 'claude-code', 'opencode'].includes(agent)
     || !['project', 'user'].includes(scope)) throw new Error(usage);
 
   const base = realpathSync(scope === 'user' ? homedir() : process.cwd());
-  const destination = path.join(base,
-    agent === 'codex' ? '.agents' : '.claude', 'skills');
+  const hostDirectory = { codex: '.agents', 'claude-code': '.claude', opencode: '.opencode' }[agent];
+  const hostRoot = path.join(base, hostDirectory);
+  const destination = path.join(hostRoot, 'skills');
   const sections = [...names, '_refs'];
   const inventories = Object.fromEntries(sections.map(name => [name, inventory(path.join(source, name))]));
   const { version } = JSON.parse(readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
-  const receipt = `${JSON.stringify({ version, inventories })}\n`;
   const marker = path.join(destination, ownership);
+  const configNames = ['opencode.json', 'opencode.jsonc'];
+  const rule = '.opencode/skills/_refs/simplify/before-writing-code.md';
+  const configText = JSON.stringify({
+    $schema: 'https://opencode.ai/config.json',
+    instructions: [scope === 'user' ? `~/${rule}` : rule],
+  }, null, 2) + '\n';
+
+  function receipt(configName) {
+    return JSON.stringify(configName ? { version, inventories, configName } : { version, inventories }) + '\n';
+  }
+
+  function verifyFiles(directory, config) {
+    if (config && (!stat(config)?.isFile() || readFileSync(config, 'utf8') !== configText)) {
+      throw new Error(`Managed OpenCode instructions differ at ${config}. Preserve your edits before retrying.`);
+    }
+    for (const name of sections) {
+      const section = path.join(directory, name);
+      if (!stat(section)?.isDirectory() || JSON.stringify(inventory(section)) !== JSON.stringify(inventories[name])) {
+        throw new Error(`Installed files differ at ${section}. Back up your changes before making any manual edits.`);
+      }
+    }
+  }
 
   function plan() {
     const markerEntry = stat(marker);
@@ -98,54 +120,82 @@ function run(args) {
       if (command === 'uninstall') throw new Error(`No managed installation at ${destination}.`);
       const collisions = sections.filter(name => stat(path.join(destination, name)));
       if (collisions.length) throw new Error(`Existing paths at ${destination}: ${collisions.join(', ')}. Back them up and move them before installing.`);
-      return 'install';
+      let configName;
+      if (agent === 'opencode') {
+        // OpenCode merges both native configuration files with project rules.
+        // Claim one unused filename without rewriting consumer-owned JSONC.
+        configName = configNames.find(name => !stat(path.join(hostRoot, name)));
+        if (!configName) throw new Error(`Both OpenCode configuration files are in use at ${hostRoot}. See the existing-config install option in docs/INSTALLATION.md.`);
+      }
+      return { action: 'install', configName };
     }
-    if (!markerEntry.isFile() || readFileSync(marker, 'utf8') !== receipt) {
+    if (!markerEntry.isFile()) throw new Error(`Expected a regular installation receipt at ${marker}.`);
+    const savedReceipt = readFileSync(marker, 'utf8');
+    const configName = agent === 'opencode' ? JSON.parse(savedReceipt).configName : undefined;
+    if ((agent === 'opencode' && !configNames.includes(configName)) || savedReceipt !== receipt(configName)) {
       throw new Error(`Installation receipt differs at ${marker}. Use the original package version or recover the files manually.`);
     }
-    for (const name of sections) {
-      const section = path.join(destination, name);
-      if (!stat(section)?.isDirectory() || JSON.stringify(inventory(section)) !== JSON.stringify(inventories[name])) {
-        throw new Error(`Installed files differ at ${section}. Back up your changes before making any manual edits.`);
-      }
-    }
-    return command === 'install' ? 'already installed' : 'uninstall';
+    verifyFiles(destination, configName && path.join(hostRoot, configName));
+    return { action: command === 'install' ? 'already installed' : 'uninstall', configName };
   }
 
   checkedDirectory(destination);
-  const action = plan();
+  const { action, configName } = plan();
   console.log(`${dryRun ? 'Dry run: ' : ''}${action} ${version} at ${destination}`);
   if (action === 'already installed') return;
   for (const name of [...sections, ownership]) console.log(`  ${name}`);
+  if (configName) console.log(`  ${path.join(hostRoot, configName)}`);
   if (dryRun) return;
 
   checkedDirectory(destination, true);
   const lock = path.join(destination, '.sdcorejs-agent.lock');
   mkdirSync(lock);
   try {
-    if (plan() !== action) throw new Error('Destination changed. Retry the command.');
+    const current = plan();
+    if (current.action !== action || current.configName !== configName) throw new Error('Destination changed. Retry the command.');
     // Keep rollback data on the same filesystem and outside skill discovery.
     const staging = mkdtempSync(path.join(path.dirname(destination), '.sdcorejs-agent-'));
     const moved = [];
     try {
       if (action === 'install') {
         copyPayload(staging, sections, inventories);
-        writeFileSync(path.join(staging, ownership), receipt, { flag: 'wx' });
+        writeFileSync(path.join(staging, ownership), receipt(configName), { flag: 'wx' });
+        if (configName) writeFileSync(path.join(staging, configName), configText, { flag: 'wx' });
       }
-      const from = action === 'install' ? staging : destination;
-      const to = action === 'install' ? destination : staging;
-      for (const name of [...sections, ownership]) {
-        if (stat(path.join(to, name))) throw new Error(`Path appeared: ${path.join(to, name)}`);
-        renameSync(path.join(from, name), path.join(to, name));
-        moved.push(name);
+      const entries = sections.map(name => [path.join(staging, name), path.join(destination, name)]);
+      if (configName) entries.push([path.join(staging, configName), path.join(hostRoot, configName)]);
+      entries.push([path.join(staging, ownership), marker]);
+      for (const [staged, installed] of entries) {
+        const [from, to] = action === 'install' ? [staged, installed] : [installed, staged];
+        if (stat(to)) throw new Error(`Path appeared: ${to}`);
+        if (action === 'install' && configName && installed === path.join(hostRoot, configName)) {
+          // Keep project settings created by another editor after plan().
+          copyFileSync(from, to, constants.COPYFILE_EXCL);
+          moved.push({ from, to, copied: true });
+        } else {
+          renameSync(from, to);
+          moved.push({ from, to });
+        }
+      }
+      if (action === 'uninstall') {
+        // An editor may save between the first inventory and the move. Check the
+        // actual files in staging while the entire uninstall is still reversible.
+        verifyFiles(staging, configName && path.join(staging, configName));
+        const stagedMarker = path.join(staging, ownership);
+        if (!stat(stagedMarker)?.isFile() || readFileSync(stagedMarker, 'utf8') !== receipt(configName)) {
+          throw new Error('Installation receipt changed during uninstall.');
+        }
       }
     } catch (error) {
       try {
-        for (const name of moved.reverse()) {
-          const from = action === 'install' ? destination : staging;
-          const to = action === 'install' ? staging : destination;
-          if (stat(path.join(to, name))) throw new Error(`Path appeared: ${path.join(to, name)}`);
-          renameSync(path.join(from, name), path.join(to, name));
+        for (const { from, to, copied } of moved.reverse()) {
+          if (copied) {
+            if (!stat(to)?.isFile() || readFileSync(to, 'utf8') !== configText) throw new Error(`Configuration changed: ${to}`);
+            rmSync(to);
+          } else {
+            if (stat(from)) throw new Error(`Path appeared: ${from}`);
+            renameSync(to, from);
+          }
         }
       } catch {
         throw new Error(`Operation interrupted. Recovery files remain at ${staging}. ${error.message}`);

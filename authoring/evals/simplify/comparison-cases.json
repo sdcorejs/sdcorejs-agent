@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "runtime": "1.19.5",
+  "ponytailRevision": "ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10",
+  "model": "qwen3-4b-instruct",
+  "modelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "timeoutSeconds": 1200,
+  "maxSteps": 18,
+  "cases": [
+    {"id":"A","fixture":"consumer","expectedSkill":true,"prompt":"Add an optional order code to the invoice CSV importer. When present it should behave like billing; keep the original result for a missing field. Update the importer and its tests and run them.","assertions":["The importer reuses the existing billing parser.","Tests distinguish normalized values and invalid codes, while preserving the absent-field result."]},
+    {"id":"B","fixture":"decisions","expectedSkill":true,"prompt":"Review the display and ledger rounding functions. Could they share an implementation? Give a concrete input and both results. This is a read-only review.","assertions":["The answer demonstrates a rounding tie where the functions differ.","The two contracts remain distinct and the project is unchanged."]},
+    {"id":"C","fixture":"decisions","expectedSkill":true,"prompt":"Make reconciliation accept trimmed, case-insensitive filters for lowercase stored statuses. Keep existing exact matches working and other consumers compatible. Add and run focused tests.","assertions":["Only reconciliation applies normalization, with uppercase exact matches retained.","The public matcher keeps its original equality semantics."]},
+    {"id":"D","fixture":"decisions","expectedSkill":true,"prompt":"Add adapters/json.mjs exporting JsonReader with the existing reader API. Exercise valid and malformed JSON and verify resource cleanup in both cases.","assertions":["The adapter uses the existing reader lifecycle.","Tests observe exactly one close for both valid and malformed input."]},
+    {"id":"E","fixture":"decisions","expectedSkill":true,"prompt":"Review the history and posting handlers. Should they share a base? Explain what each requires from its caller and show an observable difference. Leave the project unchanged.","assertions":["History works with a read-only store.","Posting uses the transaction-owned post operation and the project is unchanged."]},
+    {"id":"F","fixture":"decisions","expectedSkill":true,"prompt":"Assess whether the refund calculation would be clearer after a local refactor. First add tests for its existing boundaries and run them on the original code. Keep the implementation if it is already clear.","assertions":["Tests exercise the public refund function below zero and above the paid amount.","The tests run before any source edit and the behavior remains bounded."]},
+    {"id":"G","fixture":"fixtures/file-import","expectedSkill":true,"prompt":"Let the import CLI accept .jsonl files like .ndjson files. Keep the current output and malformed-input handling. Verify through the CLI.","assertions":["Both extensions use the existing NDJSON reader.","The CLI reports malformed input and accepts valid records for either extension."]},
+    {"id":"H","fixture":"fixtures/order-docs","expectedSkill":false,"prompt":"Update README.md with a runnable example of formatTicket handling a padded lowercase identifier and an example of an invalid value. This is a documentation change only.","assertions":["The documented examples match the function's actual output and error.","Only README.md changes."]},
+    {"id":"I","fixture":"fixtures/booking-form","expectedSkill":true,"prompt":"Add an optional delivery date to the existing booking form. A user can pick a date, save, reload and see the saved date; clearing it and saving must also work. Preserve the existing name field and verify the change.","assertions":["A real browser can set, persist, reload and clear the optional date.","The existing field component and name behavior are preserved."]},
+    {"id":"Q","fixture":"decisions","expectedSkill":false,"prompt":"What does the refund calculation return when 90 cents were paid and 20 cents are requested? Answer briefly.","assertions":["The answer gives 20 cents.","The project stays unchanged."]}
+  ]
+}
